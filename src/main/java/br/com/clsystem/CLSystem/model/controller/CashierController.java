@@ -1,10 +1,11 @@
 package br.com.clsystem.CLSystem.model.controller;
 
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,10 +37,10 @@ public class CashierController {
 		}
 	}
 	
-	@PutMapping("/update-status/{id}")
-	public ResponseEntity<?> statusController(@PathVariable Long id){
+	@PutMapping("/close-cashier")
+	public ResponseEntity<?> closeCashier(@RequestBody Map<String, Long> idCashier){
 		try {
-			return cashierService.updateStatus(id);
+			return cashierService.closeCashier(idCashier.get("idCashier"));
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}

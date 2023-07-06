@@ -38,7 +38,11 @@ public class CashierService {
 		}
 	}
 	
-	public ResponseEntity<?> updateStatus(long id){
+	public Optional<Cashier> findById(Long id) {
+		return cashierRepository.findById(id);
+	}
+	
+	public ResponseEntity<?> closeCashier(long id){
 		Optional<Cashier> cashier = cashierRepository.findById(id);
 		cashier.get().setStatus(StatusCashier.FECHADO);
 		cashier.get().setDateHourClose(LocalDateTime.now());
@@ -48,4 +52,5 @@ public class CashierService {
 			throw new DataBaseException("", dive);
 		}
 	}
+	
 }

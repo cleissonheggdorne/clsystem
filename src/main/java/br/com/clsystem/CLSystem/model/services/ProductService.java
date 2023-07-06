@@ -43,6 +43,14 @@ public class ProductService {
 		}
 	}
 	
+	public Optional<Product> findById(Long id){
+		try {
+			return productRepository.findById(id);
+		}catch(Exception e) {
+			throw new DataBaseException("", e);
+		}
+	}
+	
 	public List<ProductRecord> findAll(){
 		try {
 			List<ProductRecord> listProductRecord = new ArrayList<>(); 

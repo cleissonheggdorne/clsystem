@@ -45,7 +45,7 @@ public class Cashier implements Serializable {
 	@Column(name="date_hour_open", nullable = false)
 	private LocalDateTime dateHourOpen;
 	
-	@Column(name="date_hour_close", nullable = false)
+	@Column(name="date_hour_close")
 	private LocalDateTime dateHourClose;
 	
 	@Column(name="initial_value")

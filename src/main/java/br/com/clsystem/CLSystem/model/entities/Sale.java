@@ -5,8 +5,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.clsystem.CLSystem.types.FormPayment;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,12 +40,12 @@ public class Sale implements Serializable {
 	@Column(name="id_sale")
 	private Long idSale;
 	
-	@OneToOne
-	@JoinColumn(name="id_form_payment", nullable = false)
-	private FormPayment idFormPayment;
+	@Column(name="form_payment", nullable = false)
+	@Enumerated(EnumType.STRING)
+	private FormPayment formPayment;
 	
 	@OneToOne
-	@JoinColumn(name="id_cashier", nullable = false)
+	@JoinColumn(name="id_cashier")
 	private Cashier idCashier;
 	
 	@Column(name="date_hour_sale", nullable = false)
