@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+     <!--Import Google Icon Font-->
+     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+     <!--Import materialize.css-->
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CL SYSTEM</title>
+</head>
+<body>
+    
+    <div class="row">
+        <!-- Menu Lateral -->
+        <div class="col s2">
+            <ul class="collection">
+                <li class="collection-item"><a href="http://127.0.0.1:5500/src/index.html">Venda</a></li>
+                <li class="collection-item"><a href="http://127.0.0.1:5500/src/view/pages/product_registration.html">Cadastro de Produtos</a></li>
+                <li class="collection-item"><a href="#">Cadastro de Funcionários</a></li>
+            </ul>
+        </div>
+        <!-- Conteúdo -->
+        <div class="col s10">  
+            <div class="row">
+                <!-- input entry product -->
+                <div class="input-field">
+                  <input value="" id="product" type="text" class="validate">
+                  <label class="active" for="procuct">Produto</label>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="row">
+                <div class="input-field col s2">
+                    <!-- input quantity -->
+                    <input value="" id="input-quantity" type="number" min="0" class="validate" >
+                    <label class="active" for="input-quantity">Quantidade</label>
+                  </div>
+                  <!-- input unitary value disabled -->
+                  <div class="input-field col s2">
+                    <input disabled value="" id="unitary-value" type="number" min="0.01" class="validate">
+                    <label class="active" for="unitary-value">Valor Unitário</label>
+                  </div>
+                  <!-- Shopping List -->
+                <div class="col s8">
+                    <div class="card-panel teal">
+                        <div class="row">
+                            <div class="col l2">
+                                <span class="white-text">Quantidade Produto</span>
+                            </div>
+                            <div class="col l6">
+                                <span class="white-text">Descrição Produto</span>
+                            </div>
+                            <div class="col l2">
+                                <span class="white-text">Valor Unitário</span>
+                            </div>
+                            <div class="col l2">
+                                <span class="white-text">Valor Total</span>
+                            </div>
+                        </div>   
+                        <div class="divider"></div>
+                        <div class="row">
+                            <div class="col l2">
+                                <span class="white-text" id="span-quantity"></span>
+                            </div>
+                            <div class="col l6">
+                                <span class="white-text" id="span-product"></span>
+                            </div>
+                            <div class="col l2">
+                                <span class="white-text" id="span-unitary-value"></span>
+                            </div>
+                            <div class="col l2">
+                                <span class="white-text" id="span-total-product"></span>
+                            </div>
+                        </div>
+                    </div> 
+                </div> 
+            </div>
+            <div class="row">
+                <div class="col l8 offset-l4">
+                    <div class="card-panel teal lighten-2">
+                        <span class="white-text">Total</span>
+                        <span class="white-text right" id="span-total-list">0,00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col l3 right">
+                    <a class="waves-effect waves-light green btn right">Pagamento (f2)</a>
+                </div>
+                <div class="col l3 right">
+                    <a class="waves-effect waves-light red btn right">Cancelamento (f12)</a>
+                </div>
+            </div>
+        </div>       
+      </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+     <!--Import Google Icon Font-->
+     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+     <!--Import materialize.css-->
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <script src="/src/assets/js/product_registration.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CL SYSTEM</title>
+</head>
+<body>
+    
+    <div class="row">
+        <!-- Menu Lateral -->
+        <div class="col s2">
+            <ul class="collection">
+            <li class="collection-item"><a href="http://127.0.0.1:5500/src/index.html">Venda</a></li>
+            <li class="collection-item"><a href="http://127.0.0.1:5500/src/view/pages/product_registration.html">Cadastro de Produtos</a></li>
+            <li class="collection-item"><a href="#">Cadastro de Funcionários</a></li>
+            </ul>
+        </div>
+        <!-- Conteúdo -->
+        <div class="col s10">  
+            <div class="card-panel teal">
+                <span class="white-text">Cadastro de Produtos</span>
+            </div>
+            <div class="divider"></div>
+            <div class="row">
+                <table class="striped" id="table-products">
+                    <thead>
+                        <tr>
+                            <th>Código Produto</th>
+                            <th>Produto</th>
+                            <th>Valor Custo</th>
+                            <th>Valor Venda</th>
+                        </tr>
+                    </thead>
+          
+                    <tbody>
+                        <!-- Products -->
+                    </tbody>
+                </table>
+            </div>
+        </div>       
+      </div>
+    
+  <!-- Modal Structure For Insert And Update Product -->
+  <div id="modal1" class="modal bottom-sheet">
+    <div class="modal-content">
+      <h4>Modal Header</h4>
+      <p>A bunch of text</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+    </div>
+  </div>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+</body>
+</html>
