@@ -51,13 +51,45 @@
   <div id="modal1" class="modal bottom-sheet">
     <div class="modal-content">
       <h4>Modal Header</h4>
-      <p>A bunch of text</p>
-    </div>
-    <div class="modal-footer">
-      <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+      <form id="form-product" action="">
+            <div class="col l12">
+                <div class="row">
+                    <div class="input-field col l1">
+                        <input type="number" id="id-product" class="validate" value="" disabled>
+                        <label for="id-product" data-error="wrong" data-success="right">Código</label>
+                    </div>
+                    <div class="input-field col l5">
+                        <input type="text" id="product" class="validate">
+                        <label for="product" data-error="Inválido" data-success="Válido">Produto</label>
+                    </div>
+                    <div class="input-field col l3">
+                        <input type="number" min="0.01" step="0.01" id="value-cost" class="validate">
+                        <label for="value-cost" data-error="Inválido" data-success="Válido">Valor de Custo</label>
+                    </div>
+                    <div class="input-field col l3">
+                        <input type="number" min="0.01" step="0.01" id="value-sale" class="validate">
+                        <label for="value-sale" data-error="Inválido" data-success="Válido">Valor de Venda</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col l6">
+                        <input type="text" id="product-description" class="materialize-textarea">
+                        <label for="product-description">Descrição do Produto</label>
+                    </div>
+                    <div class="input-field col l4">
+                        <input type="text" id="bar-code" class="materialize-textarea">
+                        <label for="bar-code">Código de Barras</label>
+                    </div>
+                    <button class="btn-large waves-effect waves-light col l2" type="submit" name="action">Salvar
+                        <i class="material-icons right">save</i>
+                    </button>
+                </div>
+            </div>
+      </form>
     </div>
   </div>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
 </body>
 </html>
