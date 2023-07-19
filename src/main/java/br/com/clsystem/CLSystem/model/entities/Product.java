@@ -43,4 +43,7 @@ public class Product {
 	@Column(name="bar_code", length = 20, unique = true)
 	private String barCode;
 	
+	@Column(name="deleted")
+	private Boolean deleted;
+	
 }

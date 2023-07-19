@@ -41,7 +41,7 @@ public class DataBaseException extends RuntimeException{
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro desconhecido: (log) " + exception.getCause());
             }
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro desconhecido: (log)" + getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro desconhecido: (log)" + getCause());
         }
     }
 }

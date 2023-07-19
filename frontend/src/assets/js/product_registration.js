@@ -1,111 +1,13 @@
-// document.addEventListener('DOMContentLoaded', function(){
-//     let listProducts;
-
-//     fetch('http://localhost:8080/api/product/find')
-//     .then(response => {
-//             //Status 200 Ok
-//         if(response.ok){
-//             return response.json();
-//         }else{
-//             console.log("Erro ao Buscar dados do usuário")
-//         }   
-//     })
-//     .then(data =>{
-//         listProducts = data
-//         //Demonstrar dados
-//         console.log(data);
-//         const table = document.getElementById("table-products");
-//         data.forEach(element => {
-//             const line = document.createElement("tr");
-//             const cellId = document.createElement("td");
-//             const cellNameProduct= document.createElement("td");
-//             const cellValueCost= document.createElement("td");
-//             const cellValueSale= document.createElement("td");
-//             const cellEdit= document.createElement("td");
-//             const cellDelete= document.createElement("td");
-//             const btnEdit= document.createElement("a");
-//             const btnDelete= document.createElement("a");
-            
-//             btnEdit.setAttribute('class', 'waves-effect waves-teal btn-flat  btn modal-trigger');
-//             btnEdit.setAttribute('id', 'btn-edit');
-//             btnEdit.setAttribute('data-id-product', element.idProduct);
-//             btnDelete.setAttribute('class', 'waves-effect waves-teal btn-flat  btn modal-trigger');
-//             btnDelete.setAttribute('id', 'btn-delete');
-//             btnDelete.setAttribute('data-id-product', element.idProduct);
-//             btnEdit.setAttribute('href', '#modal1');
-//             btnDelete.setAttribute('href', '#modal1');
-//             btnEdit.textContent = "Editar";
-//             btnDelete.textContent = "Excluir";
-
-//             cellId.textContent = element.idProduct;
-//             cellNameProduct.textContent = element.nameProduct;
-//             cellValueCost.textContent = element.valueCost;
-//             cellValueSale.textContent = element.valueSale;
-//             cellEdit.appendChild(btnEdit);
-//             cellDelete.appendChild(btnDelete);
-
-   
-//             line.appendChild(cellId);
-//             line.appendChild(cellNameProduct);
-//             line.appendChild(cellValueCost);
-//             line.appendChild(cellValueSale);
-//             line.appendChild(cellEdit);
-//             line.appendChild(cellDelete);
-//             table.querySelector('tbody').appendChild(line);
-
-//             // Adicionar ouvintes de eventos para os botões de edição e exclusão
-//             const editButtons = document.querySelectorAll('#btn-edit');
-//             const deleteButtons = document.querySelectorAll('#btn-delete');
-
-//             editButtons.forEach(function(button) {
-//                 button.addEventListener('click', function() {
-//                 console.log(listProducts);
-//                 const inputIdProduct = document.getElementById("id-product");
-//                 const inputProduct = document.getElementById("product");
-//                 const inputProductDescription = document.getElementById("product-description");
-//                 const inputValueCost = document.getElementById("value-cost");
-//                 const inputValueSale = document.getElementById("value-sale");
-                
-//                 const productReturn = listProducts.find(obj => obj.idProduct == button.getAttribute("data-id-product"));
-//                 inputIdProduct.value = String(productReturn.idProduct);
-//                 inputProduct.value = String(productReturn.nameProduct);
-//                 inputProductDescription.value = String(productReturn.productDescription);
-//                 inputValueCost.value = String(productReturn.valueCost);
-//                 inputValueSale.value = String(productReturn.valueSale);
-//                 //Atualiza as entradas para evitar erro se sobreescrita de texto
-//                 Materialize.updateTextFields();
-//                 });
-//             });
-
-//             deleteButtons.forEach(function(button) {
-//                 button.addEventListener('click', function() {
-//                 console.log('Clique Delete');
-//                 });
-//             });
-//         })
-//     })
-//     .catch(error=>{
-//         console.error(error);
-//     })
-
-//     //Início Jquery
-//     $(document).ready(function(){
-//         // the "href" attribute of the modal trigger must specify the modal ID that wants to be triggered
-//         $('.modal').modal();
-//       });
-    
-// })
 // Model
 const model = {
     listProducts: [],
     fetchProducts: function() {
-      return fetch('http://localhost:8080/api/product/find')
+      return fetch('http://localhost:8080/api/product/findAll')
         .then(response => {
           if (response.ok) {
             return response.json();
           } else {
-            console.log(response);
-            throw new Error("Erro ao listar produtos: " + response);
+            throw new Error("Erro ao listar produtos. Contate o suporte técnico.");
           }
         })
         .then(data => {
@@ -113,15 +15,44 @@ const model = {
           return data;
         })
         .catch(error => {
-          console.error(error);
+          error.then(errorMsg =>{
+            Materialize.toast(errorMsg.body, 1000)
+          });
+        });
+    },
+    fetchProductsByKey: function(key) {
+      console.log("aqui");
+      return fetch('http://localhost:8080/api/product/find',{
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(key) 
+        })
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error("Erro ao listar produtos. Contate o suporte técnico.");
+          }
+        })
+        .then(data => {
+          this.listProducts = data;
+          return data;
+        })
+        .catch(error => {
+          //error.then(errorMsg =>{
+            Materialize.toast(error, 1000)
+          //});
         });
     },
     getProductById: function(id) {
       return this.listProducts.find(product => product.idProduct == id);
     },
-    fetchEditProduct: function(data){
+    fetchEditProduct: function(data, methodForm){
+        console.log(methodForm);
         return fetch('http://localhost:8080/api/product/save', {
-            method: 'PUT',
+            method: methodForm,
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -136,6 +67,27 @@ const model = {
         })
         .then(data => {
           return data;
+        })
+        .catch(error => {
+          error.then(errorMsg =>{
+            Materialize.toast(errorMsg.body, 1000)
+          });
+        });
+    },
+    fetchDelete: function(id){
+      return fetch('http://localhost:8080/api/product/delete', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(id)  
+        })
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw response.json();
+        }
         })
         .catch(error => {
           error.then(errorMsg =>{
@@ -171,8 +123,8 @@ const model = {
         btnDelete.setAttribute('class', 'waves-effect waves-teal btn-flat  btn modal-trigger');
         btnDelete.setAttribute('id', 'btn-delete');
         btnDelete.setAttribute('data-id-product', product.idProduct);
-        btnDelete.setAttribute('href', '#modal1');
-        btnDelete.textContent = "DELETE";
+        btnDelete.setAttribute('href', '#modal-delete');
+        btnDelete.textContent = "Apagar";
         btnDelete.addEventListener('click', this.handleDeleteButtonClick);
   
         cellId.textContent = product.idProduct;
@@ -214,11 +166,22 @@ const model = {
     handleEditButtonClick: function(event) {
       const idProduct = event.target.getAttribute("data-id-product");
       const product = model.getProductById(idProduct);
+      view.modifyPopup("Editar Produto");
       view.fillPopup(product);
     },
     handleDeleteButtonClick: function(event) {
-      console.log('Clique Delete');
+      const idProduct = event.target.getAttribute("data-id-product");
+      document.querySelectorAll("#modal-delete-btn-yes").forEach(btn =>{
+        btn.addEventListener('click', function(){
+          model.fetchDelete({
+            "id": idProduct
+          });
+        })
+      })
     },
+    modifyPopup: function(title){
+      headerModal.textContent = title;
+    }
     
   };
   
@@ -226,18 +189,44 @@ const model = {
   const controller = {
     init: function() {
       document.addEventListener('DOMContentLoaded', function() {
+        headerModal = document.getElementById("modal1-header");
+        //Listar todos os produtos
         model.fetchProducts()
           .then(products => {
             view.renderTable(products);
-            //$(document).ready(function() {
               $('.modal').modal();
               const form = document.getElementById("form-product");
+              const btnAddProduct = document.getElementById("add-product");
+              
+              let methodForm = "PUT";
+
+              btnAddProduct.addEventListener("click", function(event){
+                form.reset();
+                methodForm = "POST";
+                console.log(headerModal);
+                view.modifyPopup("Adicionar Produto");
+              })
+
               form.addEventListener('submit', function(event){
                 event.preventDefault();
-                model.fetchEditProduct(controller.getDataForm());
+                model.fetchEditProduct(controller.getDataForm(), methodForm);
               })
-           // });
           });
+        let inputSearch = document.getElementById("input-search");
+        inputSearch.addEventListener('input', function(event){
+          const key = event.target.value;
+          if(key.length >= 3){
+            controller.findController({"key": key});
+          } 
+        })
+      });
+    },
+    findController: function(key){
+      console.log(key);
+      model.fetchProductsByKey(key)
+      .then(products => {
+
+        view.renderTable(products);
       });
     },
     getDataForm: function(){
@@ -260,7 +249,8 @@ const model = {
   };
   
   // Inicialização do Controller
+  let headerModal;
   controller.init();
-  
+
 
 

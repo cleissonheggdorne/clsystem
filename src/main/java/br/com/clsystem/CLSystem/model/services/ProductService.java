@@ -33,6 +33,15 @@ public class ProductService {
 		}
 	}
 	
+	public ResponseEntity<?> delete(Long id){
+		try {
+			  productRepository.deleteById(id);
+		      return ResponseEntity.ok().build();
+		} catch (DataIntegrityViolationException dive) {		
+			throw new DataBaseException("", dive);
+		}
+	}
+	
 	public ResponseEntity<?> update(ProductRecord productRecord){
 		Optional<Product> productUp = productRepository.findById(productRecord.idProduct());
 		BeanUtils.copyProperties(productRecord, productUp.get());
@@ -40,6 +49,15 @@ public class ProductService {
 			return ResponseEntity.ok().body(productRepository.saveAndFlush(productUp.get()));
 		}catch(DataIntegrityViolationException dive) {
 			throw new DataBaseException("", dive);
+		}
+	}
+	
+	public List<ProductRecord> findByNameProductOrBarCode(String search){
+		try {
+			List<Product> listProduct = productRepository.findByNameProductContainingIgnoreCaseOrBarCodeContainingIgnoreCase(search, search);
+			return fillList(listProduct);
+		}catch(Exception e) {
+			throw new DataBaseException("", e);
 		}
 	}
 	
@@ -53,8 +71,29 @@ public class ProductService {
 	
 	public List<ProductRecord> findAll(){
 		try {
-			List<ProductRecord> listProductRecord = new ArrayList<>(); 
 			List<Product> listProduct = productRepository.findAll();
+			return fillList(listProduct); 
+
+//					listProduct.stream().forEach(product -> {
+//						        ProductRecord productRecord = new ProductRecord(product.getIdProduct(),
+//						        		                                        product.getNameProduct(),
+//						        		                                        product.getProductDescription(),
+//						        		                                        product.getValueCost(),
+//						        		                                        product.getValueSale(),
+//						        		                                        product.getBarCode());
+//								listProductRecord.add(productRecord);
+//								
+//							});
+		//	return listProductRecord;
+		}catch(Exception e) {
+			throw new DataBaseException("", e);
+		}
+	}
+	
+	public List<ProductRecord> fillList(List<Product> listProduct){
+		try {
+			List<ProductRecord> listProductRecord = new ArrayList<>(); 
+			//List<Product> listProduct = productRepository.findAll();
 					listProduct.stream().forEach(product -> {
 						        ProductRecord productRecord = new ProductRecord(product.getIdProduct(),
 						        		                                        product.getNameProduct(),

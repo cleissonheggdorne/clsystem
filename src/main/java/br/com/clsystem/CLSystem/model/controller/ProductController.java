@@ -1,9 +1,12 @@
 package br.com.clsystem.CLSystem.model.controller;
 
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -45,10 +48,30 @@ public class ProductController {
 		}
 	}
 	
-	@GetMapping("/find")
-	public ResponseEntity<?> findController(){
+	@DeleteMapping("/delete")
+	public ResponseEntity<?> deleteController(@RequestBody Map<String, Long> requestBody){
+		try {
+			 productService.delete(requestBody.get("id"));
+			 return ResponseEntity.ok().build();
+		}catch(DataBaseException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
+		}
+	}
+	
+	@GetMapping("/findAll")
+	public ResponseEntity<?> findAllController(){
 		try {
 			return ResponseEntity.ok().body(productService.findAll());
+		}catch(DataBaseException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
+		}
+	}
+	
+	@GetMapping("/find")
+	public ResponseEntity<?> findController(@RequestBody Map<String, String> requestBody){
+		try {
+			System.out.println(requestBody.get("key"));
+			return ResponseEntity.ok().body(productService.findByNameProductOrBarCode(requestBody.get("key")));
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}

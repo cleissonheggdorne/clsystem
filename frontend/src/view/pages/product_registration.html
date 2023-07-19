@@ -26,11 +26,16 @@
         <div class="col s10">  
             <div class="card-panel teal">
                 <span class="white-text">Cadastro de Produtos</span>
+                <a href="#modal1" id="add-product" class="waves-effect right btn modal-trigger">Adicionar</a>
             </div>
             <div class="divider"></div>
             <div class="row">
                 <table class="striped" id="table-products">
                     <thead>
+                        <div class="input-field">
+                            <input type="text" id="input-search" class="validate">
+                            <label for="input-search">Buscar Produto</label>
+                        </div>
                         <tr>
                             <th>Código Produto</th>
                             <th>Produto</th>
@@ -50,7 +55,7 @@
   <!-- Modal Structure For Insert And Update Product -->
   <div id="modal1" class="modal bottom-sheet">
     <div class="modal-content">
-      <h4>Modal Header</h4>
+      <h4 id="modal1-header">Editar Produto</h4>
       <form id="form-product" action="">
             <div class="col l12">
                 <div class="row">
@@ -86,6 +91,16 @@
                 </div>
             </div>
       </form>
+    </div>
+  </div>
+   <!-- Modal Structure For Delete Product -->
+   <div id="modal-delete" class="modal">
+    <div class="modal-content">
+      <h4>ATENÇÃO</h4>
+      <p>Deseja realmente excluir?</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" id="modal-delete-btn-yes" class="modal-close waves-effect waves-green btn-flat">Sim</a>
     </div>
   </div>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
