@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
@@ -58,7 +59,7 @@ public class ProductController {
 		}
 	}
 	
-	@GetMapping("/findAll")
+	@GetMapping("/findall")
 	public ResponseEntity<?> findAllController(){
 		try {
 			return ResponseEntity.ok().body(productService.findAll());
@@ -68,10 +69,10 @@ public class ProductController {
 	}
 	
 	@GetMapping("/find")
-	public ResponseEntity<?> findController(@RequestBody Map<String, String> requestBody){
+	public ResponseEntity<?> findController(@RequestParam(name = "key") String key){
 		try {
-			System.out.println(requestBody.get("key"));
-			return ResponseEntity.ok().body(productService.findByNameProductOrBarCode(requestBody.get("key")));
+			System.out.println(key);
+			return ResponseEntity.ok().body(productService.findByNameProductOrBarCode(key));
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}

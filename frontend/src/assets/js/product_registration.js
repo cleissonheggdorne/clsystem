@@ -2,7 +2,7 @@
 const model = {
     listProducts: [],
     fetchProducts: function() {
-      return fetch('http://localhost:8080/api/product/findAll')
+      return fetch('http://localhost:8080/api/product/findall')
         .then(response => {
           if (response.ok) {
             return response.json();
@@ -21,18 +21,13 @@ const model = {
         });
     },
     fetchProductsByKey: function(key) {
-      console.log("aqui");
-      return fetch('http://localhost:8080/api/product/find',{
-          method: 'GET',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(key) 
-        })
+      console.log(key);
+      return fetch('http://localhost:8080/api/product/find?key='+key)
         .then(response => {
           if (response.ok) {
             return response.json();
           } else {
+            console.log(response.ok);
             throw new Error("Erro ao listar produtos. Contate o suporte técnico.");
           }
         })
@@ -41,9 +36,7 @@ const model = {
           return data;
         })
         .catch(error => {
-          //error.then(errorMsg =>{
             Materialize.toast(error, 1000)
-          //});
         });
     },
     getProductById: function(id) {
@@ -102,6 +95,8 @@ const model = {
   const view = {
     renderTable: function(products) {
       const table = document.getElementById("table-products");
+      const tbody = table.querySelector("tbody");
+      this.cleanTable(tbody);
       products.forEach(product => {
         const line = document.createElement("tr");
         const cellId = document.createElement("td");
@@ -181,6 +176,11 @@ const model = {
     },
     modifyPopup: function(title){
       headerModal.textContent = title;
+    },
+    cleanTable: function (tbody) {
+      while (tbody.firstChild) {
+        tbody.removeChild(tbody.firstChild);
+      }
     }
     
   };
@@ -216,7 +216,7 @@ const model = {
         inputSearch.addEventListener('input', function(event){
           const key = event.target.value;
           if(key.length >= 3){
-            controller.findController({"key": key});
+            controller.findController(key);
           } 
         })
       });
@@ -225,7 +225,7 @@ const model = {
       console.log(key);
       model.fetchProductsByKey(key)
       .then(products => {
-
+        console.log(products);
         view.renderTable(products);
       });
     },
