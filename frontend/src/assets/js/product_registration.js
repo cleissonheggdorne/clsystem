@@ -42,8 +42,8 @@ const model = {
     getProductById: function(id) {
       return this.listProducts.find(product => product.idProduct == id);
     },
-    fetchEditProduct: function(data, methodForm){
-        console.log(methodForm);
+    fetchSaveProduct: function(data, methodForm){
+        //console.log(methodForm);
         return fetch('http://localhost:8080/api/product/save', {
             method: methodForm,
             headers: {
@@ -200,16 +200,20 @@ const model = {
               
               let methodForm = "PUT";
 
-              btnAddProduct.addEventListener("click", function(event){
+              btnAddProduct.addEventListener("click", function(){
                 form.reset();
                 methodForm = "POST";
-                console.log(headerModal);
+               // console.log(headerModal);
                 view.modifyPopup("Adicionar Produto");
               })
 
-              form.addEventListener('submit', function(event){
+              form.addEventListener('submit', async function(event){
                 event.preventDefault();
-                model.fetchEditProduct(controller.getDataForm(), methodForm);
+                const productSaved = await model.fetchSaveProduct(controller.getDataForm(), methodForm);
+                if (productSaved){
+                  tools.closeModalAndUpdateGrid();
+                  tools.updateGrid();
+                }
               })
           });
         let inputSearch = document.getElementById("input-search");
@@ -247,6 +251,19 @@ const model = {
         };
     }
   };
+
+  const tools = {
+    closeModalAndUpdateGrid: function (){
+      $('#modal1').modal('close');
+    },
+    updateGrid: function(){
+      model.fetchProducts()
+          .then(products => {
+            view.renderTable(products);
+          })
+    }
+    
+  }
   
   // Inicialização do Controller
   let headerModal;
