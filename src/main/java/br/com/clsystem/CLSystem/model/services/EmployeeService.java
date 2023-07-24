@@ -69,6 +69,34 @@ public class EmployeeService {
 		}
 	}
 	
+	public List<EmployeeRecord> findByNameEmployeeOrDocument(String search){
+		try {
+			List<Employee> listEmployee = employeeRepository.findByNameEmployeeContainingIgnoreCaseOrDocumentContainingIgnoreCase(search, search);
+			return fillList(listEmployee);
+		}catch(Exception e) {
+			throw new DataBaseException("", e);
+		}
+	}
+	
+	public List<EmployeeRecord> fillList(List<Employee> listEmployee){
+		try {
+			List<EmployeeRecord> listEmployeeRecord = new ArrayList<>(); 
+			//List<Product> listProduct = productRepository.findAll();
+					listEmployee.stream().forEach(employee -> {
+						        EmployeeRecord employeeRecord = new EmployeeRecord(employee.getIdEmployee(),
+						        													employee.getNameEmployee(),
+						        													employee.getDocument(),
+						        		                                        employee.getInitialDate());
+						        listEmployeeRecord.add(employeeRecord);
+								
+							});
+			return listEmployeeRecord;
+		}catch(Exception e) {
+			throw new DataBaseException("", e);
+		}
+	}
+	
+	
 	public ResponseEntity<?> delete(Long id){
 		try {
 			  employeeRepository.deleteById(id);

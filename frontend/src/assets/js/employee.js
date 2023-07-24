@@ -22,7 +22,7 @@ const model = {
     },
     fetchEmployeesByKey: function(key) {
      // console.log(key);
-      return fetch('http://localhost:8080/api/product/find?key='+key)
+      return fetch('http://localhost:8080/api/employee/find?key='+key)
         .then(response => {
           if (response.ok) {
             return response.json();
@@ -235,7 +235,7 @@ const model = {
     },
     findController: function(key){
      // console.log(key);
-      model.fetchProductsByKey(key)
+      model.fetchEmployeesByKey(key)
       .then(products => {
        // console.log(products);
         view.renderTable(products);
