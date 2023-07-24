@@ -69,5 +69,14 @@ public class EmployeeService {
 		}
 	}
 	
+	public ResponseEntity<?> delete(Long id){
+		try {
+			  employeeRepository.deleteById(id);
+		      return ResponseEntity.ok().build();
+		} catch (DataIntegrityViolationException dive) {		
+			throw new DataBaseException("", dive);
+		}
+	}
+	
 
 }

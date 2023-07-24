@@ -7,7 +7,7 @@
      <!--Import materialize.css-->
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
-    <script src="/src/assets/js/product_registration.js"></script>
+    <script src="/src/assets/js/employee.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CL SYSTEM</title>
 </head>
@@ -25,27 +25,28 @@
         <!-- Conteúdo -->
         <div class="col s10">  
             <div class="card-panel teal">
-                <span class="white-text">Cadastro de Produtos</span>
-                <a href="#modal1" id="add-product" class="waves-effect right btn modal-trigger">Adicionar</a>
+                <span class="white-text">Cadastro de Funcionários</span>
+                <a href="#modal1" id="add-employee" class="waves-effect right btn modal-trigger">Adicionar</a>
             </div>
             <div class="divider"></div>
             <div class="row">
-                <table class="striped" id="table-products">
+                <table class="striped" id="table-employees">
                     <thead>
                         <div class="input-field">
                             <input type="text" id="input-search" class="validate">
-                            <label for="input-search">Buscar Produto</label>
+                            <label for="input-search">Buscar Funcionário</label>
                         </div>
                         <tr>
-                            <th>Código Produto</th>
-                            <th>Produto</th>
-                            <th>Valor Custo</th>
-                            <th>Valor Venda</th>
+                            <th>Código Funcionário</th>
+                            <th>Nome</th>
+                            <th>Documento</th>
+                            <th>Data Inicial</th>
+                            <th>Data Final</th>
                         </tr>
                     </thead>
           
                     <tbody>
-                        <!-- Products -->
+                        <!-- Employees -->
                     </tbody>
                 </table>
             </div>
@@ -55,36 +56,32 @@
   <!-- Modal Structure For Insert And Update Product -->
   <div id="modal1" class="modal bottom-sheet">
     <div class="modal-content">
-      <h4 id="modal1-header">Editar Produto</h4>
-      <form id="form-product" action="">
+      <h4 id="modal1-header">Editar Funcionário</h4>
+      <form id="form-employee" action="">
             <div class="col l12">
                 <div class="row">
                     <div class="input-field col l1">
-                        <input type="number" id="id-product" class="validate" value="" disabled>
-                        <label for="id-product" data-error="wrong" data-success="right">Código</label>
+                        <input type="number" id="id-employee" class="validate" value="" disabled>
+                        <label for="id-employee" data-error="wrong" data-success="right">Código</label>
                     </div>
                     <div class="input-field col l5">
-                        <input type="text" id="product" class="validate">
-                        <label for="product" data-error="Inválido" data-success="Válido">Produto</label>
+                        <input type="text" id="employee" class="validate">
+                        <label for="employee" data-error="Inválido" data-success="Válido">Funcionário</label>
                     </div>
-                    <div class="input-field col l3">
-                        <input type="number" min="0.01" step="0.01" id="value-cost" class="validate">
-                        <label for="value-cost" data-error="Inválido" data-success="Válido">Valor de Custo</label>
+                    <div class="input-field col l5">
+                        <input type="text" id="document" class="validate">
+                        <label for="document" data-error="Inválido" data-success="Válido">Documento</label>
                     </div>
-                    <div class="input-field col l3">
-                        <input type="number" min="0.01" step="0.01" id="value-sale" class="validate">
-                        <label for="value-sale" data-error="Inválido" data-success="Válido">Valor de Venda</label>
+                    <div class="col l3">
+                        <input id="initial-date" type="date" class="validate">
+                        <label for="initial-date">Data Inicial</label>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="input-field col l6">
-                        <input type="text" id="product-description" class="materialize-textarea">
-                        <label for="product-description">Descrição do Produto</label>
+                    <div class="col l3">
+                        <input type="date" id="final-date" class="validate">
+                        <label for="final-date">Data Final</label>
                     </div>
-                    <div class="input-field col l4">
-                        <input type="text" id="bar-code" class="materialize-textarea">
-                        <label for="bar-code">Código de Barras</label>
-                    </div>
+                <!-- </div> -->
+                <!-- <div class="row"> -->
                     <button class="btn-large waves-effect waves-light col l2" type="submit" name="action">Salvar
                         <i class="material-icons right">save</i>
                     </button>

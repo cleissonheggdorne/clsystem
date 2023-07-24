@@ -1,8 +1,8 @@
 // Model
 const model = {
-    listProducts: [],
-    fetchProducts: function() {
-      return fetch('http://localhost:8080/api/product/findall')
+    listEmployees: [],
+    fetchEmployees: function() {
+      return fetch('http://localhost:8080/api/employee/findall')
         .then(response => {
           if (response.ok) {
             return response.json();
@@ -11,7 +11,7 @@ const model = {
           }
         })
         .then(data => {
-          this.listProducts = data;
+          this.listEmployees = data;
           return data;
         })
         .catch(error => {
@@ -20,7 +20,7 @@ const model = {
           });
         });
     },
-    fetchProductsByKey: function(key) {
+    fetchEmployeesByKey: function(key) {
      // console.log(key);
       return fetch('http://localhost:8080/api/product/find?key='+key)
         .then(response => {
@@ -40,11 +40,11 @@ const model = {
         });
     },
     getProductById: function(id) {
-      return this.listProducts.find(product => product.idProduct == id);
+      return this.listEmployees.find(employee => employee.idEmployee == id);
     },
-    fetchSaveProduct: function(data, methodForm){
+    fetchSaveEmployee: function(data, methodForm){
         //console.log(methodForm);
-        return fetch('http://localhost:8080/api/product/save', {
+        return fetch('http://localhost:8080/api/employee/save', {
             method: methodForm,
             headers: {
                 'Content-Type': 'application/json'
@@ -68,7 +68,8 @@ const model = {
         });
     },
     fetchDelete: function(id){
-      return fetch('http://localhost:8080/api/product/delete', {
+        console.log(id);
+      return fetch('http://localhost:8080/api/employee/delete', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -93,16 +94,18 @@ const model = {
   
   // View
   const view = {
-    renderTable: function(products) {
-      const table = document.getElementById("table-products");
+    renderTable: function(employees) {
+      const table = document.getElementById("table-employees");
+      console.log(table);
       const tbody = table.querySelector("tbody");
       this.cleanTable(tbody);
-      products.forEach(product => {
+      employees.forEach(employee => {
         const line = document.createElement("tr");
         const cellId = document.createElement("td");
-        const cellNameProduct = document.createElement("td");
-        const cellValueCost = document.createElement("td");
-        const cellValueSale = document.createElement("td");
+        const cellEmployee = document.createElement("td");
+        const cellDocument = document.createElement("td");
+        const cellInitialDate = document.createElement("td");
+        //const cellFinalDate = document.createElement("td");
         const cellEdit = document.createElement("td");
         const cellDelete = document.createElement("td");
         const btnEdit = document.createElement("a");
@@ -110,66 +113,66 @@ const model = {
         
         btnEdit.setAttribute('class', 'waves-effect waves-teal btn-flat  btn modal-trigger');
         btnEdit.setAttribute('id', 'btn-edit');
-        btnEdit.setAttribute('data-id-product', product.idProduct);
+        btnEdit.setAttribute('data-id-employee', employee.idEmployee);
         btnEdit.setAttribute('href', '#modal1');
         btnEdit.textContent = "Editar";
         btnEdit.addEventListener('click', this.handleEditButtonClick);
         
         btnDelete.setAttribute('class', 'waves-effect waves-teal btn-flat  btn modal-trigger');
         btnDelete.setAttribute('id', 'btn-delete');
-        btnDelete.setAttribute('data-id-product', product.idProduct);
+        btnDelete.setAttribute('data-id-employee', employee.idEmployee);
         btnDelete.setAttribute('href', '#modal-delete');
         btnDelete.textContent = "Apagar";
         btnDelete.addEventListener('click', this.handleDeleteButtonClick);
   
-        cellId.textContent = product.idProduct;
-        cellNameProduct.textContent = product.nameProduct;
-        cellValueCost.textContent = product.valueCost;
-        cellValueSale.textContent = product.valueSale;
+        cellId.textContent = employee.idEmployee;
+        cellEmployee.textContent = employee.nameEmployee;
+        cellDocument.textContent = employee.document;
+        cellInitialDate.textContent = employee.initialDate;
+        //cellInitialDate.textContent = employee.initialDate;
         cellEdit.appendChild(btnEdit);
         cellDelete.appendChild(btnDelete);
   
         line.appendChild(cellId);
-        line.appendChild(cellNameProduct);
-        line.appendChild(cellValueCost);
-        line.appendChild(cellValueSale);
+        line.appendChild(cellEmployee);
+        line.appendChild(cellDocument);
+        line.appendChild(cellInitialDate);
+        //line.appendChild(cellFinalDate);
         line.appendChild(cellEdit);
         line.appendChild(cellDelete);
         table.querySelector('tbody').appendChild(line);
       });
     },
-    fillPopup: function(product) {
+    fillPopup: function(employee) {
         //Obtém inputs de dados do modal de edição
-        const inputIdProduct = document.getElementById("id-product");
-        const inputProduct = document.getElementById("product");
-        const inputProductDescription = document.getElementById("product-description");
-        const inputValueCost = document.getElementById("value-cost");
-        const inputValueSale = document.getElementById("value-sale");
-        const barCode = document.getElementById("bar-code");
-        
+        const inputIdEmployee = document.getElementById("id-employee");
+        const inputEmployee = document.getElementById("employee");
+        const inputDocument = document.getElementById("document");
+        const inputInitialDate = document.getElementById("initial-date");
+       // const inputFinalDate = document.getElementById("final-date");
+       // console.log(employee);
         //Adicionar Valor aos Inputs
-        inputIdProduct.value = String(product.idProduct);
-        inputProduct.value = String(product.nameProduct);
-        inputProductDescription.value = String(product.productDescription);
-        inputValueCost.value = String(product.valueCost);
-        inputValueSale.value = String(product.valueSale);
-        barCode.value = String(product.barCode);
+        inputIdEmployee.value = String(employee.idEmployee);
+        inputEmployee.value = String(employee.nameEmployee);
+        inputDocument.value = String(employee.document);
+        inputInitialDate.value = String(employee.initialDate);
+        //inputFinalDate.value = String(employee.finalDate);
     
         //Atualizar Inputs para evitar texto sobreescrito
         Materialize.updateTextFields();
     },
     handleEditButtonClick: function(event) {
-      const idProduct = event.target.getAttribute("data-id-product");
-      const product = model.getProductById(idProduct);
-      view.modifyPopup("Editar Produto");
-      view.fillPopup(product);
+      const idEmployee = event.target.getAttribute("data-id-employee");
+      const employee = model.getProductById(idEmployee);
+      view.modifyPopup("Editar Funcionário");
+      view.fillPopup(employee);
     },
     handleDeleteButtonClick: function(event) {
-      const idProduct = event.target.getAttribute("data-id-product");
+      const idEmployee = event.target.getAttribute("data-id-employee");
       document.querySelectorAll("#modal-delete-btn-yes").forEach(btn =>{
         btn.addEventListener('click', function(){
           model.fetchDelete({
-            "id": idProduct
+            "id": idEmployee
           });
         })
       })
@@ -204,16 +207,16 @@ const model = {
       });
     },
     findAllController: function(){
-      model.fetchProducts()
-          .then(products => {
-            view.renderTable(products);
+      model.fetchEmployees()
+          .then(employees => {
+           // console.log(products);
+            view.renderTable(employees);
               $('.modal').modal();
-              const form = document.getElementById("form-product");
-              const btnAddProduct = document.getElementById("add-product");
+              const form = document.getElementById("form-employee");
+              const btnAddEmployee = document.getElementById("add-employee");
               
               let methodForm = "PUT";
-
-              btnAddProduct.addEventListener("click", function(){
+              btnAddEmployee.addEventListener("click", function(){
                 form.reset();
                 methodForm = "POST";
                 view.modifyPopup("Adicionar Produto");
@@ -221,7 +224,8 @@ const model = {
 
               form.addEventListener('submit', async function(event){
                 event.preventDefault();
-                const productSaved = await model.fetchSaveProduct(controller.getDataForm(), methodForm);
+                console.log(form);
+                const productSaved =  await model.fetchSaveEmployee(controller.getDataForm(), methodForm);
                 if (productSaved){
                   tools.closeModalAndUpdateGrid();
                   tools.updateGrid();
@@ -239,19 +243,16 @@ const model = {
     },
     getDataForm: function(){
         //Obtem dados do formulário de produto
-        const idProduct = document.getElementById("id-product").value;
-        const product = document.getElementById("product").value;
-        const productDescription = document.getElementById("product-description").value;
-        const valueCost = document.getElementById("value-cost").value;
-        const valueSale = document.getElementById("value-sale").value;
-        const barCode = document.getElementById("bar-code").value;
+        const idEmployee = document.getElementById("id-employee").value;
+        const nameEmployee = document.getElementById("employee").value;
+        const documentEmployee = document.getElementById("document").value;
+        const initialDate = document.getElementById("initial-date").value;
+        //const finalDate = document.getElementById("final-date").value;
         return {
-            idProduct: idProduct,
-            nameProduct: product,
-            productDescription: productDescription,
-            valueCost: valueCost,
-            valueSale: valueSale,
-            barCode : barCode
+            idEmployee: idEmployee,
+            nameEmployee: nameEmployee,
+            document: documentEmployee,
+            initialDate: initialDate
         };
     }
   };
@@ -261,9 +262,9 @@ const model = {
       $('#modal1').modal('close');
     },
     updateGrid: function(){
-      model.fetchProducts()
-          .then(products => {
-            view.renderTable(products);
+      model.fetchEmployees()
+          .then(employees => {
+            view.renderTable(employees);
           })
     }
   }

@@ -1,9 +1,12 @@
 package br.com.clsystem.CLSystem.model.controller;
 
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -45,10 +48,20 @@ public class EmployeeController {
 		}
 	}
 	
-	@GetMapping("/find")
+	@GetMapping("/findall")
 	public ResponseEntity<?> findController(){
 		try {
 			return ResponseEntity.ok().body(employeeService.findAll());
+		}catch(DataBaseException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
+		}
+	}
+	
+	@DeleteMapping("/delete")
+	public ResponseEntity<?> deleteController(@RequestBody Map<String, Long> requestBody){
+		try {
+			 employeeService.delete(requestBody.get("id"));
+			 return ResponseEntity.ok().build();
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
