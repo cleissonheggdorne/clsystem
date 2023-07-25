@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.clsystem.CLSystem.types.FormPayment;
+import br.com.clsystem.CLSystem.types.StatusSale;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -54,4 +55,7 @@ public class Sale implements Serializable {
 	@OneToMany(mappedBy = "idSale")
 	List<ItemSale> listItems = new ArrayList<>();
 	
+	@Column(name="status", nullable = false)
+	@Enumerated(EnumType.STRING)
+	private StatusSale statusSale;
 }
