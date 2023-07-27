@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import br.com.clsystem.CLSystem.types.FormPayment;
 import br.com.clsystem.CLSystem.types.StatusSale;
 import jakarta.persistence.Column;
@@ -19,6 +21,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,6 +30,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 @Entity
 @Table(name="TB_SALE")
 public class Sale implements Serializable {
@@ -53,6 +57,7 @@ public class Sale implements Serializable {
 	private LocalDateTime dateHourSale;
 	
 	@OneToMany(mappedBy = "idSale")
+	@JsonIgnore
 	List<ItemSale> listItems = new ArrayList<>();
 	
 	@Column(name="status", nullable = false)

@@ -1,6 +1,6 @@
 // Model
 const model = {
-    listProducts: [],
+    //listProducts: [],
     fetchProducts: function() {
       return fetch('http://localhost:8080/api/product/findall')
         .then(response => {
@@ -11,7 +11,7 @@ const model = {
           }
         })
         .then(data => {
-          this.listProducts = data;
+         // this.listProducts = data;
           return data;
         })
         .catch(error => {
@@ -32,7 +32,7 @@ const model = {
           }
         })
         .then(data => {
-          this.listProducts = data;
+       //   this.listProducts = data;
           return data;
         })
         .catch(error => {
@@ -197,6 +197,7 @@ const model = {
           const key = event.target.value;
           if(key.length >= 3){
             controller.findController(key);
+            
           }else{
             controller.findAllController();
           }
@@ -233,7 +234,7 @@ const model = {
      // console.log(key);
       model.fetchProductsByKey(key)
       .then(products => {
-       // console.log(products);
+        console.log(products);
         view.renderTable(products);
       });
     },

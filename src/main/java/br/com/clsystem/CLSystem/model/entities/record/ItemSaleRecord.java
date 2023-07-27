@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 
 public record ItemSaleRecord(
 		@NotNull
+		Long idSale,
+		@NotNull
 		Long idProduct,
 		@NotNull
 		BigDecimal unitaryValue,
