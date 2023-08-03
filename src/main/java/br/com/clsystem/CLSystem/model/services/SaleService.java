@@ -1,5 +1,7 @@
 package br.com.clsystem.CLSystem.model.services;
 
+import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -11,6 +13,7 @@ import br.com.clsystem.CLSystem.exceptions.DataBaseException;
 import br.com.clsystem.CLSystem.model.entities.Sale;
 import br.com.clsystem.CLSystem.model.entities.record.SaleRecord;
 import br.com.clsystem.CLSystem.model.repositories.SaleRepository;
+import br.com.clsystem.CLSystem.types.FormPayment;
 import br.com.clsystem.CLSystem.types.StatusSale;
 
 @Service
@@ -25,28 +28,44 @@ public class SaleService {
 		this.cashierService = cashierService;
 	}
 	
-	public ResponseEntity<?> save(SaleRecord saleRecord){
-		Sale sale = new Sale();
-		BeanUtils.copyProperties(saleRecord, sale);
-		sale.setIdCashier(cashierService.findById(saleRecord.idCashier()).get());
+	public Sale openSale(Long idCashier){
+		// if(saleRepository.findByIdCashierIdCashierAndStatusSale(idCashier, "PENDENTE")
+		// .isPresent()){
+		// 	return ResponseEntity.badRequest().body("Existe uma venda em aberto!");
+		// }
+		Sale sale = new Sale(); 
+		sale.setDateHourEntry(LocalDateTime.now());
+		System.out.println(sale.getDateHourEntry());
+		sale.setIdCashier(cashierService.findById(idCashier).get());
 		sale.setStatusSale(StatusSale.PENDENTE);
-		//List<ItemSale> listItens = new ArrayList<>();
+		sale.setFormPayment(FormPayment.PENDENTE);
 		try {
 			  Sale saleSaved = saleRepository.saveAndFlush(sale);
-//			  saleRecord.listItens().stream().forEach(item ->{
-//				  ItemSale itemSale = new ItemSale();
-//				  BeanUtils.copyProperties(item, itemSale);
-//				  itemSale.setIdSale(saleSaved);
-//				  itemSale.setAmount(item.unitaryValue().multiply(BigDecimal.valueOf(item.quantity())));
-//				  itemSale.setIdProduct(productService.findById(item.idProduct()).get());
-//				  listItens.add(itemSale);
-//			  });
-//			  itemSaleService.saveAll(listItens);
+		      return saleSaved;//ResponseEntity.ok(saleSaved);
+		} catch (DataIntegrityViolationException dive) {		
+			throw new DataBaseException("", dive);
+		}
+	}
+
+	public ResponseEntity<?> closeSale(Map<String, Object> dataSale){
+		Integer idSaleInt = (Integer) dataSale.get("idSale");
+		Long idSale = Long.valueOf(idSaleInt);
+		Optional<Sale> sale = findById(idSale);
+		sale.get().setDateHourClose(LocalDateTime.now());
+		sale.get().setStatusSale(StatusSale.FINALIZADA);
+		sale.get().setFormPayment(FormPayment.valueOf((String) dataSale.get("formPayment")));
+		try {
+			  Sale saleSaved = saleRepository.saveAndFlush(sale.get());
 		      return ResponseEntity.ok(saleSaved);
 		} catch (DataIntegrityViolationException dive) {		
 			throw new DataBaseException("", dive);
 		}
 	}
+
+	public Optional<Sale> findBySaleOpen(Long idCashier){
+		return saleRepository.findByIdCashierIdCashierAndStatusSale(idCashier, StatusSale.valueOf("PENDENTE"));
+	}
+	
 	
 	public Optional<Sale> findById(Long id){
 		try {

@@ -1,19 +1,21 @@
 package br.com.clsystem.CLSystem.model.controller;
 
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
-import br.com.clsystem.CLSystem.model.entities.record.SaleRecord;
+import br.com.clsystem.CLSystem.model.entities.Sale;
 import br.com.clsystem.CLSystem.model.services.ItemSaleService;
 import br.com.clsystem.CLSystem.model.services.SaleService;
-import jakarta.validation.Valid;
 
 @RestController
 @CrossOrigin(origins="*", maxAge = 3600) //Permitir ser acessado de Qualquer fonte
@@ -28,10 +30,22 @@ public class SaleController {
 		this.itemSaleService = itemSaleService;
 	}
 	
-	@PostMapping("/save")
-	public ResponseEntity<?> saveController(@Valid @RequestBody SaleRecord sale, BindingResult br){
-		try {
-			 return saleService.save(sale);
+	@PostMapping("/openSale")
+	public ResponseEntity<?> openSaleController(@RequestBody Map<String, Long> requestBody){
+		try { 
+			 System.out.println(requestBody.get("idCashier"));
+			 Sale sale = saleService.openSale(requestBody.get("idCashier"));
+			 return ResponseEntity.ok().body(sale);	
+		}catch(DataBaseException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
+		}
+	}
+
+	@PutMapping("/closeSale")
+	public ResponseEntity<?> closeSaleController(@RequestBody Map<String, Object> dataSale){
+		try { 
+			//System.out.println(formPayment.get("formPayment"));
+			return saleService.closeSale(dataSale);
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}

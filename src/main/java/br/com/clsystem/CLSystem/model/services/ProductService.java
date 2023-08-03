@@ -1,5 +1,6 @@
 package br.com.clsystem.CLSystem.model.services;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -88,6 +89,10 @@ public class ProductService {
 		}catch(Exception e) {
 			throw new DataBaseException("", e);
 		}
+	}
+
+	public BigDecimal findValueProduct(Long idProduct){
+		return findById(idProduct).get().getValueSale();
 	}
 	
 	public List<ProductRecord> fillList(List<Product> listProduct){

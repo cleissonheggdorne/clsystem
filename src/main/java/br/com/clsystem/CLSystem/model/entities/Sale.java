@@ -45,22 +45,25 @@ public class Sale implements Serializable {
 	@Column(name="id_sale")
 	private Long idSale;
 	
-	@Column(name="form_payment", nullable = false)
+	@Column(name="form_payment", nullable = false, length = 20)
 	@Enumerated(EnumType.STRING)
 	private FormPayment formPayment;
 	
 	@OneToOne
-	@JoinColumn(name="id_cashier")
+	@JoinColumn(name="id_cashier", unique = false)
 	private Cashier idCashier;
 	
-	@Column(name="date_hour_sale", nullable = false)
-	private LocalDateTime dateHourSale;
+	@Column(name="date_hour_open", nullable = false)
+	private LocalDateTime dateHourEntry;
+
+	@Column(name="date_hour_close")
+	private LocalDateTime dateHourClose;
 	
 	@OneToMany(mappedBy = "idSale")
 	@JsonIgnore
 	List<ItemSale> listItems = new ArrayList<>();
 	
-	@Column(name="status", nullable = false)
+	@Column(name="status", nullable = false, length = 20)
 	@Enumerated(EnumType.STRING)
 	private StatusSale statusSale;
 }
