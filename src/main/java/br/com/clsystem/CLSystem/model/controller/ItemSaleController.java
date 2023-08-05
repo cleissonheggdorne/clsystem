@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
 import br.com.clsystem.CLSystem.model.entities.ItemSale;
-import br.com.clsystem.CLSystem.model.entities.Sale;
 import br.com.clsystem.CLSystem.model.entities.record.ItemSaleRecord;
 import br.com.clsystem.CLSystem.model.services.ItemSaleService;
 import br.com.clsystem.CLSystem.model.services.SaleService;

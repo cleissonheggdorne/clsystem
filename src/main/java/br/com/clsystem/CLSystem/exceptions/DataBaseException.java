@@ -26,6 +26,7 @@ public class DataBaseException extends RuntimeException{
             if (exception.getCause() instanceof ConstraintViolationException) {
                 ConstraintViolationException constraintViolationException = (ConstraintViolationException) exception.getCause();
                 String constraintName = constraintViolationException.getConstraintName();
+                //Product
                 if (constraintName.contains("bar_code")) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Código de Barras Já Está Em Uso!");
                 } else if (constraintName.contains("name_product")) {

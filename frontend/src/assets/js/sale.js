@@ -9,7 +9,6 @@ const model = {
           }
         })
         .then(data => {
-        // this.listProducts = data;
           return data;
         })
         .catch(error => {
@@ -63,7 +62,6 @@ const view = {
     products.forEach(product => {
       autoCompleteProducts[product.nameProduct] = null;
     });
-    // console.log(autoCompleteProducts);
     $('input.autocomplete').autocomplete({
       data: autoCompleteProducts,
       limit: 5, // The max amount of results that can be shown at once. Default: Infinity.
@@ -83,9 +81,7 @@ const view = {
       Materialize.updateTextFields();     
   },
   renderTable: function(itens) {
-    console.log(itens);
     const table = document.getElementById("table-itens");
-    console.log(table);
     const tbody = table.querySelector("tbody");
     this.cleanTable(tbody);
     itens.forEach(item => {
@@ -127,7 +123,15 @@ const view = {
      // line.appendChild(cellEdit);
      // line.appendChild(cellDelete);
       table.querySelector('tbody').appendChild(line);
+      view.moveScroll();
     });
+  },
+  renderAmount: function (amount){
+    $('#span-total-list').text(amount);
+  },
+  moveScroll: function (){
+    const scroll = document.querySelector(".section-table-itens");
+    scroll.scrollTop = scroll.scrollHeight;
   },
   cleanTable: function (tbody) {
     while (tbody.firstChild) {
@@ -155,19 +159,23 @@ const controller = {
         return await model.fetchProductsByKey(key);
       },
       fillList: function(item){
-        console.log(item);
         const itemData = {
           "idProduct": item.idProduct,
           "quantity": $("#input-quantity").val(),
           "idSale": null,
           "idCashier": 1
         }
-        model.fetchSave(itemData);
+        model.fetchSave(itemData)
+        .then(item => {
+            controller.findItensSaleController(6);
+        })
       },
       findItensSaleController: function(idSale){
         model.fetchItensSale(idSale)
         .then(items => {
           view.renderTable(items);
+          const total = Number(items.reduce((sum, item) => sum + item.amount, 0)).toFixed(2);
+          view.renderAmount(total);
         })
       }
 }

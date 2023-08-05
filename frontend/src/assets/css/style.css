@@ -1,0 +1,10 @@
+
+/* Sale */
+.autocomplete-content{
+    position: absolute;
+}
+.section-table-itens{
+    height: 50vh; 
+    overflow-y: auto;
+} 
+   

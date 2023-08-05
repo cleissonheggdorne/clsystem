@@ -6,11 +6,11 @@ import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
 import br.com.clsystem.CLSystem.model.entities.ItemSale;
+import br.com.clsystem.CLSystem.model.entities.Product;
 import br.com.clsystem.CLSystem.model.entities.Sale;
 import br.com.clsystem.CLSystem.model.entities.projection.ItemSaleProjection;
 import br.com.clsystem.CLSystem.model.entities.record.ItemSaleRecord;
@@ -34,26 +34,44 @@ public class ItemSaleService {
 	
 	@Transactional
 	public ItemSale saveItem(ItemSaleRecord itemSaleRecord){
-		  ItemSale itemSale = new ItemSale();
-		  BeanUtils.copyProperties(itemSaleRecord, itemSale);
-		 
-		  Optional<Sale> sale = saleService.findBySaleOpen(itemSaleRecord.idCashier());
-		  if(!sale.isPresent()){
+		BigDecimal amount = new BigDecimal(0.0);
+		Integer quantity;
+		Optional<Sale> sale = saleService.findBySaleOpen(itemSaleRecord.idCashier());
+		//Sale Open 
+		if(!sale.isPresent()){
 			sale = Optional.of(saleService.openSale(itemSaleRecord.idCashier()));
-		  }
-		  //Optional<Sale> sale = saleService.findById(itemSaleRecord.idSale());
-		  BigDecimal valueUnitary = productService.findValueProduct(itemSaleRecord.idProduct());
-		  
-		  itemSale.setIdSale(sale.get());
-		  itemSale.setUnitaryValue(valueUnitary); 
-		  itemSale.setAmount(valueUnitary
-		                    .multiply(BigDecimal.valueOf(itemSaleRecord.quantity())));
-		  itemSale.setIdProduct(productService.findById(itemSaleRecord.idProduct()).get());
-		  itemSale.setIdSale(sale.get());
+		}
+
+		BigDecimal valueUnitary = productService.findValueProduct(itemSaleRecord.idProduct());
+		Optional<Product> product = productService.findById(itemSaleRecord.idProduct());
+		Optional<ItemSale> itemSale = findItemInSale(product.get(), sale.get());
+		
+		//ItemSale itemSale;
+		//Sale item existis
+		if(itemSale.isPresent()){
+			//itemSale = itemSale.get();	
+			quantity = itemSale.get().getQuantity()+itemSaleRecord.quantity();
+			amount = valueUnitary.multiply(BigDecimal.valueOf(quantity));
+		}else{
+			quantity = itemSaleRecord.quantity();
+			amount = valueUnitary.multiply(BigDecimal.valueOf(quantity));
+			itemSale = Optional.of(new ItemSale());
+		}
+
+
+		BeanUtils.copyProperties(itemSaleRecord, itemSale);
+        itemSale.get().setAmount(amount);
+		itemSale.get().setQuantity(quantity);
+		itemSale.get().setIdSale(sale.get());
+		itemSale.get().setUnitaryValue(valueUnitary);
+		itemSale.get().setIdProduct(product.get()); 
+		//itemSale.setAmount(valueUnitary
+				//		.multiply(BigDecimal.valueOf(itemSaleRecord.quantity())));
+		itemSale.get().setIdSale(sale.get());
 		try {
-			  ItemSale itemSaleSaved = itemSaleRepository.saveAndFlush(itemSale);
-			  System.out.println(itemSaleSaved.getIdItemSale());
-		      return itemSaleSaved;
+			ItemSale itemSaleSaved = itemSaleRepository.saveAndFlush(itemSale.get());
+			System.out.println(itemSaleSaved.getIdItemSale());
+			return itemSaleSaved;
 		} catch (DataIntegrityViolationException dive) {		
 			throw new DataBaseException("", dive);
 		}
@@ -77,5 +95,14 @@ public class ItemSaleService {
 		}
 	}
 
-	
+	public Optional<ItemSale> findItemInSale(Product product, Sale sale){
+		try{
+			
+			//Optional<Sale> sale = saleService.findById(sale);
+			Optional<ItemSale> itemSale = itemSaleRepository.findByIdProductAndIdSale(product, sale);
+			return itemSale;
+		}catch(Exception e){
+			throw new DataBaseException("", e);
+		}
+	}
 }
