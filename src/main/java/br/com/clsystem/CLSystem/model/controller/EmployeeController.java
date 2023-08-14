@@ -77,5 +77,14 @@ public class EmployeeController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
 	}
+	@GetMapping("/entry")
+	public ResponseEntity<?> entryController(@RequestParam(name = "idOrDocument") String idOrDocument){
+		try {
+			//System.out.println(idOrDocument);
+			return ResponseEntity.ok().body(employeeService.findByIdOrDocument(idOrDocument));
+		}catch(DataBaseException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
+		}
+	}
 	
 }

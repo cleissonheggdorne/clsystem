@@ -77,6 +77,15 @@ public class EmployeeService {
 			throw new DataBaseException("", e);
 		}
 	}
+
+	public Employee findByIdOrDocument(String idOrDocument){
+		try {
+			Optional<Employee> employee = employeeRepository.findByIdEmployeeOrDocument(Long.valueOf(idOrDocument), idOrDocument);
+			return employee.get();
+		}catch(Exception e) {
+			throw new DataBaseException("", e);
+		}
+	}
 	
 	public List<EmployeeRecord> fillList(List<Employee> listEmployee){
 		try {

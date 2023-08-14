@@ -41,7 +41,7 @@ public class SaleController {
 		}
 	}
 
-	@PutMapping("/closeSale")
+	@PutMapping("/closesale")
 	public ResponseEntity<?> closeSaleController(@RequestBody Map<String, Object> dataSale){
 		try { 
 			//System.out.println(formPayment.get("formPayment"));

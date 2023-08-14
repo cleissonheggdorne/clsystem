@@ -12,14 +12,8 @@ import jakarta.validation.constraints.NotNull;
 @Validated
 public record CashierRecord(
 		Long idCashier,
-		@NotNull
-		@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-		LocalDateTime dateHourOpen,
-		@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-		LocalDateTime dateHouClose,
 		BigDecimal initialValue,
 		@NotNull
-		Long idEmployee,
-		StatusCashier status 
+		Long idEmployee
 		) {
 }

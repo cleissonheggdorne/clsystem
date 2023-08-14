@@ -1,7 +1,10 @@
 package br.com.clsystem.CLSystem.model.services;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -9,6 +12,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
+import br.com.clsystem.CLSystem.model.entities.Cashier;
 import br.com.clsystem.CLSystem.model.entities.ItemSale;
 import br.com.clsystem.CLSystem.model.entities.Product;
 import br.com.clsystem.CLSystem.model.entities.Sale;
@@ -24,12 +28,15 @@ public class ItemSaleService {
 	final ItemSaleRepository itemSaleRepository;
 	final ProductService productService;
 	final SaleService saleService;
+	final CashierService cashierService;
 	
 	public ItemSaleService(ItemSaleRepository itemSaleRepository,
-			ProductService productService, SaleService saleService) {
+			ProductService productService, SaleService saleService,
+			CashierService cashierService) {
 		this.itemSaleRepository = itemSaleRepository;
 		this.productService = productService;
 		this.saleService = saleService;
+		this.cashierService = cashierService;
 	}
 	
 	@Transactional
@@ -65,8 +72,6 @@ public class ItemSaleService {
 		itemSale.get().setIdSale(sale.get());
 		itemSale.get().setUnitaryValue(valueUnitary);
 		itemSale.get().setIdProduct(product.get()); 
-		//itemSale.setAmount(valueUnitary
-				//		.multiply(BigDecimal.valueOf(itemSaleRecord.quantity())));
 		itemSale.get().setIdSale(sale.get());
 		try {
 			ItemSale itemSaleSaved = itemSaleRepository.saveAndFlush(itemSale.get());
@@ -86,12 +91,21 @@ public class ItemSaleService {
 		}
 	}
 
-	public List<ItemSaleProjection> findItensSale(Long idSale){
+	public List<ItemSaleProjection> findItensSale(Long idSale, Long idCashier){
+		//Map<Sale, List<ItemSaleProjection>> mapItensSale = new HashMap<>();
+		List<ItemSaleProjection> listItensSale = new ArrayList<>();
 		if(idSale != null){
 			Optional<Sale> sale = saleService.findById(idSale);
-			return itemSaleRepository.findByIdSale(sale.get());
+			listItensSale = itemSaleRepository.findByIdSale(sale.get());
+			//mapItensSale.put(sale.get(), listItensSale);
+			return listItensSale;
 		}else{
-			return itemSaleRepository.findByIdSaleStatusSale(StatusSale.PENDENTE);
+			Optional<Sale> sale = saleService.findBySaleOpen(idCashier);
+			//Optional<Cashier> cashier = cashierService.findById(idCashier);
+			listItensSale = itemSaleRepository.findByIdSale(sale.get()); //itemSaleRepository.findByIdSaleStatusSaleAndIdSaleIdCashier(StatusSale.PENDENTE, cashier.get());
+			
+			//mapItensSale.put(sale.get(), listItensSale);
+			return listItensSale;
 		}
 	}
 

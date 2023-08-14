@@ -91,12 +91,15 @@ const model = {
         });
     }
   };
-  
+  const service = {
+    findAllEmployee: async function(){
+      return await model.fetchEmployees();
+    } 
+  }
   // View
   const view = {
     renderTable: function(employees) {
       const table = document.getElementById("table-employees");
-      console.log(table);
       const tbody = table.querySelector("tbody");
       this.cleanTable(tbody);
       employees.forEach(employee => {
@@ -269,9 +272,9 @@ const model = {
     }
   }
   
-  // Inicialização do Controller
-  let headerModal;
-  controller.init();
-
+// Inicialização do Controller
+let headerModal;
+controller.init();
+export {service};
 
 

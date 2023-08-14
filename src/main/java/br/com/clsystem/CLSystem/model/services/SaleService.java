@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
+import br.com.clsystem.CLSystem.model.entities.Cashier;
 import br.com.clsystem.CLSystem.model.entities.Sale;
 import br.com.clsystem.CLSystem.model.entities.record.SaleRecord;
 import br.com.clsystem.CLSystem.model.repositories.SaleRepository;
@@ -29,10 +30,7 @@ public class SaleService {
 	}
 	
 	public Sale openSale(Long idCashier){
-		// if(saleRepository.findByIdCashierIdCashierAndStatusSale(idCashier, "PENDENTE")
-		// .isPresent()){
-		// 	return ResponseEntity.badRequest().body("Existe uma venda em aberto!");
-		// }
+
 		Sale sale = new Sale(); 
 		sale.setDateHourEntry(LocalDateTime.now());
 		System.out.println(sale.getDateHourEntry());
@@ -48,9 +46,15 @@ public class SaleService {
 	}
 
 	public ResponseEntity<?> closeSale(Map<String, Object> dataSale){
+
+		Integer idCashierInt = (Integer) dataSale.get("idCashier");
+		Long idCashier = Long.valueOf(idCashierInt);
+		Optional<Cashier> cashier = cashierService.findById(idCashier);
+
 		Integer idSaleInt = (Integer) dataSale.get("idSale");
 		Long idSale = Long.valueOf(idSaleInt);
-		Optional<Sale> sale = findById(idSale);
+		Optional<Sale> sale = saleRepository.findByIdSaleAndIdCashierAndStatusSale(idSale, cashier.get(), StatusSale.PENDENTE);
+
 		sale.get().setDateHourClose(LocalDateTime.now());
 		sale.get().setStatusSale(StatusSale.FINALIZADA);
 		sale.get().setFormPayment(FormPayment.valueOf((String) dataSale.get("formPayment")));

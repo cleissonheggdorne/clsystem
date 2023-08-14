@@ -18,6 +18,7 @@ import br.com.clsystem.CLSystem.model.entities.ItemSale;
 import br.com.clsystem.CLSystem.model.entities.record.ItemSaleRecord;
 import br.com.clsystem.CLSystem.model.services.ItemSaleService;
 import br.com.clsystem.CLSystem.model.services.SaleService;
+import br.com.clsystem.CLSystem.tools.Convert;
 import jakarta.validation.Valid;
 
 @RestController
@@ -36,7 +37,6 @@ public class ItemSaleController {
 	@PostMapping("/save")
 	public ResponseEntity<?> saveController(@Valid @RequestBody ItemSaleRecord itemSaleRecord, BindingResult br){
 		try {
-			 System.out.println(itemSaleRecord.idProduct());
 			 ItemSale itemSale =  itemSaleService.saveItem(itemSaleRecord);
 			 return  ResponseEntity.ok().body(itemSale);
 		}catch(DataBaseException e) {
@@ -45,9 +45,15 @@ public class ItemSaleController {
 	}
 
 	@GetMapping("/finditenssale")
-	public ResponseEntity<?> findController(@RequestParam(name = "id") Long id){
+	public ResponseEntity<?> findController(@RequestParam(name = "idSale") String idSaleRequest, @RequestParam(name = "idCashier") String idCashierRequest){
+		System.out.println(idSaleRequest + " teste " + idCashierRequest);
+		Long idSale = (idSaleRequest == "")? null : Long.valueOf(idSaleRequest);
+		Long idCashier = Long.valueOf(idCashierRequest);
 		try {
-			return ResponseEntity.ok().body(itemSaleService.findItensSale(id));
+			//Convert convert = new Convert();
+			//String listItensString = convert.convertToJson();
+			
+			return ResponseEntity.ok().body(itemSaleService.findItensSale(idSale, idCashier));
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}

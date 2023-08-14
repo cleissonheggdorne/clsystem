@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import br.com.clsystem.CLSystem.model.entities.projection.ItemSaleProjection;
 import br.com.clsystem.CLSystem.types.FormPayment;
 import br.com.clsystem.CLSystem.types.StatusSale;
 import jakarta.persistence.Column;

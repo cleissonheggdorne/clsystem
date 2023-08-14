@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-     <!--Import Google Icon Font-->
-     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
      <!--Import materialize.css-->
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
     <link rel="stylesheet" href="/frontend/src/assets/css/style.css">
-    <script src="/frontend/src/assets/js/sale.js"></script>
+    <script type="module" src="/frontend/src/assets/js/sale.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CL SYSTEM</title>
 </head>
@@ -44,6 +44,7 @@
                     <input disabled value="" id="unitary-value" type="number" min="0.01" class="validate">
                     <label class="active" for="unitary-value">Valor Unitário</label>
                   </div>
+
                   <!-- Shopping List -->
                 <div class="col s8 section-table-itens">
                     <div class="row" >
@@ -73,15 +74,85 @@
             </div>
             <div class="row">
                 <div class="col l3 right">
-                    <a class="waves-effect waves-light green btn right">Pagamento (f2)</a>
+                    <a class="waves-effect waves-light green btn right modal-trigger" id="btn-payment" href="#modal">Pagamento (f2)</a>
                 </div>
                 <div class="col l3 right">
-                    <a class="waves-effect waves-light red btn right">Cancelamento (f12)</a>
+                    <a class="waves-effect waves-light red btn right" id="btn-cancel">Cancelamento (f12)</a>
                 </div>
             </div>
         </div>       
       </div>
-      <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+      <div id="modal" class="modal">
+        <div class="modal-content">
+          <h4>Fechar Compra</h4>
+          <!-- Dropdown Trigger -->
+          <div class="row">
+            <div class="col l6 colection">
+                <div class="collection">
+                    <a href="#!" class="collection-item"><span class="badge"><i class="material-icons">payments</i></span>Dinheiro</a>
+                    <a href="#!" class="collection-item"><span class="badge"><i class="material-icons">credit_card</i></span>Cartão de Crédito</a>
+                    <a href="#!" class="collection-item"><span class="badge"><i class="material-icons">credit_card</i></span>Cartão de Débito</a>
+                    <a href="#!" class="collection-item"><span class="badge"><i class="material-icons">money</i></span>Pix</a>
+                </div>
+            </div>
+                
+            <div class="col l6">
+                <div class="row" id="div-money-change">
+                    <div class="col l6 input-field">
+                        <input value="" id="modal-input-money" type="number" class="validate">
+                        <label class="active" for="modal-input-money">Valor</label>
+                    </div>
+                    <div class="col l6 input-field">
+                        <input value="" id="modal-return-money" type="number" class="validate" disabled>
+                        <label class="active" for="modal-return-money">Troco</label>
+                    </div>
+                </div>
+                <div class="card-panel teal">
+                    <span class="white-text" id="span-total-list-modal">
+                    </span>
+                </div>
+                <div class="row">
+                    <div class="col l5">
+                        <button class="btn waves-effect waves-light gray right" id="back">Voltar
+                            <i class="material-icons right">cancel</i>
+                        </button>
+                    </div> 
+                    <div class="col l5">
+                        <button class="btn waves-effect waves-light green left disabled" id="conclude">Concluir
+                            <i class="material-icons right">done_outline</i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+      </div>
+
+  <!-- Modal Structure -->
+  <div id="modal-select-user" class="modal">
+    <div class="modal-content">
+      <h4>Usuário</h4>
+      <!-- input entry product -->
+      <div class="input-field">
+        <input value="" id="input-user" type="text" class="validate">
+        <label class="active" for="input-user">CPF</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="waves-effect waves-green btn-flat" id="btn-enter">ENTRAR</a>
+    </div>
+  </div>
+<!-- Modal Structure -->
+  <div id="modal-custom" class="modal">
+    <div class="modal-content">
+      
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="waves-effect waves-green btn-flat" id="btn-modal-custom">Ok</a>
+    </div>
+  </div>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
 </body>
 </html>

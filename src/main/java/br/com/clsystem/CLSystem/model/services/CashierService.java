@@ -26,10 +26,12 @@ public class CashierService {
 		this.employeeService = employeeService;
 	}
 	
-	public ResponseEntity<?> save(CashierRecord cashierRecord){
+	public ResponseEntity<?> openCashier(CashierRecord cashierRecord){
 		Cashier cashier = new Cashier();
 		Optional<Employee> employee = employeeService.findById(cashierRecord.idEmployee());
 		BeanUtils.copyProperties(cashierRecord, cashier);
+		cashier.setDateHourOpen(LocalDateTime.now());
+		cashier.setStatus(StatusCashier.ABERTO);
 		cashier.setEmployee(employee.get());
 		try {
 		      return ResponseEntity.ok(cashierRepository.saveAndFlush(cashier));
@@ -40,6 +42,11 @@ public class CashierService {
 	
 	public Optional<Cashier> findById(Long id) {
 		return cashierRepository.findById(id);
+	}
+
+	public Optional<Cashier> findByEmployeeAndStatus(Long idEmployee) {
+		Optional<Employee> employee = employeeService.findById(idEmployee);
+		return cashierRepository.findByEmployeeAndStatus(employee.get(), StatusCashier.ABERTO);
 	}
 	
 	public ResponseEntity<?> closeCashier(long id){

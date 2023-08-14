@@ -6,10 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
@@ -28,19 +30,28 @@ public class CashierController {
 		this.cashierService = cashierService;
 	}
 	
-	@PostMapping("/save")
+	@PostMapping("/open")
 	public ResponseEntity<?> saveController(@Valid @RequestBody CashierRecord cashierRecord, BindingResult br){
 		try {
-			return cashierService.save(cashierRecord);
+			return cashierService.openCashier(cashierRecord);
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
 	}
 	
-	@PutMapping("/close-cashier")
+	@PutMapping("/close")
 	public ResponseEntity<?> closeCashier(@RequestBody Map<String, Long> idCashier){
 		try {
 			return cashierService.closeCashier(idCashier.get("idCashier"));
+		}catch(DataBaseException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
+		}
+	}
+
+	@GetMapping("/find-open")
+	public ResponseEntity<?> findOpenCashier(@RequestParam(name = "id") Long idEmployee){
+		try {
+			return ResponseEntity.ok().body(cashierService.findByEmployeeAndStatus(idEmployee));
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
