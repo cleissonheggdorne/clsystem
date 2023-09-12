@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
 import br.com.clsystem.CLSystem.model.entities.Cashier;
 import br.com.clsystem.CLSystem.model.entities.Sale;
-import br.com.clsystem.CLSystem.model.entities.record.SaleRecord;
 import br.com.clsystem.CLSystem.model.repositories.SaleRepository;
 import br.com.clsystem.CLSystem.types.FormPayment;
 import br.com.clsystem.CLSystem.types.StatusSale;

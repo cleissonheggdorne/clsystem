@@ -1,4 +1,4 @@
-package br.com.clsystem.CLSystem.model.controller;
+package br.com.clsystem.CLSystem.controller;
 
 import java.util.Optional;
 
