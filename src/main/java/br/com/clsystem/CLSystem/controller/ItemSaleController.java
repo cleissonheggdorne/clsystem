@@ -1,7 +1,5 @@
 package br.com.clsystem.CLSystem.controller;
 
-import java.util.Optional;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -18,7 +16,6 @@ import br.com.clsystem.CLSystem.model.entities.ItemSale;
 import br.com.clsystem.CLSystem.model.entities.record.ItemSaleRecord;
 import br.com.clsystem.CLSystem.model.services.ItemSaleService;
 import br.com.clsystem.CLSystem.model.services.SaleService;
-import br.com.clsystem.CLSystem.tools.Convert;
 import jakarta.validation.Valid;
 
 @RestController
@@ -50,10 +47,12 @@ public class ItemSaleController {
 		Long idSale = (idSaleRequest == "")? null : Long.valueOf(idSaleRequest);
 		Long idCashier = Long.valueOf(idCashierRequest);
 		try {
-			//Convert convert = new Convert();
-			//String listItensString = convert.convertToJson();
+			//if(idSale != null){
+				return ResponseEntity.ok().body(itemSaleService.findItensSale(idSale, idCashier));
+			//}else{
+			//	return ResponseEntity.ok().body(itemSaleService.findItensSale(idCashier));
+			//}
 			
-			return ResponseEntity.ok().body(itemSaleService.findItensSale(idSale, idCashier));
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}

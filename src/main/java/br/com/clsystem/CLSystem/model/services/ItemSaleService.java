@@ -2,9 +2,7 @@ package br.com.clsystem.CLSystem.model.services;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -12,14 +10,12 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
-import br.com.clsystem.CLSystem.model.entities.Cashier;
 import br.com.clsystem.CLSystem.model.entities.ItemSale;
 import br.com.clsystem.CLSystem.model.entities.Product;
 import br.com.clsystem.CLSystem.model.entities.Sale;
 import br.com.clsystem.CLSystem.model.entities.projection.ItemSaleProjection;
 import br.com.clsystem.CLSystem.model.entities.record.ItemSaleRecord;
 import br.com.clsystem.CLSystem.model.repositories.ItemSaleRepository;
-import br.com.clsystem.CLSystem.types.StatusSale;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -91,22 +87,35 @@ public class ItemSaleService {
 		}
 	}
 
+	// public List<ItemSaleProjection> findItensSale(Long idCashier){
+		
+	// 	List<ItemSaleProjection> listItensSale = new ArrayList<>();
+		
+	// 	Optional<Sale> sale = saleService.findBySaleOpen(idCashier);
+	// 	listItensSale = itemSaleRepository.findByIdSale(sale.get()); //itemSaleRepository.findByIdSaleStatusSaleAndIdSaleIdCashier(StatusSale.PENDENTE, cashier.get());
+	// 	return listItensSale;
+		
+	// }
+
 	public List<ItemSaleProjection> findItensSale(Long idSale, Long idCashier){
-		//Map<Sale, List<ItemSaleProjection>> mapItensSale = new HashMap<>();
+		
 		List<ItemSaleProjection> listItensSale = new ArrayList<>();
-		if(idSale != null){
-			Optional<Sale> sale = saleService.findById(idSale);
-			listItensSale = itemSaleRepository.findByIdSale(sale.get());
-			//mapItensSale.put(sale.get(), listItensSale);
-			return listItensSale;
-		}else{
-			Optional<Sale> sale = saleService.findBySaleOpen(idCashier);
-			//Optional<Cashier> cashier = cashierService.findById(idCashier);
-			listItensSale = itemSaleRepository.findByIdSale(sale.get()); //itemSaleRepository.findByIdSaleStatusSaleAndIdSaleIdCashier(StatusSale.PENDENTE, cashier.get());
-			
-			//mapItensSale.put(sale.get(), listItensSale);
-			return listItensSale;
+		try{
+			if(idSale != null){
+				Optional<Sale> sale = saleService.findById(idSale);
+				listItensSale = itemSaleRepository.findByIdSale(sale.get());
+				return listItensSale;
+			}else{
+				Optional<Sale> sale = saleService.findBySaleOpen(idCashier);
+				if(sale.isPresent()){
+					listItensSale = itemSaleRepository.findByIdSale(sale.get()); //itemSaleRepository.findByIdSaleStatusSaleAndIdSaleIdCashier(StatusSale.PENDENTE, cashier.get());
+				}
+				return listItensSale;
+			}
+		}catch (DataIntegrityViolationException dive) {		
+			throw new DataBaseException("", dive);
 		}
+		
 	}
 
 	public Optional<ItemSale> findItemInSale(Product product, Sale sale){

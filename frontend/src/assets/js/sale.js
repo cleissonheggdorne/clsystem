@@ -3,21 +3,29 @@ import { service as serviceEmployee} from './employee.js';
 
 
 const model = {
-  fetchEntry: function(idOrDocument) {
-    return fetch('http://localhost:8080/api/employee/entry?idOrDocument=' + idOrDocument)
-      .then(response => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error("Erro ao pesquisar usuário. Contate o suporte técnico.");
-        }
-      })
-      .then(data => {
-        return data;
-      })
-      .catch(error => {
-        Materialize.toast(error, 1000)
-      });
+  fetchEntry: async function(idOrDocument) {
+     const response = await fetch('http://localhost:8080/api/employee/entry?idOrDocument=' + idOrDocument);
+     if (response.ok && response.text !== "") {
+        return await response.json();
+     } else {
+        throw new Error("Usuário Inexistente!");
+     }
+    //  return (response.ok)? response.json() : throw new Error("Id de Usuário ou Documento Incorreto!");
+    // console.log(response);
+    // return fetch('http://localhost:8080/api/employee/entry?idOrDocument=' + idOrDocument)
+    //   .then(response => {
+    //     if (response.ok && response.text !== "") {
+    //       return response.json();
+    //     } else {
+    //       throw new Error("Usuário Inexistente!");
+    //     }
+    //   })
+    //   .then(data => {
+    //     return data;
+    //   })
+    //   .catch(error => {
+    //     throw error;
+    //   });
   },
   fetchOpenCashier: function(idCashier, initialValue) {
     return fetch('http://localhost:8080/api/cashier/open', {
@@ -34,7 +42,7 @@ const model = {
         if (response.ok) {
           return response.json();
         } else {
-          throw new Error("Erro ao abir caixa. Contate o suporte técnico.");
+          throw new Error("Erro ao abrir caixa. Contate o suporte técnico.");
         }
       })
       .then(data => {
@@ -68,22 +76,14 @@ const model = {
           Materialize.toast(error, 1000)
       });
   },
-    fetchItensSale: function(idSale, idCashier) {
+    fetchItensSale: async function(idSale, idCashier) {
       const urlIds = "?idSale="+idSale+"&idCashier="+idCashier;
-      return fetch('http://localhost:8080/api/itemsale/finditenssale' + urlIds)
-        .then(response => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error("Erro ao listar produtos. Contate o suporte técnico.");
-          }
-        })
-        .then(data => {
-          return data;
-        })
-        .catch(error => {
-          Materialize.toast(error, 1000)
-        });
+      const response = await fetch('http://localhost:8080/api/itemsale/finditenssale' + urlIds);
+      if(response.ok && response.text !== ""){
+        return await response.json();
+      } else{
+        throw new Error("Não há lista de compras em aberto");
+      }
     },
     fetchProductsByKey: function(key) {
       return fetch('http://localhost:8080/api/product/find?key='+key)
@@ -288,39 +288,51 @@ const view = {
   },
 }
 const controller = { 
-    entry: function(){
+    componentEntry: function(){
       document.addEventListener("DOMContentLoaded", function(){
         view.init();
 
         const btnEnter = document.getElementById("btn-enter");
         btnEnter.addEventListener("click", async function(){
-            const idOrDocument = document.getElementById("input-user").value;
-            if(idOrDocument.length >= 1){
-              user = await model.fetchEntry(idOrDocument);
-              if(user){
-                view.modalUser("close");
-                console.log(user);
-                controller.init();
-              }else{
-                Materialize.toast("Usuário Inexistente", 1000);
-              }
-            }else{
-              Materialize.toast("Preencha os dados", 1000);
-            }
+          const idOrDocument = document.getElementById("input-user").value;
+          controller.entry(idOrDocument);
         })
       })
     },
-    init: async function() { 
-        cashier = await this.verifyCashier(user.idEmployee);
-        //Verifica se existe caixa aberto para o usuário
-        if(cashier){
-          view.modalCustom("open", "Caixa Aberto", "Há um caixa aberto para esse usuário.");
-          const btnModalCustom = document.getElementById("btn-modal-custom");
-          btnModalCustom.addEventListener("click", function(){
-            controller.findItensSaleController("", cashier.idCashier);
-            view.modalCustom("close");
-          })
+    //1
+    entry: async function(idOrDocument){
+   
+        if(idOrDocument.length >= 1){
+            try{
+            user = await model.fetchEntry(idOrDocument);
+            view.modalUser("close");
+            cashier = await controller.verifyCashier(user.idEmployee);
+            console.log(cashier);
+            const btnModalCustom = document.getElementById("btn-modal-custom");
+            btnModalCustom.addEventListener("click", function(){
+              controller.findItensSaleController("", cashier.idCashier);
+              view.modalCustom("close");
+            });
+            }catch(error){
+              Materialize.toast(error, 1000);
+            }
+            controller.init();
+          
+        }else{
+          Materialize.toast("Preencha os dados", 1000);
         }
+    },
+    init: async function() { 
+        // cashier = await this.verifyCashier(user.idEmployee);
+        // //Verifica se existe caixa aberto para o usuário
+        // if(cashier){
+        //   view.modalCustom("open", "Caixa Aberto", "Há um caixa aberto para esse usuário.");
+        //   const btnModalCustom = document.getElementById("btn-modal-custom");
+        //   btnModalCustom.addEventListener("click", function(){
+        //     controller.findItensSaleController("", cashier.idCashier);
+        //     view.modalCustom("close");
+        //   })
+        // }
         
         const inputSearch = document.getElementById("input-product");
         inputSearch.focus();
@@ -388,9 +400,18 @@ const controller = {
         })
     //});
       },
-      verifyCashier: function(idEmployee){
-        console.log(controllerCashier)
-        return controllerCashier.verifyCashierOpen(idEmployee);
+    //Passo 2
+      verifyCashier: async function(idEmployee){
+        try{
+          
+          const cashierReturned = await controllerCashier.verifyCashierOpen(idEmployee);
+          view.modalCustom("open", "Caixa Aberto", "Há um caixa aberto para esse usuário.");
+      
+          return cashierReturned;
+        }catch(error){
+          throw error;
+        }
+        
       },
       findController: async function(key){
         return await model.fetchProductsByKey(key);
@@ -408,22 +429,23 @@ const controller = {
             controller.findItensSaleController("", cashier.idCashier);
         })
       },
-      findItensSaleController: function(idSale, idCashier){
-        console.log(idCashier);
-        model.fetchItensSale(idSale, idCashier)
-        .then(items => {
-          console.log(items[0].idSale.idSale);
-          idSaleReal = items[0].idSale.idSale;
-          console.log(idSale);
-          view.renderTable(items);
-          total = Number(items.reduce((sum, item) => sum + item.amount, 0)).toFixed(2);
-          view.renderAmount(total);
-        })
-        console.log(idSaleReal);
+      findItensSaleController: async function(idSale, idCashier){
+        try{
+          const items = await model.fetchItensSale(idSale, idCashier);
+         // console.log(items.length);
+          if(items.length >= 1){
+            idSaleReal = items[0].idSale.idSale;
+            view.renderTable(items);
+            total = Number(items.reduce((sum, item) => sum + item.amount, 0)).toFixed(2);
+            view.renderAmount(total);
+          }
+         
+        }catch(error){
+          throw error;
+        }
+
       }
-      // updateSaleList: function(idSale, idCashier){
-      //   this.findItensSaleController(idSale, idCashier);
-      // }
+    
 }
 let total;
 /*
@@ -436,4 +458,8 @@ let idSaleReal = null;
 let user = null;
 let cashier = null;
 const listSelectedItens = [];
-controller.entry();
+
+//1
+controller.componentEntry();
+//controller.entry()
+

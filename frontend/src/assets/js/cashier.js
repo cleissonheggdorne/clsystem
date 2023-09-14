@@ -48,21 +48,14 @@ const model = {
               Materialize.toast(error, 1000)
           });
       },
-      fetchFindOpenCashier: function(idEmployee) {
-        return fetch('http://localhost:8080/api/cashier/find-open?id='+idEmployee)
-          .then(response => {
-            if (response.ok) {
-              return response.json();
-            } else {
-              throw new Error("Erro ao fechar caixa. Contate o suporte técnico.");
-            }
-          })
-        //   .then(data => {
-        //     return data;
-        //   })
-          .catch(error => {
-              Materialize.toast(error, 1000)
-          });
+      fetchFindOpenCashier: async function(idEmployee) {
+        const response = await fetch('http://localhost:8080/api/cashier/find-open?id='+idEmployee)
+        console.log(response);
+        if(response.ok && response.text !== ""){
+          return response.json();
+        }else{
+          throw new Error("Não Há Caixa Aberto Para o Usuario Informado!")
+        }
       }
 }
 
@@ -71,9 +64,13 @@ const controller= {
 
     },
     verifyCashierOpen: async function(idEmployee){
+       try{
         const cashier = await model.fetchFindOpenCashier(idEmployee);
         return cashier;
-       
+       }catch(error){
+        throw error;
+       }
+        
     }
 }
 
