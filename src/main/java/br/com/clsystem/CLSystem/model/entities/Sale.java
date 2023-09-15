@@ -17,6 +17,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -49,8 +50,8 @@ public class Sale implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private FormPayment formPayment;
 	
-	@OneToOne
-	@JoinColumn(name="id_cashier", unique = false)
+	@ManyToOne
+	@JoinColumn(name="id_cashier")
 	private Cashier idCashier;
 	
 	@Column(name="date_hour_open", nullable = false)

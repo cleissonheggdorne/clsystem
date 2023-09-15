@@ -50,7 +50,7 @@ const model = {
       },
       fetchFindOpenCashier: async function(idEmployee) {
         const response = await fetch('http://localhost:8080/api/cashier/find-open?id='+idEmployee)
-        console.log(response);
+      //  console.log(response);
         if(response.ok && response.text !== ""){
           return response.json();
         }else{

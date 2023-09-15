@@ -33,20 +33,29 @@
                 </div>
             </div>
             <div class="divider"></div>
-            <div class="row">
-                 <div class="input-field col s2">
+            <div class="col l4">
+                <div class="row">
+                 <div class="input-field col s6">
                     <!-- input quantity -->
                     <input value="" id="input-quantity" type="number" min="0" class="validate" >
                     <label class="active" for="input-quantity">Quantidade</label>
                   </div>
                   <!-- input unitary value disabled -->
-                  <div class="input-field col s2">
+                  <div class="input-field col s6">
                     <input disabled value="" id="unitary-value" type="number" min="0.01" class="validate">
                     <label class="active" for="unitary-value">Valor Unitário</label>
                   </div>
-
+                  <div class="input-field col s12">
+                    <input disabled value="" id="name-product" type="text">
+                    <label class="active" for="name-product">Produto</label>
+                  </div>
+                  
+                </div>
+            </div>
+            
+            <div class="row">
                   <!-- Shopping List -->
-                <div class="col s8 section-table-itens">
+                <div class="col s8 section-table-itens right">
                     <div class="row" >
                         <table class="striped" id="table-itens">
                             <thead>
