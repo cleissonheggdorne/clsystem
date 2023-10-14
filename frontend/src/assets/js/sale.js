@@ -235,16 +235,20 @@ const view = {
         // Callback function when value is autcompleted.
         selected = products.find(product => product.nameProduct == selected || product.barCode == selected);
         
-        view.fillQuantityAndUnitaryValue(selected);
-        (cashier !== null)? controller.addItemInList(selected): null;
+        view.fillQuantityAndUnitaryValueAndNameProduct(selected);
         $('#input-product').val('');
+        (cashier !== null)? controller.addItemInList(selected): null;
       },
       minLength: 1, // The minimum length of the input for the autocomplete to start. Default: 1.
     });
   },
-  fillQuantityAndUnitaryValue: function(product){
-      $("#input-quantity").val(1);
-      $("#unitary-value").val(product.valueCost); 
+  fillQuantityAndUnitaryValueAndNameProduct: function(product){
+    console.log(product);
+      
+    document.getElementById("input-quantity").value = 1;
+    document.getElementById("unitary-value").value = product.valueCost;
+    document.getElementById("name-product").value = product.nameProduct; 
+
       Materialize.updateTextFields();     
   },
   renderTable: function(itens) {
