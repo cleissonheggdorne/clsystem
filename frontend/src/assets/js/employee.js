@@ -210,7 +210,7 @@ const model = {
       });
     },
     findAllController: function(){
-      model.fetchEmployees()
+      service.findAllEmployee()
           .then(employees => {
            // console.log(products);
             view.renderTable(employees);
@@ -275,6 +275,6 @@ const model = {
 // Inicialização do Controller
 let headerModal;
 controller.init();
-export {service};
+//export {service};
 
 
