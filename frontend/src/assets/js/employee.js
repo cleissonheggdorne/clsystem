@@ -94,8 +94,8 @@ const model = {
   const service = {
     findAllEmployee: async function(){
       return await model.fetchEmployees();
-    } 
-  }
+    }
+  };
   // View
   const view = {
     renderTable: function(employees) {
@@ -188,12 +188,12 @@ const model = {
         tbody.removeChild(tbody.firstChild);
       }
     }
-    
   };
   
   // Controller
   const controller = {
     init: function() {
+      console.log('controller');
       document.addEventListener('DOMContentLoaded', function() {
         headerModal = document.getElementById("modal1-header");
         //List all products
@@ -270,11 +270,11 @@ const model = {
             view.renderTable(employees);
           })
     }
-  }
+  };
   
 // Inicialização do Controller
 let headerModal;
 controller.init();
-//export {service};
+export { service };
 
 
