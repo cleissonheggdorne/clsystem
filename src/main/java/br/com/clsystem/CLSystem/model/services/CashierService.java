@@ -27,14 +27,19 @@ public class CashierService {
 	}
 	
 	public ResponseEntity<?> openCashier(CashierRecord cashierRecord){
-		Cashier cashier = new Cashier();
+		Optional<Cashier> cashier = findByEmployeeAndStatus(cashierRecord.idEmployee());
+		if(!cashier.isPresent()){
+			cashier = Optional.empty();
+		}else{
+			return ResponseEntity.ok(cashier);
+		}
 		Optional<Employee> employee = employeeService.findById(cashierRecord.idEmployee());
 		BeanUtils.copyProperties(cashierRecord, cashier);
-		cashier.setDateHourOpen(LocalDateTime.now());
-		cashier.setStatus(StatusCashier.ABERTO);
-		cashier.setEmployee(employee.get());
+		cashier.get().setDateHourOpen(LocalDateTime.now());
+		cashier.get().setStatus(StatusCashier.ABERTO);
+		cashier.get().setEmployee(employee.get());
 		try {
-		      return ResponseEntity.ok(cashierRepository.saveAndFlush(cashier));
+		      return ResponseEntity.ok(cashierRepository.saveAndFlush(cashier.get()));
 		} catch (DataIntegrityViolationException dive) {		
 			throw new DataBaseException("", dive);
 		}
