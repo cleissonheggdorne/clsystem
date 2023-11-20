@@ -39,7 +39,7 @@ public class ItemSale implements Serializable {
 	private Long idItemSale;
 	
 	@NotNull
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name="id_product")
 	private Product idProduct;
 	

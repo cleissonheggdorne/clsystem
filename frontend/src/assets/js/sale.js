@@ -11,30 +11,22 @@ const model = {
         throw new Error("Usuário Inexistente!");
      }
   },
-  fetchOpenCashier: function(idCashier, initialValue) {
-    return fetch('http://localhost:8080/api/cashier/open', {
+  fetchOpenCashier: async function(idEmployee, initialValue) {
+    const response = await fetch('http://localhost:8080/api/cashier/open', {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         initialValue: initialValue,
-        idCashier: idCashier
+        idEmployee: idEmployee
       })  
-      })
-      .then(response => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error("Erro ao abrir caixa. Contate o suporte técnico.");
-        }
-      })
-      .then(data => {
-        return data;
-      })
-      .catch(error => {
-          Materialize.toast(error, 1000)
       });
+      if (response.ok && response.text !== "") {
+        return response.json();
+      } else {
+          throw new Error("Erro ao abrir caixa. Contate o suporte técnico.");
+      }
   },
   fetchCloseCashier: function(idCashier) {
     return fetch('http://localhost:8080/api/cashier/close', {
@@ -85,27 +77,20 @@ const model = {
             Materialize.toast(error, 1000)
         });
     },
-    fetchSave: function(item) {
-      return fetch('http://localhost:8080/api/itemsale/save', {
+    fetchSave: async function(item) {
+      const response = await fetch('http://localhost:8080/api/itemsale/save', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(item)  
-        })
-        .then(response => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error("Erro ao salvar produto. Contate o suporte técnico.");
-          }
-        })
-        .then(data => {
-          return data;
-        })
-        .catch(error => {
-            Materialize.toast(error, 1000)
         });
+        console.log(response)
+        if(response.ok && response.text !== ""){
+          return await response.json();
+        } else{
+          throw new Error("Erro ao salvar produto. Contate o suporte técnico.");
+        }
     },
     calculateMoneyChange: function(entryValue, total){
       return entryValue-total;
@@ -160,6 +145,11 @@ const view = {
         view.AutoComplete(products);
       }
     });
+
+    // Abrir caixa
+    document.getElementById("open-close-cashier").addEventListener('click', async function(event){
+      view.modalCustom("open", "Abertura de Caixa", "Você está prestes a iniciar um caixa.", true);
+    });
     
     const payment  = document.getElementById("btn-payment");
     document.addEventListener('keydown', function(event) {
@@ -208,8 +198,6 @@ const view = {
         })
       })
       btnConclude.addEventListener("click", async function(){
-        
-        
         try{
           const saleClosed = await controller.closeSale(cashier.idCashier, idSaleReal, formPayment);//model.fetchCloseSale(cashier.idCashier, idSaleReal, formPayment) 
           $('#modal').modal('close');
@@ -243,13 +231,18 @@ const view = {
     });
   },
   fillQuantityAndUnitaryValueAndNameProduct: function(product){
-    console.log(product);
-      
-    document.getElementById("input-quantity").value = 1;
-    document.getElementById("unitary-value").value = product.valueCost;
+    const inputQuantity = document.getElementById("input-quantity");
+    const inputUnitaryValue = document.getElementById("unitary-value");
+    const inputNameProduct = document.getElementById("name-product");
+    
+    if(inputQuantity.value == "" || inputQuantity.value == null){
+      inputQuantity.value = 1;
+    }
+
+    inputUnitaryValue.value = product.valueCost;
     document.getElementById("name-product").value = product.nameProduct; 
 
-      Materialize.updateTextFields();     
+    Materialize.updateTextFields();     
   },
   renderTable: function(itens) {
     const table = document.getElementById("table-itens");
@@ -291,6 +284,7 @@ const view = {
       line.appendChild(cellNameProduct);
       line.appendChild(cellUnitaryValue);
       line.appendChild(cellAmount);
+      //line.appendChild(btnEdit);
       table.querySelector('tbody').appendChild(line);
       view.moveScroll();
     });
@@ -333,7 +327,7 @@ const view = {
   modalUser: function(openClose){
     $('#modal-select-user').modal(openClose);
   },
-  modalCustom: function(openClose, title, content){
+  modalCustom: function(openClose, title, content, moreComponents){
     const modal = document.getElementById("modal-custom");
     const modalContent = modal.querySelector(".modal-content");
     modalContent.innerHTML = "";
@@ -343,7 +337,71 @@ const view = {
     p.textContent = content;
     modalContent.appendChild(h4);
     modalContent.appendChild(p);
+    
+    if(moreComponents){
+      modalContent.appendChild(this.addComponentsForOpenCashier());
+    }
+    
     $('#modal-custom').modal(openClose);
+  },
+  addComponentsForOpenCashier: function(){
+    const divInputFild = document.createElement("div");
+    divInputFild.setAttribute("class", "input-field col s6");
+    const input  = document.createElement('input')
+    input.setAttribute("type", "number");;
+    input.setAttribute("min", "0");
+    input.setAttribute("class", "validate");
+    input.setAttribute("id", "input-value-initial")
+    const label = document.createElement('label');
+    label.setAttribute("class", "active");
+    label.setAttribute("for", "input-value-initial");
+    label.textContent = "Valor de Entrada";
+    
+    //Alteração de botão padrão do modal custom
+    const btnOkModalCustom = document.getElementById("btn-modal-custom")
+    btnOkModalCustom.textContent = "Cancelar";
+    const footerModalCustom = btnOkModalCustom.parentElement;
+    //Adição de botão de ação
+    const btnActionModalCustom = document.createElement("a");
+    btnActionModalCustom.setAttribute("href", "#!");
+    btnActionModalCustom.setAttribute("class", "waves-effect waves-green btn");
+    btnActionModalCustom.setAttribute("id", "btn-action-modal-custom");
+    btnActionModalCustom.textContent = "Confirmar";
+    
+    btnActionModalCustom.addEventListener("click", function(){
+      controller.openCashier(input.value);
+    })
+    
+    footerModalCustom.appendChild(btnActionModalCustom);
+
+    divInputFild.appendChild(input);
+    divInputFild.appendChild(label);
+    return divInputFild;
+  },
+  fillInformationLoggin: function(){
+    const navInformation = document.getElementById("nav");
+    const liUser = document.createElement("li");
+    liUser.textContent = "Usuário: "+user.idEmployee+" "+user.nameEmployee+" ";
+    navInformation.appendChild(liUser); 
+
+  },
+  fillInformationCashier: function(){
+    const navInformation = document.getElementById("nav");
+    const liCashier = document.createElement("li");
+    liCashier.innerHTML = "";
+    liCashier.textContent = (cashier != null)? "Caixa: " + cashier.status + " Hora Abertura: "+cashier.dateHourOpen: "Não Há Registro de Caixa em Aberto";
+    navInformation.appendChild(liCashier); 
+  },
+  fillButtonOpenCloseCashier: function(openClose){
+    const btnSpanOpenCloseCashier = document.getElementById("open-close-cashier");
+    btnSpanOpenCloseCashier.classList.add("white-text");
+    if(openClose === "open"){
+      btnSpanOpenCloseCashier.textContent = "Abrir Caixa";
+      btnSpanOpenCloseCashier.classList.add("light-green");
+    }else{
+      btnSpanOpenCloseCashier.textContent = "Fechar Caixa";
+      btnSpanOpenCloseCashier.classList.add("light-gray");
+    } 
   },
   openModalPayment: function(){
     
@@ -367,15 +425,21 @@ const controller = {
    
         if(idOrDocument.length >= 1){
             try{
-            user = await model.fetchEntry(idOrDocument);
-            view.modalUser("close");
+               user = await model.fetchEntry(idOrDocument);
+            // if(user != null){
+               view.modalUser("close");
+               view.fillInformationLoggin();
+            // }
+            
             cashier = await controller.verifyCashier(user.idEmployee);
-            if(cashier   !== null){
-              view.modalCustom("open", "Caixa Aberto", "Há um caixa aberto para esse usuário.");
+            if(cashier !== null){
+              view.modalCustom("open", "Caixa Aberto", "Há um caixa aberto para esse usuário.", false);
+              view.fillInformationCashier();
+              view.fillButtonOpenCloseCashier("close");
             }else{
-              view.modalCustom("open", "Atenção", "Não há um caixa aberto para esse usuário. Uma venda só poderá ser feita quando houver a abertura de um.");
+              view.modalCustom("open", "Atenção", "Não há um caixa aberto para esse usuário. Uma venda só poderá ser feita quando houver a abertura de um.", false);
+              view.fillButtonOpenCloseCashier("open");
             }
-            console.log(cashier);
             
             }catch(error){
               Materialize.toast(error, 1000);
@@ -384,33 +448,47 @@ const controller = {
           Materialize.toast("Preencha os dados", 1000);
         }
     },
-  
     //Passo 2
       verifyCashier: async function(idEmployee){
         try{
           const cashierReturned = await controllerCashier.verifyCashierOpen(idEmployee);
           return cashierReturned;
-          
         }catch(error){
           throw error;
         }
-        
+      },
+      openCashier: async function(initialValue){
+        //view.modalCustom("open", "Abertura de Caixa", "Você está prestes a iniciar um caixa.", true);
+        try{
+          cashier = await model.fetchOpenCashier(user.idEmployee, initialValue);
+          if(cashier !== null){
+              view.modalCustom("close", "", "", false);
+              view.fillInformationCashier();
+              view.fillButtonOpenCloseCashier("close");
+          }else{
+              view.modalCustom("open", "Atenção", "Não há um caixa aberto para esse usuário. Uma venda só poderá ser feita quando houver a abertura de um.", true);
+          }
+        }catch(error){
+          throw error;
+        }
       },
       findController: async function(key){
         return await model.fetchProductsByKey(key);
       },
-      addItemInList: function(item){
+      addItemInList: async function(item){
         const itemData = {
           "idProduct": item.idProduct,
-          "quantity": $("#input-quantity").val(),
+          "quantity": document.getElementById("input-quantity").value, 
           "idSale": null,
-          "idCashier": 1
+          "idCashier": cashier.idCashier
+        };
+        console.log(itemData);
+        try{
+          await model.fetchSave(itemData)
+          await controller.findItensSaleController("", cashier.idCashier);
+        }catch(error){
+          Materialize.toast(error, 1000);
         }
-        model.fetchSave(itemData)
-        .then(item => {
-          console.log(cashier);
-            controller.findItensSaleController("", cashier.idCashier);
-        })
       },
       findItensSaleController: async function(idSale, idCashier){
         try{
@@ -437,8 +515,30 @@ const controller = {
           throw error;
         }    
       }
-    
 }
+
+// const utils = {
+//   formatDateHour: function(dateHourUnformatted){
+//     // String de data no formato ISO
+//     const dateHourISO = dateHourUnformatted;
+
+//     // Criar um objeto de data a partir da string ISO
+//     const dateHour = new Date(dateHourISO);
+
+//     // Formatando a data para o padrão brasileiro
+//     const optionsDate = { year: 'numeric', month: 'numeric', day: 'numeric' };
+//     const dateformated = dateHour.toLocaleDateString('pt-BR', optionsDate);
+
+//     // Formatando a hora para o padrão brasileiro
+//     const optionsHour = { hour: 'numeric', minute: 'numeric', second: 'numeric' };
+//     const hourFormated = dateHour.toLocaleTimeString('pt-BR', optionsHour);
+//     return {
+//       date: dateformated,
+//       hour: hourFormated
+//     }
+//   }
+// }
+
 let total;
 /*
 Fluxo de Entrada na Aplicação
