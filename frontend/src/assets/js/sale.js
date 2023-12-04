@@ -1,7 +1,6 @@
 import { controller as controllerCashier} from './cashier.js';
 import { service as serviceEmployee} from './employee.js';
 
-
 const model = {
   fetchEntry: async function(idOrDocument) {
      const response = await fetch('http://localhost:8080/api/employee/entry?idOrDocument=' + idOrDocument);
@@ -12,6 +11,7 @@ const model = {
      }
   },
   fetchOpenCashier: async function(idEmployee, initialValue) {
+    console.log(idEmployee + "value: "+initialValue)
     const response = await fetch('http://localhost:8080/api/cashier/open', {
       method: 'POST',
       headers: {
@@ -92,6 +92,22 @@ const model = {
           throw new Error("Erro ao salvar produto. Contate o suporte técnico.");
         }
     },
+    fetchUpdateItem: async function(item) {
+      console.log(item);
+      const response = await fetch('http://localhost:8080/api/itemsale/save', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(item)  
+        });
+        console.log(response)
+        if(response.ok && response.text !== ""){
+          return await response.json();
+        } else{
+          throw new Error("Erro ao atualizar item da venda. Contate o suporte técnico.");
+        }
+    },
     calculateMoneyChange: function(entryValue, total){
       return entryValue-total;
     },
@@ -151,6 +167,7 @@ const view = {
       view.modalCustom("open", "Abertura de Caixa", "Você está prestes a iniciar um caixa.", true);
     });
     
+    //Pagamento
     const payment  = document.getElementById("btn-payment");
     document.addEventListener('keydown', function(event) {
       // Verificar se a tecla pressionada 
@@ -206,7 +223,62 @@ const view = {
         }
       })
     });
-    
+  },
+  saleEventsDinamicsComponents: {
+    //handleEditclickObj: null, 
+    eventEditButtonItemSale: function(){
+      //const btnEditItemSale = document.getElementById("btn-edit-item-sale");
+      //this.handleEditclick = () => this.handleEditclickFunction(btnEditItemSale);
+      //btnEditItemSale.addEventListener("click", this.handleEditclick);
+    },
+    handleEditclickFunction: function(btnEditItemSale){
+      console.log("editar")
+      let row = btnEditItemSale.parentNode; // Linha da tabela
+      let cells = row.getElementsByTagName('td');
+      console.log(cells);
+
+      for (let i = 0; i < cells.length -1; i++) {
+        if(cells[i].id == "table-itens-quantity"){
+          this.transformCellToInput(cells[i]);
+          console.log(cells[i]);
+          console.log(btnEditItemSale);
+          btnEditItemSale.textContent = 'Salvar';
+          btnEditItemSale.removeEventListener("click", this.handleEditclick);        
+          btnEditItemSale.addEventListener("click", () => this.handleSaveClick(btnEditItemSale.dataset.idItem)); 
+          break;
+        }
+      }
+      
+    },
+    transformCellToInput: function(cell){
+      let originalContent = cell.textContent;
+      let input = document.createElement('input');
+      input.setAttribute("id", "table-itens-quantity-input")
+      input.type = 'number';
+      input.min = 0; 
+      input.value = originalContent;
+      // Substitui o conteúdo da célula pelo input
+      cell.textContent = '';
+      cell.appendChild(input);
+    },
+    handleSaveClick: async function(idItemSale){
+      const quantityInput = document.getElementById("table-itens-quantity-input");
+      console.log(quantityInput);
+      const itemData = {
+        "idProduct": null,
+        "quantity": quantityInput.value, 
+        "idSale": null,
+        "idCashier": cashier.idCashier,
+        "idItemSale": idItemSale
+      };
+      console.log(itemData);
+      try{
+        await model.fetchUpdateItem(itemData)
+        await controller.findItensSaleController("", cashier.idCashier);
+      }catch(error){
+        Materialize.toast(error, 1000);
+      }
+    }
   },
   AutoComplete: function(products){
     const autoCompleteProducts = {};
@@ -251,27 +323,33 @@ const view = {
     itens.forEach(item => {
       const line = document.createElement("tr");
       const cellQuantity = document.createElement("td");
+      cellQuantity.setAttribute("id", "table-itens-quantity");
       const cellAmount = document.createElement("td");
+      cellAmount.setAttribute("id", "table-itens-amount");
       const cellNameProduct = document.createElement("td");
+      cellNameProduct.setAttribute("id", "table-itens-name--product");
       const cellUnitaryValue = document.createElement("td");
+      cellUnitaryValue.setAttribute("id", "table-itens-unitary-value");
       const cellEdit = document.createElement("td");
       const cellDelete = document.createElement("td");
       const btnEdit = document.createElement("a");
       const btnDelete = document.createElement("a");
-      
+      console.log(item);
       btnEdit.setAttribute('class', 'waves-effect waves-teal btn-flat  btn modal-trigger');
-      btnEdit.setAttribute('id', 'btn-edit');
-      btnEdit.setAttribute('data-id-item', '');
+      btnEdit.setAttribute('id', 'btn-edit-item-sale');
+      btnEdit.setAttribute('data-id-item', item.idItemSale);
       btnEdit.setAttribute('href', '#modal1');
       btnEdit.textContent = "Editar";
-      btnEdit.addEventListener('click', this.handleEditButtonClick);
+       btnEdit.addEventListener('click', () => {
+        view.saleEventsDinamicsComponents.handleEditclickFunction(btnEdit);
+       });
       
       btnDelete.setAttribute('class', 'waves-effect waves-teal btn-flat  btn modal-trigger');
       btnDelete.setAttribute('id', 'btn-delete');
       btnDelete.setAttribute('data-id-item', ''); 
       btnDelete.setAttribute('href', '#modal-delete');
       btnDelete.textContent = "Apagar";
-      btnDelete.addEventListener('click', this.handleDeleteButtonClick);
+      //btnDelete.addEventListener('click', this.handleDeleteButtonClick);
 
       cellQuantity.textContent = item.quantity;
       cellNameProduct.textContent = item.idProductNameProduct;
@@ -284,10 +362,14 @@ const view = {
       line.appendChild(cellNameProduct);
       line.appendChild(cellUnitaryValue);
       line.appendChild(cellAmount);
-      //line.appendChild(btnEdit);
+      line.appendChild(btnEdit);
       table.querySelector('tbody').appendChild(line);
       view.moveScroll();
+
     });
+    if(itens.length > 0){
+      view.saleEventsDinamicsComponents.eventEditButtonItemSale();
+    }
   },
   customModal: function(){
    
