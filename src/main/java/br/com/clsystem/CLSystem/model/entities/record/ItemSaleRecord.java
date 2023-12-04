@@ -4,8 +4,8 @@ import jakarta.validation.constraints.NotNull;
 
 public record ItemSaleRecord(
 		
+		Long idItemSale,
 		Long idSale,
-		@NotNull
 		Long idProduct,
 		@NotNull
 		Integer quantity,
