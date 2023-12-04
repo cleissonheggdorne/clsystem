@@ -68,7 +68,6 @@ public class SaleService {
 		return saleRepository.findByIdCashierIdCashierAndStatusSale(idCashier, StatusSale.valueOf("PENDENTE"));
 	}
 	
-	
 	public Optional<Sale> findById(Long id){
 		try {
 			return saleRepository.findById(id);
