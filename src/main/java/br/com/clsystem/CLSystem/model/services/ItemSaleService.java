@@ -51,8 +51,7 @@ public class ItemSaleService {
 		
 		//ItemSale itemSale;
 		//Sale item existis
-		if(itemSale.isPresent()){
-			//itemSale = itemSale.get();	
+		if(itemSale.isPresent()){	
 			quantity = itemSale.get().getQuantity()+itemSaleRecord.quantity();
 			amount = valueUnitary.multiply(BigDecimal.valueOf(quantity));
 		}else{
@@ -69,6 +68,30 @@ public class ItemSaleService {
 		itemSale.get().setUnitaryValue(valueUnitary);
 		itemSale.get().setIdProduct(product.get()); 
 		itemSale.get().setIdSale(sale.get());
+		try {
+			ItemSale itemSaleSaved = itemSaleRepository.saveAndFlush(itemSale.get());
+			System.out.println(itemSaleSaved.getIdItemSale());
+			return itemSaleSaved;
+		} catch (DataIntegrityViolationException dive) {		
+			throw new DataBaseException("", dive);
+		}
+	}
+
+	@Transactional
+	public ItemSale updateItem(ItemSaleRecord itemSaleRecord){
+		BigDecimal amount = new BigDecimal(0.0);
+		Integer quantity;
+		
+		Optional<ItemSale> itemSale = itemSaleRepository.findById(itemSaleRecord.idItemSale());
+		BigDecimal valueUnitary = productService.findValueProduct(itemSale.get().getIdProduct().getIdProduct());
+	
+		quantity = itemSaleRecord.quantity();
+		amount = valueUnitary.multiply(BigDecimal.valueOf(quantity));
+
+		itemSale.get().setQuantity(itemSaleRecord.quantity());
+		itemSale.get().setAmount(amount);
+		
+
 		try {
 			ItemSale itemSaleSaved = itemSaleRepository.saveAndFlush(itemSale.get());
 			System.out.println(itemSaleSaved.getIdItemSale());
