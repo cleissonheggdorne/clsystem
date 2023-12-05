@@ -225,30 +225,28 @@ const view = {
     });
   },
   saleEventsDinamicsComponents: {
-    //handleEditclickObj: null, 
-    eventEditButtonItemSale: function(){
-      //const btnEditItemSale = document.getElementById("btn-edit-item-sale");
-      //this.handleEditclick = () => this.handleEditclickFunction(btnEditItemSale);
-      //btnEditItemSale.addEventListener("click", this.handleEditclick);
-    },
     handleEditclickFunction: function(btnEditItemSale){
-      console.log("editar")
-      let row = btnEditItemSale.parentNode; // Linha da tabela
-      let cells = row.getElementsByTagName('td');
-      console.log(cells);
-
-      for (let i = 0; i < cells.length -1; i++) {
-        if(cells[i].id == "table-itens-quantity"){
-          this.transformCellToInput(cells[i]);
-          console.log(cells[i]);
-          console.log(btnEditItemSale);
-          btnEditItemSale.textContent = 'Salvar';
-          btnEditItemSale.removeEventListener("click", this.handleEditclick);        
-          btnEditItemSale.addEventListener("click", () => this.handleSaveClick(btnEditItemSale.dataset.idItem)); 
-          break;
+      console.log(btnEditItemSale.textContent)
+      if(btnEditItemSale.textContent === "EDITAR"){
+        console.log("editar")
+        let row = btnEditItemSale.parentNode; // Linha da tabela
+        let cells = row.getElementsByTagName('td');
+        console.log(cells);
+  
+        for (let i = 0; i < cells.length -1; i++) {
+          if(cells[i].id == "table-itens-quantity"){
+            this.transformCellToInput(cells[i]);
+            console.log(cells[i]);
+            console.log(btnEditItemSale);
+            btnEditItemSale.textContent = 'SALVAR';
+            btnEditItemSale.removeEventListener("click", this.handleEditclick);        
+            break;
+          }
         }
+        return;
       }
-      
+      console.log("SALVAR")
+      this.handleSaveClick(btnEditItemSale);
     },
     transformCellToInput: function(cell){
       let originalContent = cell.textContent;
@@ -261,7 +259,7 @@ const view = {
       cell.textContent = '';
       cell.appendChild(input);
     },
-    handleSaveClick: async function(idItemSale){
+    handleSaveClick: async function(btnEditItemSale){
       const quantityInput = document.getElementById("table-itens-quantity-input");
       console.log(quantityInput);
       const itemData = {
@@ -269,7 +267,7 @@ const view = {
         "quantity": quantityInput.value, 
         "idSale": null,
         "idCashier": cashier.idCashier,
-        "idItemSale": idItemSale
+        "idItemSale": btnEditItemSale.dataset.idItem
       };
       console.log(itemData);
       try{
@@ -339,7 +337,7 @@ const view = {
       btnEdit.setAttribute('id', 'btn-edit-item-sale');
       btnEdit.setAttribute('data-id-item', item.idItemSale);
       btnEdit.setAttribute('href', '#modal1');
-      btnEdit.textContent = "Editar";
+      btnEdit.textContent = "EDITAR";
        btnEdit.addEventListener('click', () => {
         view.saleEventsDinamicsComponents.handleEditclickFunction(btnEdit);
        });
@@ -367,9 +365,6 @@ const view = {
       view.moveScroll();
 
     });
-    if(itens.length > 0){
-      view.saleEventsDinamicsComponents.eventEditButtonItemSale();
-    }
   },
   customModal: function(){
    
@@ -444,18 +439,20 @@ const view = {
     btnOkModalCustom.textContent = "Cancelar";
     const footerModalCustom = btnOkModalCustom.parentElement;
     //Adição de botão de ação
-    const btnActionModalCustom = document.createElement("a");
-    btnActionModalCustom.setAttribute("href", "#!");
-    btnActionModalCustom.setAttribute("class", "waves-effect waves-green btn");
-    btnActionModalCustom.setAttribute("id", "btn-action-modal-custom");
-    btnActionModalCustom.textContent = "Confirmar";
+    if(!document.getElementById("btn-action-modal-custom")){
+      const btnActionModalCustom = document.createElement("a");
+      btnActionModalCustom.setAttribute("href", "#!");
+      btnActionModalCustom.setAttribute("class", "waves-effect waves-green btn");
+      btnActionModalCustom.setAttribute("id", "btn-action-modal-custom");
+      btnActionModalCustom.textContent = "Confirmar";
     
-    btnActionModalCustom.addEventListener("click", function(){
-      controller.openCashier(input.value);
-    })
-    
-    footerModalCustom.appendChild(btnActionModalCustom);
+      btnActionModalCustom.addEventListener("click", function(){
+        controller.openCashier(input.value);
+      })
 
+      footerModalCustom.appendChild(btnActionModalCustom);
+
+    }
     divInputFild.appendChild(input);
     divInputFild.appendChild(label);
     return divInputFild;
