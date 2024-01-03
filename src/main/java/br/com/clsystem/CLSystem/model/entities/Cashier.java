@@ -3,18 +3,26 @@ package br.com.clsystem.CLSystem.model.entities;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import br.com.clsystem.CLSystem.types.StatusCashier;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -56,5 +64,20 @@ public class Cashier implements Serializable {
 	@Column(name="status", nullable = false, length = 44)
 	@Enumerated(EnumType.STRING)
 	private StatusCashier status;
-	
+
+	@OneToMany(mappedBy = "idCashier")
+	@JsonIgnore
+	private List<Sale> listSale = new ArrayList<>();
+
+	@Transient
+	@JsonInclude
+	private BigDecimal amountSales;
+
+	public void getAmountSales(){
+        listSale.stream().forEach(item -> item.calculateAmount());
+		amountSales = listSale
+		.stream()
+		.map(Sale::getAmount)
+		.reduce(new BigDecimal(0.0), BigDecimal::add);
+	}
 }
