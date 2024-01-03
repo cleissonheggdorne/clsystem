@@ -1,9 +1,14 @@
 package br.com.clsystem.CLSystem.model.entities;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.hibernate.Hibernate;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -13,6 +18,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,6 +26,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -61,9 +69,19 @@ public class Sale implements Serializable {
 	
 	@OneToMany(mappedBy = "idSale")
 	@JsonIgnore
-	List<ItemSale> listItems = new ArrayList<>();
+	private List<ItemSale> listItems = new ArrayList<>();
 	
 	@Column(name="status", nullable = false, length = 20)
 	@Enumerated(EnumType.STRING)
 	private StatusSale statusSale;
+    
+	@Transient 
+	private BigDecimal amount;
+
+	public void calculateAmount(){
+		amount = listItems
+		.stream()
+		.map(ItemSale::getAmount)
+		.reduce(new BigDecimal(0.0), BigDecimal::add);
+	}
 }
