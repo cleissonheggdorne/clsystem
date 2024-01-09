@@ -70,9 +70,11 @@ public class SaleService {
 	
 	public Optional<Sale> findById(Long id){
 		try {
+			
 			return saleRepository.findById(id);
 		}catch(Exception e) {
 			throw new DataBaseException("", e);
 		}
 	}
+
 }

@@ -119,7 +119,7 @@ public class ItemSaleService {
 	// 	return listItensSale;
 		
 	// }
-
+	@Transactional	
 	public List<ItemSaleProjection> findItensSale(Long idSale, Long idCashier){
 		
 		List<ItemSaleProjection> listItensSale = new ArrayList<>();
@@ -130,6 +130,7 @@ public class ItemSaleService {
 				return listItensSale;
 			}else{
 				Optional<Sale> sale = saleService.findBySaleOpen(idCashier);
+				sale.get().calculateAmount();
 				if(sale.isPresent()){
 					listItensSale = itemSaleRepository.findByIdSale(sale.get()); //itemSaleRepository.findByIdSaleStatusSaleAndIdSaleIdCashier(StatusSale.PENDENTE, cashier.get());
 				}
