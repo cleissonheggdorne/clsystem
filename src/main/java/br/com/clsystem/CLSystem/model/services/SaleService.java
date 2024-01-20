@@ -1,8 +1,13 @@
 package br.com.clsystem.CLSystem.model.services;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -10,10 +15,13 @@ import org.springframework.stereotype.Service;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
 import br.com.clsystem.CLSystem.model.entities.Cashier;
+import br.com.clsystem.CLSystem.model.entities.ItemSale;
 import br.com.clsystem.CLSystem.model.entities.Sale;
+import br.com.clsystem.CLSystem.model.entities.projection.SaleProjection;
 import br.com.clsystem.CLSystem.model.repositories.SaleRepository;
 import br.com.clsystem.CLSystem.types.FormPayment;
 import br.com.clsystem.CLSystem.types.StatusSale;
+import scala.Array;
 
 @Service
 public class SaleService {
@@ -75,6 +83,66 @@ public class SaleService {
 		}catch(Exception e) {
 			throw new DataBaseException("", e);
 		}
+	}
+
+	public List<Map<String, List<Map<String, BigDecimal>>>> resumeByCashier(Long idCashier){
+		Map<String, BigDecimal> amountSalesMap = new HashMap<>();
+
+		List<Sale> sales = saleRepository.findByIdCashier(cashierService.findById(idCashier).get());
+		sales.forEach(sale -> {
+		       sale.calculateAmount();
+		 });
+		//Map<String, BigDecimal> countSales = new HashMap<>(); 
+		//countSales.put("Quantidade de Vendas",  BigDecimal.valueOf(Integer.valueOf(sales.size())));
+		
+		Map<FormPayment, Long> countGroup = sales.stream() 
+		    .collect((Collectors.groupingBy(Sale::getFormPayment,  Collectors.counting())));
+		//Lista de vendas por forma de pagamento
+		List<Map<String, BigDecimal>> listSalesByFormPayment = new ArrayList<>();
+		countGroup.forEach((formpayment, amount) -> {
+			Map<String, BigDecimal> salesByFormPayment = new HashMap<>();
+			salesByFormPayment.put(formpayment.toString(), BigDecimal.valueOf(amount));
+			listSalesByFormPayment.add(salesByFormPayment);
+		});
+
+		List<Map<String, BigDecimal>> listAmountSalesByFormPayment = new ArrayList<>();
+		Map<FormPayment, BigDecimal> amountGroup = sales.stream()
+			.collect(Collectors.groupingBy(
+				Sale::getFormPayment, 
+				Collectors.mapping(Sale::getAmount, 
+				Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))));
+		
+		//Lista de valor total por forma de pagamento
+		amountGroup.forEach((formpayment, amount)->{
+			Map<String, BigDecimal> salesByFormPayment = new HashMap<>();
+			salesByFormPayment.put(formpayment.toString(), amount);
+			listAmountSalesByFormPayment.add(salesByFormPayment);
+		});
+
+		BigDecimal amountSales = sales.stream().map(Sale::getAmount)
+		    .reduce(new BigDecimal(0.0), BigDecimal::add);
+        
+		//Resumo geral
+		List<Map<String, BigDecimal>> listResumeSales = new ArrayList<>();
+		amountSalesMap.put("Total de Vendas", amountSales);
+		amountSalesMap.put("Quantidade de vendas", BigDecimal.valueOf(Integer.valueOf(sales.size())));
+        listResumeSales.add(amountSalesMap);
+
+	    List<Map<String, List<Map<String, BigDecimal>>>> retorno = new ArrayList<>();
+		
+		Map<String, List<Map<String,BigDecimal>>> a = new HashMap<>();
+		a.put("Quantidade", listSalesByFormPayment);
+		
+		Map<String, List<Map<String,BigDecimal>>> b = new HashMap<>();
+		b.put("Valor", listAmountSalesByFormPayment);
+
+		Map<String, List<Map<String,BigDecimal>>> c = new HashMap<>();
+		c.put("Resumo", listResumeSales);
+
+		retorno.add(a);
+		retorno.add(b);
+		retorno.add(c);
+		return retorno;
 	}
 
 }

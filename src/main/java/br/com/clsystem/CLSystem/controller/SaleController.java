@@ -5,10 +5,12 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
@@ -35,6 +37,15 @@ public class SaleController {
 			 System.out.println(requestBody.get("idCashier"));
 			 Sale sale = saleService.openSale(requestBody.get("idCashier"));
 			 return ResponseEntity.ok().body(sale);	
+		}catch(DataBaseException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
+		}
+	}
+	@GetMapping("/resume-by-cashier")
+	public ResponseEntity<?> resumeByCashier(@RequestParam(name = "idCashier") Long idCashierRequest){
+		try { 
+			//System.out.println(formPayment.get("formPayment"));
+			return ResponseEntity.ok().body(saleService.resumeByCashier((Long) idCashierRequest));
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}

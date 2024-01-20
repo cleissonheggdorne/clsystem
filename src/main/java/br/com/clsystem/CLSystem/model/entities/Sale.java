@@ -78,10 +78,10 @@ public class Sale implements Serializable {
 	@Transient 
 	private BigDecimal amount;
 
-//	public void calculateAmount(){
-//		amount = listItems
-//		.stream()
-//		.map(ItemSale::getAmount)
-//		.reduce(new BigDecimal(0.0), BigDecimal::add);
-//	}
+	public void calculateAmount(){
+		amount = listItems
+		.stream()
+		.map(ItemSale::getAmount)
+		.reduce(new BigDecimal(0.0), BigDecimal::add);
+	}
 }

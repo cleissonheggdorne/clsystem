@@ -193,7 +193,6 @@ const model = {
   // Controller
   const controller = {
     init: function() {
-      console.log('controller');
       document.addEventListener('DOMContentLoaded', function() {
         headerModal = document.getElementById("modal1-header");
         //List all products

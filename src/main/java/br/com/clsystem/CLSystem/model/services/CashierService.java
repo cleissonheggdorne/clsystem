@@ -55,7 +55,7 @@ public class CashierService {
 		Optional<Employee> employee = employeeService.findById(idEmployee);
 		return cashierRepository.findByEmployeeAndStatus(employee.get(), StatusCashier.ABERTO);
 	}
-	
+
 	public ResponseEntity<?> closeCashier(long id){
 		Optional<Cashier> cashier = cashierRepository.findById(id);
 		cashier.get().setStatus(StatusCashier.FECHADO);
