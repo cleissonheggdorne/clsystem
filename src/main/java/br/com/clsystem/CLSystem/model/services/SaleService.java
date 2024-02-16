@@ -88,8 +88,9 @@ public class SaleService {
 	public List<Map<String, List<Map<String, BigDecimal>>>> resumeByCashier(Long idCashier){
 		Map<String, BigDecimal> amountSalesMap = new HashMap<>();
 
-		List<Sale> sales = saleRepository.findByIdCashier(cashierService.findById(idCashier).get());
-		sales.forEach(sale -> {
+		List<Sale> sales = saleRepository.findByIdCashierAndStatusSaleIsNot(cashierService.findById(idCashier).get(), StatusSale.CANCELADA);
+		sales//.stream().filter(sale -> !sale.getStatusSale().toString().equals(StatusSale.CANCELADA.toString()) )
+		.forEach(sale -> {
 		       sale.calculateAmount();
 		 });
 		//Map<String, BigDecimal> countSales = new HashMap<>(); 
@@ -99,11 +100,12 @@ public class SaleService {
 		    .collect((Collectors.groupingBy(Sale::getFormPayment,  Collectors.counting())));
 		//Lista de vendas por forma de pagamento
 		List<Map<String, BigDecimal>> listSalesByFormPayment = new ArrayList<>();
+		Map<String, BigDecimal> salesByFormPayment = new HashMap<>();
 		countGroup.forEach((formpayment, amount) -> {
-			Map<String, BigDecimal> salesByFormPayment = new HashMap<>();
-			salesByFormPayment.put(formpayment.toString(), BigDecimal.valueOf(amount));
-			listSalesByFormPayment.add(salesByFormPayment);
+			salesByFormPayment.put(formpayment.toString().replace("_", " "), BigDecimal.valueOf(amount));
 		});
+		listSalesByFormPayment.add(salesByFormPayment);
+
 
 		List<Map<String, BigDecimal>> listAmountSalesByFormPayment = new ArrayList<>();
 		Map<FormPayment, BigDecimal> amountGroup = sales.stream()
@@ -113,11 +115,13 @@ public class SaleService {
 				Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))));
 		
 		//Lista de valor total por forma de pagamento
+		Map<String, BigDecimal> amountByFormPayment = new HashMap<>();
 		amountGroup.forEach((formpayment, amount)->{
-			Map<String, BigDecimal> salesByFormPayment = new HashMap<>();
-			salesByFormPayment.put(formpayment.toString(), amount);
-			listAmountSalesByFormPayment.add(salesByFormPayment);
+			
+			amountByFormPayment.put(formpayment.toString().replace("_", " "), amount);
 		});
+		listAmountSalesByFormPayment.add(amountByFormPayment);
+
 
 		BigDecimal amountSales = sales.stream().map(Sale::getAmount)
 		    .reduce(new BigDecimal(0.0), BigDecimal::add);
@@ -145,4 +149,22 @@ public class SaleService {
 		return retorno;
 	}
 
+    public ResponseEntity<?> cancelSale(Map<String, Object> dataSale) {
+        Integer idCashierInt = (Integer) dataSale.get("idCashier");
+		Long idCashier = Long.valueOf(idCashierInt);
+		Optional<Cashier> cashier = cashierService.findById(idCashier);
+
+		Integer idSaleInt = (Integer) dataSale.get("idSale");
+		Long idSale = Long.valueOf(idSaleInt);
+		Optional<Sale> sale = saleRepository.findByIdSaleAndIdCashierAndStatusSale(idSale, cashier.get(), StatusSale.PENDENTE);
+
+		sale.get().setDateHourClose(LocalDateTime.now());
+		sale.get().setStatusSale(StatusSale.CANCELADA);
+		try {
+			  Sale saleCancel = saleRepository.saveAndFlush(sale.get()); 
+		      return ResponseEntity.ok(saleCancel);
+		} catch (DataIntegrityViolationException dive) {		
+			throw new DataBaseException("", dive);
+		}
+    }
 }

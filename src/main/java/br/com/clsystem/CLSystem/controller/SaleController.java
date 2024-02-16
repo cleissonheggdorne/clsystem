@@ -41,7 +41,7 @@ public class SaleController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
 	}
-	@GetMapping("/resume-by-cashier")
+	@GetMapping("/summary-by-cashier")
 	public ResponseEntity<?> resumeByCashier(@RequestParam(name = "idCashier") Long idCashierRequest){
 		try { 
 			//System.out.println(formPayment.get("formPayment"));
@@ -56,6 +56,15 @@ public class SaleController {
 		try { 
 			//System.out.println(formPayment.get("formPayment"));
 			return saleService.closeSale(dataSale);
+		}catch(DataBaseException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
+		}
+	}
+
+	@PutMapping("/cancel-sale")
+	public ResponseEntity<?> cancelSaleController(@RequestBody Map<String, Object> dataSale){
+		try { 
+			return saleService.cancelSale(dataSale);
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
