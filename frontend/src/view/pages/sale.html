@@ -1,40 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <!--Import Google Icon Font-->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-     <!--Import materialize.css-->
-    <!-- Compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
-    <link rel="stylesheet" href="/frontend/src/assets/css/style.css">
-    <script type="module" src="/frontend/src/assets/js/sale.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CL SYSTEM</title>
-</head>
-<body">
+    <head>
+        <meta charset="UTF-8">
+        <!--Import Google Icon Font-->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+            <!--Import materialize.css-->
+        <!-- Compiled and minified CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+        <link rel="stylesheet" href="/frontend/src/assets/css/style.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="module" src="/frontend/src/assets/js/sale.js"></script>
+        <title>CL SYSTEM</title>        
+    </head>
+<body>
+    <header-custom></header-custom>
     <div class="row">
-        <nav>
-            <div class="nav-wrapper">
-                <a href="" class="brand-logo">Logo</a>
-                <ul id="nav" class="right">
-                  
-                </ul>
-              </div>
-        </nav>
-    </div>
-    <div class="row">
-        <!-- Menu Lateral -->
-        <div class="col s2">
-            <ul class="collection">
-                <li class="collection-item"><a href="http://127.0.0.1:5500/frontend/src/view/pages/sale.html">Venda</a><span class="badge btn" id="open-close-cashier"></span></li>
-                <li class="collection-item"><a href="http://127.0.0.1:5500/frontend/src/view/pages/product_registration.html">Cadastro de Produtos</a></li>
-                <li class="collection-item"><a href="http://127.0.0.1:5500/frontend/src/view/pages/employee.html">Cadastro de Funcionários</a></li>
-            </ul>
-        </div>
+        <navbar-custom></navbar-custom>
+        
         <!-- Conteúdo -->
         <div class="col s10">  
-            <div class="row">
+            <div class="row"> 
+                <div class="card-panel teal">
+                <span class="white-text">Venda</span>
+            </div>
                 <!-- input entry product -->
                 <div class="input-field">
                   <input value="" id="input-product" type="text" class="autocomplete">
@@ -55,8 +43,8 @@
                     <label class="active" for="unitary-value">Valor Unitário</label>
                   </div>
                   <div class="input-field col s12">
-                    <input disabled value="" id="name-product" type="text">
-                    <label class="active" for="name-product">Produto</label>
+                    <textarea id="selected-product-summary" disabled class="materialize-textarea"></textarea>
+                    <label for="selected-product-summary">Resumo Última Seleção</label>
                   </div>
                   
                 </div>
@@ -172,5 +160,7 @@
   </div>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    <script src="/frontend/src/assets/js/commonComponents/navbarCustom.js"></script>
+
 </body>
 </html>
