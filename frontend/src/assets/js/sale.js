@@ -1,5 +1,4 @@
 import { controller as controllerCashier} from './cashier.js';
-import { service as serviceEmployee} from './employee.js';
 
 const model = {
   fetchEntry: async function(idOrDocument) {
@@ -12,7 +11,6 @@ const model = {
   },
   fetchOpenCashier: async function(idEmployee, initialValue) {
     
-    console.log(idEmployee + "value: "+initialValue)
     const response = await fetch('http://localhost:8080/api/cashier/open', {
       method: 'POST',
       headers: {
@@ -78,7 +76,6 @@ const model = {
         },
         body: JSON.stringify(item)  
         });
-        console.log(response)
         if(response.ok && response.text !== ""){
           return await response.json();
         } else{
@@ -86,7 +83,6 @@ const model = {
         }
     },
     fetchUpdateItem: async function(item) {
-      console.log(item);
       const response = await fetch('http://localhost:8080/api/itemsale/save', {
         method: 'PUT',
         headers: {
@@ -94,7 +90,6 @@ const model = {
         },
         body: JSON.stringify(item)  
         });
-        console.log(response)
         if(response.ok && response.text !== ""){
           return await response.json();
         } else{
@@ -105,7 +100,6 @@ const model = {
       return entryValue-total;
     },
     fetchCloseSale: async function(idCashier, idSale, formPayment){
-      console.log(idCashier+" "+idSale+" "+formPayment);
       const saleClosed = await fetch('http://localhost:8080/api/sale/closesale', {
         method: 'PUT',
         headers: {
@@ -117,22 +111,42 @@ const model = {
           formPayment: formPayment
         })  
       });
-      console.log(saleClosed);
       if(saleClosed.ok && saleClosed.text !== ""){
         return saleClosed.json();
       }else {
         throw new Error("Erro ao fechar venda.");
       }
-
-    }
+    },
+    fetchCancelSale: async function(idCashier, idSale){
+      const saleCancel = await fetch('http://localhost:8080/api/sale/cancel-sale', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          idCashier: idCashier,
+          idSale: idSale
+        })  
+      });
+      if(saleCancel.ok && saleCancel.text !== ""){
+        return saleCancel.json();
+      }else {
+        throw new Error("Erro ao fechar venda.");
+      }
+    },
+    fetchSummaryByCashier: async function(idCahier) {
+      const response = await fetch('http://localhost:8080/api/sale/summary-by-cashier?idCashier=' + idCahier);
+      if (response.ok && response.text !== "") {
+         return await response.json();
+      } else {
+         throw new Error("Não foi possível obter o resumo de fechamento deste caixa!");
+      }
+   },
 }
 const view = {
   init: function(){
     this.initComponents();
     user = JSON.parse(sessionStorage.getItem("user"));
-    //console.log(user.idEmployee);
-    
-   // const btnEnter = document.getElementById("btn-enter");
     this.eventsSale();
     (user === null)? this.modalUser("open"): controller.entry(user.idEmployee);
 
@@ -148,7 +162,9 @@ const view = {
     const btnModalCustom = document.getElementById("btn-modal-custom");
     
     btnModalCustom.addEventListener("click", function(){
-      (cashier !== null)? controller.findItensSaleController("", cashier.idCashier) : null;
+      if(btnModalCustom.textContent.toUpperCase() == "CONFIRMAR"){
+        (cashier !== null)? controller.findItensSaleController("", cashier.idCashier) : null;
+      }
       view.modalCustom("close");
     });
 
@@ -164,9 +180,21 @@ const view = {
       }
     });
 
-    // Abrir caixa
-    document.getElementById("open-close-cashier").addEventListener('click', async function(event){
-      view.modalCustom("open", "Abertura de Caixa", "Você está prestes a iniciar um caixa.", true);
+    // Abrir/Fechar Caixa
+    const btnOpenClosecashier = document.getElementById("open-close-cashier");
+    btnOpenClosecashier.addEventListener('click', async function(event){
+       
+     if(btnOpenClosecashier.textContent.includes("Fechar")){
+       let summaryByCashier;
+       try{
+           summaryByCashier = await  model.fetchSummaryByCashier(cashier.idCashier);
+       }catch(error){
+           Materialize.toast(error, 1000);
+       }
+       view.modalOpenCloseCashier("open", "Fechamento de Caixa", "", true, summaryByCashier);
+     }else{
+        view.modalOpenCloseCashier("open", "Abertura de Caixa", "Você está prestes a iniciar um caixa.", true, null);
+     }
     });
     
     //Pagamento
@@ -200,7 +228,7 @@ const view = {
       let formPayment = null;
       listPayment.forEach(item =>{
         item.addEventListener("click", function(){
-          formPayment = item.childNodes[1].textContent.toUpperCase();
+          formPayment = (item.childNodes[1].textContent.toUpperCase()).replace(/ /g, "_");
           listPayment.forEach(item => {
             item.classList.remove('active');
             btnConclude.classList.add('disabled');
@@ -219,27 +247,62 @@ const view = {
       btnConclude.addEventListener("click", async function(){
         try{
           const saleClosed = await controller.closeSale(cashier.idCashier, idSaleReal, formPayment);//model.fetchCloseSale(cashier.idCashier, idSaleReal, formPayment) 
-          $('#modal').modal('close');
+          if(saleClosed != null && saleClosed.idSale != null){
+            $('#modal').modal('close');
+            location.reload();
+            Materialize.toast("Venda finalizada.", 1000);
+          }else{
+            Materialize.toast("Houve um erro ao tentar fechar a venda.", 1000);
+          }
+          
         }catch(error){
           Materialize.toast(error, 1000);
         }
       })
     });
+     //Cancelamento
+     const btnCancel = document.getElementById("btn-cancel");
+     btnCancel.addEventListener("click", async function(){
+      try{
+        view.modalCustom("open","ATENÇÃO","Deseja realmente cancelar esta venda?", true);
+        view.addButonActionInModalCustom();
+        $('#modal-custom').modal("open");
+
+        const  btnActionModalCustom = document.getElementById("btn-action-modal-custom");
+        btnActionModalCustom.addEventListener("click", async function(){
+          console.log("cancelamento de venda")
+          
+          const saleCancel = await controller.cancelSale();
+          if(saleCancel != null && saleCancel.idSale != null){
+            Materialize.toast("Venda Cancelada", 1000);
+            $('#modal').modal('close');
+            setTimeout(() =>{
+              location.reload()
+            }, 500);
+          }else{
+            Materialize.toast("Houve um erro ao tentar cancelar a venda.", 1000);
+          }
+
+        })
+      }catch(error){
+        Materialize.toast(error, 1000);
+      }
+     });
   },
   saleEventsDinamicsComponents: {
     handleEditclickFunction: function(btnEditItemSale){
-      console.log(btnEditItemSale.textContent)
+
       if(btnEditItemSale.textContent === "EDITAR"){
-        console.log("editar")
+
         let row = btnEditItemSale.parentNode; // Linha da tabela
         let cells = row.getElementsByTagName('td');
-        console.log(cells);
-  
+
+        
         for (let i = 0; i < cells.length -1; i++) {
           if(cells[i].id == "table-itens-quantity"){
             this.transformCellToInput(cells[i]);
-            console.log(cells[i]);
-            console.log(btnEditItemSale);
+
+
             btnEditItemSale.textContent = 'SALVAR';
             btnEditItemSale.removeEventListener("click", this.handleEditclick);        
             break;
@@ -247,7 +310,6 @@ const view = {
         }
         return;
       }
-      console.log("SALVAR")
       this.handleSaveClick(btnEditItemSale);
     },
     transformCellToInput: function(cell){
@@ -263,7 +325,6 @@ const view = {
     },
     handleSaveClick: async function(btnEditItemSale){
       const quantityInput = document.getElementById("table-itens-quantity-input");
-      console.log(quantityInput);
       const itemData = {
         "idProduct": null,
         "quantity": quantityInput.value, 
@@ -271,7 +332,6 @@ const view = {
         "idCashier": cashier.idCashier,
         "idItemSale": btnEditItemSale.dataset.idItem
       };
-      console.log(itemData);
       try{
         await model.fetchUpdateItem(itemData)
         await controller.findItensSaleController("", cashier.idCashier);
@@ -305,15 +365,17 @@ const view = {
   fillQuantityAndUnitaryValueAndNameProduct: function(product){
     const inputQuantity = document.getElementById("input-quantity");
     const inputUnitaryValue = document.getElementById("unitary-value");
-    const inputNameProduct = document.getElementById("name-product");
     
     if(inputQuantity.value == "" || inputQuantity.value == null){
       inputQuantity.value = 1;
     }
 
     inputUnitaryValue.value = product.valueCost;
-    document.getElementById("name-product").value = product.nameProduct; 
-
+    const informationProductSelected = document.getElementById("selected-product-summary")
+    informationProductSelected.value = product.nameProduct 
+                                      + "\nQtd.: " + inputQuantity.value
+                                      +" \nUnd.: " + inputUnitaryValue.value
+                                      +" \nTot.: "+ inputQuantity.value * inputUnitaryValue.value; 
     Materialize.updateTextFields();     
   },
   renderTable: function(itens) {
@@ -389,7 +451,6 @@ const view = {
     }
   },
   fillModalPayment: function(){
-    console.log($('#span-total-list').text());
      $('#span-total-list-modal').text("Total " + $('#span-total-list').text());
   },
   fillMoneyChange: function(moneyChange){
@@ -409,26 +470,49 @@ const view = {
     const modal = document.getElementById("modal-custom");
     const modalContent = modal.querySelector(".modal-content");
     modalContent.innerHTML = "";
-    const h4 = document.createElement('h4');
-    const p = document.createElement('p');
-    h4.textContent = title;
-    p.textContent = content;
-    modalContent.appendChild(h4);
-    modalContent.appendChild(p);
+    const h4Title = document.createElement('h4');
+    const paragraph = document.createElement('p');
+    h4Title.textContent = title;
+    paragraph.textContent = content;
+    modalContent.appendChild(h4Title);
+    modalContent.appendChild(paragraph);
     
-    const btnOpenClosecashier = document.getElementById("open-close-cashier");
+    $('#modal-custom').modal(openClose);
+    return {"modal":modal, "modalContent":modalContent, "h4title":h4Title, "paragraph":paragraph};
+  },
+  modalOpenCloseCashier: function(openClose, title, content, moreComponents, summaryByCashier){
+    const modal = this.modalCustom("close", title,content, moreComponents);
     
-    if(moreComponents && btnOpenClosecashier.textContent.includes("Abrir")){
-      modalContent.appendChild(this.addComponentsForOpenCashier());
-    }else if(moreComponents && btnOpenClosecashier.textContent.includes("Fechar")){
-      h4.textContent = "Fechamento de Caixa"
-      p.textContent = "Valor Total no Sistema: " + "A DEFINIR"
-      console.log(cashier)
-      modalContent.appendChild(this.addComponentsForCloseCashier());
+    if(moreComponents && summaryByCashier == null){
+       modal.modalContent.appendChild(this.addComponentsMoldalCustom());
+       const  btnActionModalCustom = document.getElementById("btn-action-modal-custom");
+       btnActionModalCustom.addEventListener("click", function(){
+        const inputValueModal = document.getElementById("input-value-initial");
+        controller.openCashier(inputValueModal.value);
+      })
+    }else{
+      modal.modalContent.appendChild(this.addComponentsForCloseCashier(modal,  summaryByCashier));
+      const  btnActionModalCustom = document.getElementById("btn-action-modal-custom");
+       btnActionModalCustom.addEventListener("click", function(){
+        const inputValueModal = document.getElementById("input-value-initial");
+        const amounthReportedAtClosed = inputValueModal.value;
+        controller.closeCashier(amounthReportedAtClosed);
+
+      //  const amounthSalesRecorded = summaryByCashier[2]["Resumo"][0]["Total de Vendas"];
+       // console.log(amounthSalesRecorded);
+        //(amounthReportedAtClosed >= amounthSalesRecorded)?
+        //controller.closeCashier(amounthReportedAtClosed): view.modalCustom("open", "Ateção", "Valor informado abaixo do contabilizado. Deseja continuar assim mesmo?", false);
+
+      })
     }
     
     $('#modal-custom').modal(openClose);
   },
+  // modalCancelSale: function(openClose, title, content, moreComponents){
+  //   this.modalCustom("close", title,content, moreComponents);
+  //   this.addButonActionInModalCustom();
+  //   $('#modal-custom').modal(openClose);
+  // },
   createInputNumber: function(){
     const divInputFild = document.createElement("div");
     divInputFild.setAttribute("class", "input-field col s6");
@@ -452,6 +536,7 @@ const view = {
     btnActionModalCustom.setAttribute("class", "waves-effect waves-green btn");
     btnActionModalCustom.setAttribute("id", "btn-action-modal-custom");
     btnActionModalCustom.textContent = "Confirmar";
+    
     return btnActionModalCustom;
   },
   addComponentsForOpenCashier: function(){
@@ -468,16 +553,30 @@ const view = {
       btnActionModalCustom.addEventListener("click", function(){
         controller.openCashier(divInputLabel.input.value);
       })
-
       footerModalCustom.appendChild(btnActionModalCustom);
-
     }
     divInputLabel.div.appendChild(divInputLabel.input);
     divInputLabel.div.appendChild(divInputLabel.label);
     return divInputLabel.div;
   },
-  addComponentsForCloseCashier: function(){
-    
+  addButonActionInModalCustom: function(){
+    //Alteração de botão padrão do modal custom
+    const btnOkModalCustom = document.getElementById("btn-modal-custom")
+    btnOkModalCustom.textContent = "Cancelar";
+    const footerModalCustom = btnOkModalCustom.parentElement;
+    //Adição de botão de ação
+    if(!document.getElementById("btn-action-modal-custom")){
+      const btnActionModalCustom = this.createButtonWithAction();
+     // btnActionModalCustom.addEventListener("click", function(){
+       // controller.openCashier(divInputLabel.input.value);
+     // })
+      footerModalCustom.appendChild(btnActionModalCustom);
+    }
+    //divInputLabel.div.appendChild(divInputLabel.input);
+    //divInputLabel.div.appendChild(divInputLabel.label);
+    //return divInputLabel.div;
+  },
+  addComponentsMoldalCustom: function(){
     const divInputLabel = this.createInputNumber();
 
     //Alteração de botão padrão do modal custom
@@ -487,26 +586,55 @@ const view = {
     //Adição de botão de ação
     if(!document.getElementById("btn-action-modal-custom")){
       const btnActionModalCustom = this.createButtonWithAction();
-    
-      btnActionModalCustom.addEventListener("click", function(){
-        //if(divInputLabel.input.value >= sale.amountSales){
-          view.modalCustom("open", "ATENÇÃO", "Valor informado é menor que o valor registrado no sistema. Deseja continuar?", false);
-          controller.closeCashier(divInputLabel.input.value);
-        //}
-        
-      })
-
+     // btnActionModalCustom.addEventListener("click", function(){
+       // controller.openCashier(divInputLabel.input.value);
+     // })
       footerModalCustom.appendChild(btnActionModalCustom);
-
     }
     divInputLabel.div.appendChild(divInputLabel.input);
     divInputLabel.div.appendChild(divInputLabel.label);
     return divInputLabel.div;
   },
+  addComponentsForCloseCashier:  function(modal, summaryByCashier){
+    modal.h4title.textContent = "Fechamento de Caixa";
+    modal.paragraph.textContent = "Movimentação Registrada: ";
+
+    const divInputLabel = this.createInputNumber();
+
+    divInputLabel.div.appendChild(divInputLabel.input);
+    divInputLabel.div.appendChild(divInputLabel.label);
+
+    modal.modalContent.appendChild(this.constroiTabela(summaryByCashier))
+    this.addComponentsMoldalCustom();
+    return divInputLabel.div;
+  },
+  constroiTabela: function(dados){
+    
+      const tabela = document.createElement('table');
+      tabela.className = "responsive-table striped";
+
+      dados.forEach(item => {
+        const tipo = Object.keys(item)[0]; // Obtém o tipo (Quantidade, Valor, Resumo)
+        const valores = Object.values(item)[0][0]; // Obtém os valores
+        
+        const linha = tabela.insertRow(); 
+        
+        // Adiciona o tipo como o cabeçalho da linha
+        const cabecalho = linha.insertCell();
+        cabecalho.textContent = tipo;
+        
+        // Adiciona os valores como células na linha
+        for (const chave in valores) {
+          const celula = linha.insertCell();
+          celula.textContent = `${chave}: ${valores[chave]}`;
+        }
+      });
+      return tabela;
+  },
   fillInformationLoggin: function(){
     const navInformation = document.getElementById("nav");
     const liUser = document.createElement("li");
-    liUser.textContent = "Usuário: "+user.idEmployee+" "+user.nameEmployee+" ";
+    liUser.textContent = "Usuário: " + user.idEmployee+" "+user.nameEmployee+" ";
     navInformation.appendChild(liUser); 
 
   },
@@ -514,7 +642,7 @@ const view = {
     const navInformation = document.getElementById("nav");
     const liCashier = document.createElement("li");
     liCashier.innerHTML = "";
-    liCashier.textContent = (cashier != null)? "Caixa: " + cashier.status + " Hora Abertura: "+cashier.dateHourOpen: "Não Há Registro de Caixa em Aberto";
+    liCashier.textContent = (cashier != null)? " Caixa: " + cashier.status + " Hora Abertura: "+cashier.dateHourOpenFormatted: "Não Há Registro de Caixa em Aberto";
     navInformation.appendChild(liCashier); 
   },
   fillButtonOpenCloseCashier: function(openClose){
@@ -540,11 +668,11 @@ const controller = {
         //Verifica Sessão
         //(user != undefined)? controller.entry(user.document) : ;
         
-        const btnEnter = document.getElementById("btn-enter");
-        btnEnter.addEventListener("click", async function(){
-          const idOrDocument = document.getElementById("input-user").value;
-          controller.entry(idOrDocument);
-        });
+        // const btnEnter = document.getElementById("btn-enter");
+        // btnEnter.addEventListener("click", async function(){
+        //   const idOrDocument = document.getElementById("input-user").value;
+        //   controller.entry(idOrDocument);
+        // });
 
       })
     },
@@ -554,14 +682,15 @@ const controller = {
             try{
                user = await model.fetchEntry(idOrDocument);
                sessionStorage.setItem('user', JSON.stringify(user));
-               view.modalUser("close");
                view.fillInformationLoggin();            
+               view.modalUser("close");
                cashier = await controller.verifyCashier(user.idEmployee);
             if(cashier !== null){
               sessionStorage.setItem('cashier', cashier);
-              view.modalCustom("open", "Caixa Aberto", "Há um caixa aberto para esse usuário.", false);
+              //view.modalCustom("open", "Caixa Aberto", "Há um caixa aberto para esse usuário.", false);
               view.fillInformationCashier();
               view.fillButtonOpenCloseCashier("close");
+              controller.findItensSaleController("", cashier.idCashier);
             }else{
               view.modalCustom("open", "Atenção", "Não há um caixa aberto para esse usuário. Uma venda só poderá ser feita quando houver a abertura de um.", false);
               view.fillButtonOpenCloseCashier("open");
@@ -599,13 +728,11 @@ const controller = {
         }
       },
       closeCashier: async function(finalValue){
-        //view.modalCustom("open", "Abertura de Caixa", "Você está prestes a iniciar um caixa.", true);
         try{
           cashier = await model.fetchCloseCashier(cashier.idCashier, finalValue);
           if(cashier !== null){
               view.modalCustom("close", "", "", false);
-              //view.fillInformationCashier();
-              //view.fillButtonOpenCloseCashier("close");
+              location.reload();
           }else{
               view.modalCustom("open", "Atenção", "Não foi possível fechar o caixa corretamente. Tente novamente", true);
           }
@@ -623,7 +750,9 @@ const controller = {
           "idSale": null,
           "idCashier": cashier.idCashier
         };
-        console.log(itemData);
+        document.getElementById("input-quantity").value = '';
+        document.getElementById("unitary-value").value= '';
+
         try{
           await model.fetchSave(itemData)
           await controller.findItensSaleController("", cashier.idCashier);
@@ -635,11 +764,9 @@ const controller = {
         try{
           const items = await model.fetchItensSale(idSale, idCashier);
           quantityItensInSale = items.length;
-         // console.log(items.length);
           if(items.length >= 1){
             idSaleReal = items[0].idSale.idSale;
             sale = items[0].idSale;
-            console.log(sale);
             view.renderTable(items);
             total = Number(items.reduce((sum, item) => sum + item.amount, 0)).toFixed(2);
             view.renderAmount(total);
@@ -655,6 +782,13 @@ const controller = {
       closeSale: async function(idCashier, idSaleReal, formPayment){
         try{
           return await model.fetchCloseSale(idCashier, idSaleReal, formPayment);
+        }catch(error){
+          throw error;
+        }    
+      },
+      cancelSale: async function(){
+        try{
+          return await model.fetchCancelSale(cashier.idCashier, idSaleReal);
         }catch(error){
           throw error;
         }    
