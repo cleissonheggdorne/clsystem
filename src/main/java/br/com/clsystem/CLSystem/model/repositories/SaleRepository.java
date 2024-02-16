@@ -12,5 +12,5 @@ import br.com.clsystem.CLSystem.types.StatusSale;
 public interface SaleRepository extends JpaRepository<Sale, Long> {
     Optional<Sale> findByIdCashierIdCashierAndStatusSale(Long id, StatusSale status);
     Optional<Sale> findByIdSaleAndIdCashierAndStatusSale(Long id, Cashier idCashier, StatusSale status);
-    List<Sale> findByIdCashier(Cashier id);
+    List<Sale> findByIdCashierAndStatusSaleIsNot(Cashier id, StatusSale statusSale);
 }
