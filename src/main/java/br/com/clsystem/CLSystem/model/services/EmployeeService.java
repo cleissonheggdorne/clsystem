@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
 import br.com.clsystem.CLSystem.model.entities.Employee;
+import br.com.clsystem.CLSystem.model.entities.projection.EmployeeProjection;
 import br.com.clsystem.CLSystem.model.entities.record.EmployeeRecord;
 import br.com.clsystem.CLSystem.model.repositories.EmployeeRepository;
 
@@ -78,9 +79,9 @@ public class EmployeeService {
 		}
 	}
 
-	public Employee findByIdOrDocument(String idOrDocument){
+	public EmployeeProjection findByIdOrDocument(String idOrDocument){
 		try {
-			Optional<Employee> employee = employeeRepository.findByIdEmployeeOrDocument(Long.valueOf(idOrDocument), idOrDocument);
+			Optional<EmployeeProjection> employee = employeeRepository.findByIdEmployeeOrDocument(Long.valueOf(idOrDocument), idOrDocument);
 			return employee.get();
 		}catch(Exception e) {
 			throw new DataBaseException("", e);

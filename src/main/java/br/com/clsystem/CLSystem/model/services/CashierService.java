@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
 import br.com.clsystem.CLSystem.model.entities.Cashier;
 import br.com.clsystem.CLSystem.model.entities.Employee;
+import br.com.clsystem.CLSystem.model.entities.projection.CashierProjection;
 import br.com.clsystem.CLSystem.model.entities.record.CashierRecord;
 import br.com.clsystem.CLSystem.model.repositories.CashierRepository;
 import br.com.clsystem.CLSystem.types.StatusCashier;
@@ -27,7 +28,7 @@ public class CashierService {
 	}
 	
 	public ResponseEntity<?> openCashier(CashierRecord cashierRecord){
-		Optional<Cashier> cashierOpened = findByEmployeeAndStatus(cashierRecord.idEmployee());
+		Optional<CashierProjection> cashierOpened = findByEmployeeAndStatus(cashierRecord.idEmployee());
 		Cashier cashier;
 		if(!cashierOpened.isPresent()){
 			cashier= new Cashier();
@@ -51,7 +52,7 @@ public class CashierService {
 		return cashierRepository.findById(id);
 	}
 
-	public Optional<Cashier> findByEmployeeAndStatus(Long idEmployee) {
+	public Optional<CashierProjection> findByEmployeeAndStatus(Long idEmployee) {
 		Optional<Employee> employee = employeeService.findById(idEmployee);
 		return cashierRepository.findByEmployeeAndStatus(employee.get(), StatusCashier.ABERTO);
 	}
