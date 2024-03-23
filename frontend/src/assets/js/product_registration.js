@@ -271,6 +271,7 @@ const model = {
   
   // Inicialização do Controller
   let headerModal;
+  console.log(sessionStorage);
   controller.init();
 
 

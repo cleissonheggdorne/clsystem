@@ -58,12 +58,7 @@ public class ItemSaleController {
 		Long idSale = (idSaleRequest == "")? null : Long.valueOf(idSaleRequest);
 		Long idCashier = Long.valueOf(idCashierRequest);
 		try {
-			//if(idSale != null){
 				return ResponseEntity.ok().body(itemSaleService.findItensSale(idSale, idCashier));
-			//}else{
-			//	return ResponseEntity.ok().body(itemSaleService.findItensSale(idCashier));
-			//}
-			
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}

@@ -1,4 +1,5 @@
-// Model
+//import { controller as controllerLogin} from './login.js';
+
 const model = {
     listEmployees: [],
     fetchEmployees: function() {
