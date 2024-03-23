@@ -1,14 +1,10 @@
 import { controller as controllerCashier} from './cashier.js';
+import { controller as controllerLogin} from './login.js';
+
+
 
 const model = {
-  fetchEntry: async function(idOrDocument) {
-     const response = await fetch('http://localhost:8080/api/employee/entry?idOrDocument=' + idOrDocument);
-     if (response.ok && response.text !== "") {
-        return await response.json();
-     } else {
-        throw new Error("Usuário Inexistente!");
-     }
-  },
+
   fetchOpenCashier: async function(idEmployee, initialValue) {
     
     const response = await fetch('http://localhost:8080/api/cashier/open', {
@@ -46,11 +42,11 @@ const model = {
     fetchItensSale: async function(idSale, idCashier) {
       const urlIds = "?idSale="+idSale+"&idCashier="+idCashier;
       const response = await fetch('http://localhost:8080/api/itemsale/finditenssale' + urlIds);
-      if(response.ok && response.text !== ""){
+      if(response.ok){
         return await response.json();
-      } else{
-        throw new Error("Não há lista de compras em aberto");
-      }
+      } else if (!response.ok){
+        throw new Error("Erro ao buscar lista de compras");
+      } 
     },
     fetchProductsByKey: function(key) {
       return fetch('http://localhost:8080/api/product/find?key='+key)
@@ -145,19 +141,12 @@ const model = {
 }
 const view = {
   init: function(){
-    this.initComponents();
-    user = JSON.parse(sessionStorage.getItem("user"));
-    this.eventsSale();
-    (user === null)? this.modalUser("open"): controller.entry(user.idEmployee);
+     user = JSON.parse(sessionStorage.getItem("user"));
+     cashier = JSON.parse(sessionStorage.getItem("cashier"));
+     this.eventsSale();
 
-  },
+   },
   eventsSale: function(){
-
-    const btnEnter = document.getElementById("btn-enter");
-    btnEnter.addEventListener("click", async function(){
-      const idOrDocument = document.getElementById("input-user").value;
-      controller.entry(idOrDocument);
-    });
 
     const btnModalCustom = document.getElementById("btn-modal-custom");
     
@@ -410,7 +399,6 @@ const view = {
       btnDelete.setAttribute('data-id-item', ''); 
       btnDelete.setAttribute('href', '#modal-delete');
       btnDelete.textContent = "Apagar";
-      //btnDelete.addEventListener('click', this.handleDeleteButtonClick);
 
       cellQuantity.textContent = item.quantity;
       cellNameProduct.textContent = item.idProductNameProduct;
@@ -456,16 +444,6 @@ const view = {
   fillMoneyChange: function(moneyChange){
     $('#modal-return-money').val(moneyChange);
   },
-  initComponents: function(){
-    $('#modal-select-user').modal();
-    $('select').material_select();
-    $('.modal').modal({
-      dismissible: false
-    });
-  },
-  modalUser: function(openClose){
-    $('#modal-select-user').modal(openClose);
-  },
   modalCustom: function(openClose, title, content, moreComponents){
     const modal = document.getElementById("modal-custom");
     const modalContent = modal.querySelector(".modal-content");
@@ -491,28 +469,18 @@ const view = {
         controller.openCashier(inputValueModal.value);
       })
     }else{
-      modal.modalContent.appendChild(this.addComponentsForCloseCashier(modal,  summaryByCashier));
+        this.addComponentsForCloseCashier(modal,  summaryByCashier)
       const  btnActionModalCustom = document.getElementById("btn-action-modal-custom");
        btnActionModalCustom.addEventListener("click", function(){
         const inputValueModal = document.getElementById("input-value-initial");
         const amounthReportedAtClosed = inputValueModal.value;
         controller.closeCashier(amounthReportedAtClosed);
-
-      //  const amounthSalesRecorded = summaryByCashier[2]["Resumo"][0]["Total de Vendas"];
-       // console.log(amounthSalesRecorded);
-        //(amounthReportedAtClosed >= amounthSalesRecorded)?
-        //controller.closeCashier(amounthReportedAtClosed): view.modalCustom("open", "Ateção", "Valor informado abaixo do contabilizado. Deseja continuar assim mesmo?", false);
-
       })
     }
     
     $('#modal-custom').modal(openClose);
   },
-  // modalCancelSale: function(openClose, title, content, moreComponents){
-  //   this.modalCustom("close", title,content, moreComponents);
-  //   this.addButonActionInModalCustom();
-  //   $('#modal-custom').modal(openClose);
-  // },
+  
   createInputNumber: function(){
     const divInputFild = document.createElement("div");
     divInputFild.setAttribute("class", "input-field col s6");
@@ -567,14 +535,10 @@ const view = {
     //Adição de botão de ação
     if(!document.getElementById("btn-action-modal-custom")){
       const btnActionModalCustom = this.createButtonWithAction();
-     // btnActionModalCustom.addEventListener("click", function(){
-       // controller.openCashier(divInputLabel.input.value);
-     // })
+     
       footerModalCustom.appendChild(btnActionModalCustom);
     }
-    //divInputLabel.div.appendChild(divInputLabel.input);
-    //divInputLabel.div.appendChild(divInputLabel.label);
-    //return divInputLabel.div;
+   
   },
   addComponentsMoldalCustom: function(){
     const divInputLabel = this.createInputNumber();
@@ -586,9 +550,6 @@ const view = {
     //Adição de botão de ação
     if(!document.getElementById("btn-action-modal-custom")){
       const btnActionModalCustom = this.createButtonWithAction();
-     // btnActionModalCustom.addEventListener("click", function(){
-       // controller.openCashier(divInputLabel.input.value);
-     // })
       footerModalCustom.appendChild(btnActionModalCustom);
     }
     divInputLabel.div.appendChild(divInputLabel.input);
@@ -599,14 +560,8 @@ const view = {
     modal.h4title.textContent = "Fechamento de Caixa";
     modal.paragraph.textContent = "Movimentação Registrada: ";
 
-    const divInputLabel = this.createInputNumber();
-
-    divInputLabel.div.appendChild(divInputLabel.input);
-    divInputLabel.div.appendChild(divInputLabel.label);
-
     modal.modalContent.appendChild(this.constroiTabela(summaryByCashier))
     this.addComponentsMoldalCustom();
-    return divInputLabel.div;
   },
   constroiTabela: function(dados){
     
@@ -630,13 +585,6 @@ const view = {
         }
       });
       return tabela;
-  },
-  fillInformationLoggin: function(){
-    const navInformation = document.getElementById("nav");
-    const liUser = document.createElement("li");
-    liUser.textContent = "Usuário: " + user.idEmployee+" "+user.nameEmployee+" ";
-    navInformation.appendChild(liUser); 
-
   },
   fillInformationCashier: function(){
     const navInformation = document.getElementById("nav");
@@ -662,48 +610,11 @@ const view = {
 }
 const controller = { 
    
-    componentEntry: function(){
-      document.addEventListener("DOMContentLoaded", function(){
-        view.init();
-        //Verifica Sessão
-        //(user != undefined)? controller.entry(user.document) : ;
-        
-        // const btnEnter = document.getElementById("btn-enter");
-        // btnEnter.addEventListener("click", async function(){
-        //   const idOrDocument = document.getElementById("input-user").value;
-        //   controller.entry(idOrDocument);
-        // });
-
-      })
-    },
-    //1
-    entry: async function(idOrDocument){
-        if(idOrDocument !== "" && idOrDocument !== null){
-            try{
-               user = await model.fetchEntry(idOrDocument);
-               sessionStorage.setItem('user', JSON.stringify(user));
-               view.fillInformationLoggin();            
-               view.modalUser("close");
-               cashier = await controller.verifyCashier(user.idEmployee);
-            if(cashier !== null){
-              sessionStorage.setItem('cashier', cashier);
-              //view.modalCustom("open", "Caixa Aberto", "Há um caixa aberto para esse usuário.", false);
-              view.fillInformationCashier();
-              view.fillButtonOpenCloseCashier("close");
-              controller.findItensSaleController("", cashier.idCashier);
-            }else{
-              view.modalCustom("open", "Atenção", "Não há um caixa aberto para esse usuário. Uma venda só poderá ser feita quando houver a abertura de um.", false);
-              view.fillButtonOpenCloseCashier("open");
-            }
-            
-            }catch(error){
-              Materialize.toast(error, 1000);
-            }
-        }else{
-          Materialize.toast("Preencha os dados", 1000);
-        }
-    },
-    //Passo 2
+     componentEntry: function(){
+         view.init();
+         console.log(cashier);
+         this.findItensSaleController("", cashier.idCashier);
+     },
       verifyCashier: async function(idEmployee){
         try{
           const cashierReturned = await controllerCashier.verifyCashierOpen(idEmployee);
@@ -713,7 +624,6 @@ const controller = {
         }
       },
       openCashier: async function(initialValue){
-        //view.modalCustom("open", "Abertura de Caixa", "Você está prestes a iniciar um caixa.", true);
         try{
           cashier = await model.fetchOpenCashier(user.idEmployee, initialValue);
           if(cashier !== null){
@@ -771,7 +681,6 @@ const controller = {
             total = Number(items.reduce((sum, item) => sum + item.amount, 0)).toFixed(2);
             view.renderAmount(total);
           }
-         
         }catch(error){
           throw error;
         }
@@ -795,42 +704,10 @@ const controller = {
       }
 }
 
-// const utils = {
-//   formatDateHour: function(dateHourUnformatted){
-//     // String de data no formato ISO
-//     const dateHourISO = dateHourUnformatted;
-
-//     // Criar um objeto de data a partir da string ISO
-//     const dateHour = new Date(dateHourISO);
-
-//     // Formatando a data para o padrão brasileiro
-//     const optionsDate = { year: 'numeric', month: 'numeric', day: 'numeric' };
-//     const dateformated = dateHour.toLocaleDateString('pt-BR', optionsDate);
-
-//     // Formatando a hora para o padrão brasileiro
-//     const optionsHour = { hour: 'numeric', minute: 'numeric', second: 'numeric' };
-//     const hourFormated = dateHour.toLocaleTimeString('pt-BR', optionsHour);
-//     return {
-//       date: dateformated,
-//       hour: hourFormated
-//     }
-//   }
-// }
-
 let total;
-/*
-Fluxo de Entrada na Aplicação
-1- Selecionar Usuário (Verifica se usuário existe)
-2- Verificar se existe caixa aberto para o usuário selecionado
-3- Verifica se existe lista de compras aberta para o caixa 
-*/
-
 let idSaleReal = null;
-let sale = null;
-let quantityItensInSale = 0;
 let user = null;
 let cashier = null;
-const listSelectedItens = [];
 
 controller.componentEntry();
 
