@@ -132,8 +132,8 @@ public class ItemSaleService {
 				return listItensSale;
 			}else{
 				Optional<Sale> sale = saleService.findBySaleOpen(idCashier);
-				sale.get().calculateAmount();
 				if(sale.isPresent()){
+					sale.get().calculateAmount();
 					listItensSale = itemSaleRepository.findByIdSale(sale.get()); //itemSaleRepository.findByIdSaleStatusSaleAndIdSaleIdCashier(StatusSale.PENDENTE, cashier.get());
 				}
 				//Map<String, BigDecimal> slaes = saleService.resumeByCashier(idCashier);
