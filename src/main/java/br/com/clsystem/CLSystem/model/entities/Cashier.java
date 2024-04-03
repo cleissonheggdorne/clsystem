@@ -69,15 +69,11 @@ public class Cashier implements Serializable {
 	@JsonIgnore
 	private List<Sale> listSale = new ArrayList<>();
 
-	@Transient
-	@JsonInclude
-	private BigDecimal amountSales;
-
-//	public void getAmountSales(){
-//        listSale.stream().forEach(item -> item.calculateAmount());
-//		amountSales = listSale
-//		.stream()
-//		.map(Sale::getAmount)
-//		.reduce(new BigDecimal(0.0), BigDecimal::add);
-//	}
+	public BigDecimal  getAmountSales(){
+       listSale.stream().forEach(item -> item.calculateAmount());
+		return listSale
+		.stream()
+		.map(Sale::getAmount)
+		.reduce(new BigDecimal(0.0), BigDecimal::add);
+	}
 }

@@ -56,5 +56,41 @@ public class CashierController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
 	}
+
+	@GetMapping("/summary-by-cashier")
+	public ResponseEntity<?> resumeByCashier(@RequestParam(name = "idCashier") Long idCashierRequest){
+		try { 
+			//System.out.println(formPayment.get("formPayment"));
+			return ResponseEntity.ok().body(cashierService.resumeByCashier((Long) idCashierRequest));
+		}catch(DataBaseException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
+		}
+	}
+	// @GetMapping("/find-by-id")
+	// public ResponseEntity<?> findByIdCashier(@RequestParam(name = "id") Long idCashier){
+	// 	try {
+	// 		return ResponseEntity.ok().body(cashierService.findById(idCashier));
+	// 	}catch(DataBaseException e) {
+	// 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
+	// 	}
+	// }
+
+	@GetMapping("/findall")
+	public ResponseEntity<?> findByIdCashier(){
+		try {
+			return ResponseEntity.ok().body(cashierService.findHistorySummary());
+		}catch(DataBaseException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
+		}
+	}
+	@GetMapping("/find")
+	public ResponseEntity<?> findByEmployeeName(@RequestParam(name = "key") String key){
+		try {
+			return ResponseEntity.ok().body(cashierService.findByEmployeeName(key));
+		}catch(DataBaseException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
+		}
+	}
+	
 	
 }
