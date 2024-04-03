@@ -1,3 +1,6 @@
+import UtilsStorage from './Utils/UtilsStorage.js';
+import {handleRoute} from '../../../routes.js';
+
 const model = {
     fetchOpenCashier: function(idCashier, initialValue) {
         return fetch('http://localhost:8080/api/cashier/open', {
@@ -14,7 +17,7 @@ const model = {
             if (response.ok) {
               return response.json();
             } else {
-              throw new Error("Erro ao abir caixa. Contate o suporte técnico.");
+              throw new Error("Erro ao abrir caixa. Contate o suporte técnico.");
             }
           })
           .then(data => {
@@ -55,7 +58,15 @@ const model = {
         }else{
           throw new Error("Não Há Caixa Aberto Para o Usuario Informado!")
         }
-      }
+      },
+      fetchSummaryByCashier: async function(idCahier) {
+        const response = await fetch('http://localhost:8080/api/cashier/summary-by-cashier?idCashier=' + idCahier);
+        if (response.ok && response.text !== "") {
+          return await response.json();
+        } else {
+          throw new Error("Não foi possível obter o resumo de fechamento deste caixa!");
+        }
+    },
 }
 
 const controller= {
@@ -69,7 +80,13 @@ const controller= {
        }catch(error){
         throw error;
        }
-        
+    },
+    resumeByCashier: async function(idCashier){
+      try{
+        return await model.fetchSummaryByCashier(idCashier);
+       }catch(error){
+        throw error;
+       }
     }
 }
 

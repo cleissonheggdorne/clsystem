@@ -1,100 +1,64 @@
 //import { controller as controllerLogin} from './login.js';
+import UtilsStorage from './Utils/UtilsStorage.js';
+import {handleRoute} from '../../../routes.js';
 
 const model = {
     listEmployees: [],
-    fetchEmployees: function() {
-      return fetch('http://localhost:8080/api/employee/findall')
-        .then(response => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error("Erro ao listar produtos. Contate o suporte técnico.");
-          }
-        })
-        .then(data => {
-          this.listEmployees = data;
-          return data;
-        })
-        .catch(error => {
-          error.then(errorMsg =>{
-            Materialize.toast(errorMsg.body, 1000)
-          });
-        });
+    fetchEmployees: async function() {
+      const response = await fetch('http://localhost:8080/api/employee/findall');
+      if(response.ok){
+        const data = await response.json();
+        this.listEmployees = data;
+        return data;
+      } else {
+        throw new Error("Erro ao listar listar funcionários");
+      } 
     },
-    fetchEmployeesByKey: function(key) {
-     // console.log(key);
-      return fetch('http://localhost:8080/api/employee/find?key='+key)
-        .then(response => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            //console.log(response.ok);
-            throw new Error("Erro ao listar produtos. Contate o suporte técnico.");
-          }
-        })
-        .then(data => {
-          this.listProducts = data;
-          return data;
-        })
-        .catch(error => {
-            Materialize.toast(error, 1000)
-        });
+    fetchEmployeesByKey: async function(key) {
+     const response = await fetch('http://localhost:8080/api/employee/find?key='+key)
+     if(response.ok){
+        const data = await response.json();
+        this.listEmployees = data;
+        return data;
+      } else {
+        throw new Error("Erro ao listar produtos. Contate o suporte técnico.");
+      }    
     },
     getProductById: function(id) {
       return this.listEmployees.find(employee => employee.idEmployee == id);
     },
-    fetchSaveEmployee: function(data, methodForm){
-        //console.log(methodForm);
-        return fetch('http://localhost:8080/api/employee/save', {
+    fetchSaveEmployee: async function(data, methodForm){
+        const response = await fetch('http://localhost:8080/api/employee/save', {
             method: methodForm,
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)  
         })
-        .then(response => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw response.json();
+        if (response.ok) {
+          return await response.json();
+        } else {
+          throw new Error("Erro ao salvar produto. Contate o suporte técnico.");
         }
-        })
-        .then(data => {
-          return data;
-        })
-        .catch(error => {
-          error.then(errorMsg =>{
-            Materialize.toast(errorMsg.body, 1000)
-          });
-        });
     },
-    fetchDelete: function(id){
-        console.log(id);
-      return fetch('http://localhost:8080/api/employee/delete', {
+    fetchDelete: async function(id){
+      const response = await fetch('http://localhost:8080/api/employee/delete', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(id)  
-        })
-        .then(response => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw response.json();
-        }
-        })
-        .catch(error => {
-          error.then(errorMsg =>{
-           // console.log(errorMsg.body);
-            Materialize.toast(errorMsg.body, 1000)
-          });
         });
+        if (response.ok) {
+          return response;
+        } else {
+          throw await response.json();
+        }
     }
   };
   const service = {
     findAllEmployee: async function(){
-      return await model.fetchEmployees();
+      
     }
   };
   // View
@@ -109,31 +73,40 @@ const model = {
         const cellEmployee = document.createElement("td");
         const cellDocument = document.createElement("td");
         const cellInitialDate = document.createElement("td");
-        //const cellFinalDate = document.createElement("td");
         const cellEdit = document.createElement("td");
         const cellDelete = document.createElement("td");
         const btnEdit = document.createElement("a");
         const btnDelete = document.createElement("a");
         
-        btnEdit.setAttribute('class', 'waves-effect waves-teal btn-flat  btn modal-trigger');
+        const iconEdit = document.createElement("i");
+        iconEdit.classList.add("material-icons");
+        iconEdit.textContent = "edit"
+        iconEdit.setAttribute('data-id-employee', employee.idEmployee);
+
+
+        btnEdit.setAttribute('class', 'btn modal-trigger');
         btnEdit.setAttribute('id', 'btn-edit');
         btnEdit.setAttribute('data-id-employee', employee.idEmployee);
         btnEdit.setAttribute('href', '#modal1');
-        btnEdit.textContent = "Editar";
         btnEdit.addEventListener('click', this.handleEditButtonClick);
+        btnEdit.appendChild(iconEdit);
         
-        btnDelete.setAttribute('class', 'waves-effect waves-teal btn-flat  btn modal-trigger');
+        const iconDelete = document.createElement("i");
+        iconDelete.classList.add("material-icons");
+        iconDelete.textContent = "delete"
+        iconDelete.setAttribute('data-id-employee', employee.idEmployee);
+
+        btnDelete.setAttribute('class', 'btn modal-trigger');
         btnDelete.setAttribute('id', 'btn-delete');
         btnDelete.setAttribute('data-id-employee', employee.idEmployee);
         btnDelete.setAttribute('href', '#modal-delete');
-        btnDelete.textContent = "Apagar";
         btnDelete.addEventListener('click', this.handleDeleteButtonClick);
+        btnDelete.appendChild(iconDelete);
   
         cellId.textContent = employee.idEmployee;
         cellEmployee.textContent = employee.nameEmployee;
         cellDocument.textContent = employee.document;
         cellInitialDate.textContent = employee.initialDate;
-        //cellInitialDate.textContent = employee.initialDate;
         cellEdit.appendChild(btnEdit);
         cellDelete.appendChild(btnDelete);
   
@@ -141,7 +114,6 @@ const model = {
         line.appendChild(cellEmployee);
         line.appendChild(cellDocument);
         line.appendChild(cellInitialDate);
-        //line.appendChild(cellFinalDate);
         line.appendChild(cellEdit);
         line.appendChild(cellDelete);
         table.querySelector('tbody').appendChild(line);
@@ -153,14 +125,18 @@ const model = {
         const inputEmployee = document.getElementById("employee");
         const inputDocument = document.getElementById("document");
         const inputInitialDate = document.getElementById("initial-date");
-       // const inputFinalDate = document.getElementById("final-date");
-       // console.log(employee);
+
         //Adicionar Valor aos Inputs
         inputIdEmployee.value = String(employee.idEmployee);
         inputEmployee.value = String(employee.nameEmployee);
         inputDocument.value = String(employee.document);
-        inputInitialDate.value = String(employee.initialDate);
-        //inputFinalDate.value = String(employee.finalDate);
+        const partes = String(employee.initialDate).split('/');
+        const dia = partes[0];
+        const mes = partes[1] - 1; // (janeiro é 0)
+        const ano = partes[2];
+
+        const data = new Date(dia, mes, ano);
+        inputInitialDate.value = employee.initialDate;//(data.getFullYear()+"-"+data.getMonth()+"-"+data.getDate());
     
         //Atualizar Inputs para evitar texto sobreescrito
         Materialize.updateTextFields();
@@ -174,10 +150,17 @@ const model = {
     handleDeleteButtonClick: function(event) {
       const idEmployee = event.target.getAttribute("data-id-employee");
       document.querySelectorAll("#modal-delete-btn-yes").forEach(btn =>{
-        btn.addEventListener('click', function(){
-          model.fetchDelete({
-            "id": idEmployee
-          });
+        btn.addEventListener('click', async function(){
+          try{
+            const response = await model.fetchDelete({
+              "id": idEmployee
+            });
+            if(response.ok){
+              tools.updateGrid();
+            }
+          }catch(error){
+            Materialize.toast(error, 1000)
+          }
         })
       })
     },
@@ -194,6 +177,9 @@ const model = {
   // Controller
   const controller = {
     init: function() {
+      if(!UtilsStorage.userLogged()){
+        handleRoute("/login");
+      }
       document.addEventListener('DOMContentLoaded', function() {
         headerModal = document.getElementById("modal1-header");
         //List all products
@@ -209,40 +195,45 @@ const model = {
         })
       });
     },
-    findAllController: function(){
-      service.findAllEmployee()
-          .then(employees => {
-           // console.log(products);
-            view.renderTable(employees);
-              $('.modal').modal();
-              const form = document.getElementById("form-employee");
-              const btnAddEmployee = document.getElementById("add-employee");
-              
-              let methodForm = "PUT";
-              btnAddEmployee.addEventListener("click", function(){
-                form.reset();
-                methodForm = "POST";
-                view.modifyPopup("Adicionar Produto");
-              })
+    findAllController: async function(){
+          let employees;
+          try{
+            employees = await model.fetchEmployees();
+          }catch(error){
+            Materialize.toast(error, 1000);
+          }
+          view.renderTable(employees);
+          $('.modal').modal();
+          const form = document.getElementById("form-employee");
+          const btnAddEmployee = document.getElementById("add-employee");
+          
+          let methodForm = "PUT";
+          btnAddEmployee.addEventListener("click", function(){
+            form.reset();
+            methodForm = "POST";
+            view.modifyPopup("Adicionar Funcionário");
+          })
 
-              form.addEventListener('submit', async function(event){
-                event.preventDefault();
-                console.log(form);
-                const productSaved =  await model.fetchSaveEmployee(controller.getDataForm(), methodForm);
-                if (productSaved){
-                  tools.closeModalAndUpdateGrid();
-                  tools.updateGrid();
-                }
-              })
+          form.addEventListener('submit', async function(event){
+            event.preventDefault();
+            try{
+              const employeeSaved =  await model.fetchSaveEmployee(controller.getDataForm(), methodForm);
+              if (employeeSaved){
+                tools.closeModalAndUpdateGrid();
+                tools.updateGrid();
+              }
+            }catch(error){
+                Materialize.toast(error, 1000);
+            }
           });
     },
-    findController: function(key){
-     // console.log(key);
-      model.fetchEmployeesByKey(key)
-      .then(products => {
-       // console.log(products);
-        view.renderTable(products);
-      });
+    findController: async function(key){
+      try{
+        const employees = await model.fetchEmployeesByKey(key);
+        view.renderTable(employees);
+      }catch(error){
+        Materialize.toast(error, 1000);
+      }
     },
     getDataForm: function(){
         //Obtem dados do formulário de produto
@@ -250,7 +241,6 @@ const model = {
         const nameEmployee = document.getElementById("employee").value;
         const documentEmployee = document.getElementById("document").value;
         const initialDate = document.getElementById("initial-date").value;
-        //const finalDate = document.getElementById("final-date").value;
         return {
             idEmployee: idEmployee,
             nameEmployee: nameEmployee,
@@ -271,7 +261,6 @@ const model = {
           })
     }
   };
-  
 // Inicialização do Controller
 let headerModal;
 controller.init();

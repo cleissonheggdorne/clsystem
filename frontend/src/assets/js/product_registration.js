@@ -1,93 +1,57 @@
-// Model
+import { controller as controllerLogin} from './login.js';
+import UtilsStorage from './Utils/UtilsStorage.js';
+import {handleRoute} from '../../../routes.js';
+
 const model = {
-    //listProducts: [],
-    fetchProducts: function() {
-      return fetch('http://localhost:8080/api/product/findall')
-        .then(response => {
+    listProducts: [],
+    fetchProducts: async function() {
+      const response = await fetch('http://localhost:8080/api/product/findall')
           if (response.ok) {
-            return response.json();
+            this.listProducts = await response.json();
+            return this.listProducts;
           } else {
             throw new Error("Erro ao listar produtos. Contate o suporte técnico.");
           }
-        })
-        .then(data => {
-         // this.listProducts = data;
-          return data;
-        })
-        .catch(error => {
-          error.then(errorMsg =>{
-            Materialize.toast(errorMsg.body, 1000)
-          });
-        });
     },
-    fetchProductsByKey: function(key) {
-     // console.log(key);
-      return fetch('http://localhost:8080/api/product/find?key='+key)
-        .then(response => {
+    fetchProductsByKey: async function(key) {
+      const response = await fetch('http://localhost:8080/api/product/find?key='+key);
           if (response.ok) {
-            return response.json();
+            this.listProducts = await response.json();
+            return this.listProducts;
           } else {
-            //console.log(response.ok);
             throw new Error("Erro ao listar produtos. Contate o suporte técnico.");
           }
-        })
-        .then(data => {
-       //   this.listProducts = data;
-          return data;
-        })
-        .catch(error => {
-            Materialize.toast(error, 1000)
-        });
     },
     getProductById: function(id) {
       return this.listProducts.find(product => product.idProduct == id);
     },
-    fetchSaveProduct: function(data, methodForm){
-        //console.log(methodForm);
-        return fetch('http://localhost:8080/api/product/save', {
+    fetchSaveProduct: async function(data, methodForm){
+        const response = await fetch('http://localhost:8080/api/product/save', {
             method: methodForm,
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)  
-        })
-        .then(response => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw response.json();
-        }
-        })
-        .then(data => {
-          return data;
-        })
-        .catch(error => {
-          error.then(errorMsg =>{
-            Materialize.toast(errorMsg.body, 1000)
-          });
         });
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw response.json();
+        }
     },
-    fetchDelete: function(id){
-      return fetch('http://localhost:8080/api/product/delete', {
+    fetchDelete: async function(id){
+      const response = await fetch('http://localhost:8080/api/product/delete', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(id)  
-        })
-        .then(response => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw response.json();
-        }
-        })
-        .catch(error => {
-          error.then(errorMsg =>{
-           // console.log(errorMsg.body);
-            Materialize.toast(errorMsg.body, 1000)
-          });
         });
+        if (response.ok) {
+          return response;
+        } else {
+          throw response.error;
+        }
     }
   };
   
@@ -108,20 +72,30 @@ const model = {
         const btnEdit = document.createElement("a");
         const btnDelete = document.createElement("a");
         
-        btnEdit.setAttribute('class', 'waves-effect waves-teal btn-flat  btn modal-trigger');
+        const iconEdit = document.createElement("i");
+        iconEdit.classList.add("material-icons");
+        iconEdit.textContent = "edit"
+        iconEdit.setAttribute("data-id-product", product.idProduct);
+
+        btnEdit.setAttribute('class', 'btn modal-trigger');
         btnEdit.setAttribute('id', 'btn-edit');
         btnEdit.setAttribute('data-id-product', product.idProduct);
         btnEdit.setAttribute('href', '#modal1');
-        btnEdit.textContent = "Editar";
         btnEdit.addEventListener('click', this.handleEditButtonClick);
-        
-        btnDelete.setAttribute('class', 'waves-effect waves-teal btn-flat  btn modal-trigger');
+        btnEdit.appendChild(iconEdit);
+
+        const iconDelete = document.createElement("i");
+        iconDelete.classList.add("material-icons");
+        iconDelete.textContent = "delete"
+        iconDelete.setAttribute('data-id-product', product.idProduct);
+
+        btnDelete.setAttribute('class', 'btn modal-trigger');
         btnDelete.setAttribute('id', 'btn-delete');
         btnDelete.setAttribute('data-id-product', product.idProduct);
         btnDelete.setAttribute('href', '#modal-delete');
-        btnDelete.textContent = "Apagar";
         btnDelete.addEventListener('click', this.handleDeleteButtonClick);
-  
+        btnDelete.appendChild(iconDelete);
+
         cellId.textContent = product.idProduct;
         cellNameProduct.textContent = product.nameProduct;
         cellValueCost.textContent = product.valueCost;
@@ -146,7 +120,6 @@ const model = {
         const inputValueCost = document.getElementById("value-cost");
         const inputValueSale = document.getElementById("value-sale");
         const barCode = document.getElementById("bar-code");
-        
         //Adicionar Valor aos Inputs
         inputIdProduct.value = String(product.idProduct);
         inputProduct.value = String(product.nameProduct);
@@ -167,10 +140,17 @@ const model = {
     handleDeleteButtonClick: function(event) {
       const idProduct = event.target.getAttribute("data-id-product");
       document.querySelectorAll("#modal-delete-btn-yes").forEach(btn =>{
-        btn.addEventListener('click', function(){
-          model.fetchDelete({
-            "id": idProduct
-          });
+        btn.addEventListener('click', async function(){
+          try{
+            const response = await model.fetchDelete({
+              "id": idProduct
+            });
+            if(response.ok){
+              tools.updateGrid();
+            }
+          }catch(error){
+            Materialize.toast(error, 1000);
+          }
         })
       })
     },
@@ -182,12 +162,14 @@ const model = {
         tbody.removeChild(tbody.firstChild);
       }
     }
-    
   };
   
   // Controller
   const controller = {
     init: function() {
+      if(!UtilsStorage.userLogged()){
+        handleRoute("/login");
+      }
       document.addEventListener('DOMContentLoaded', function() {
         headerModal = document.getElementById("modal1-header");
         //List all products
@@ -197,46 +179,53 @@ const model = {
           const key = event.target.value;
           if(key.length >= 3){
             controller.findController(key);
-            
           }else{
             controller.findAllController();
           }
         })
       });
     },
-    findAllController: function(){
-      model.fetchProducts()
-          .then(products => {
-            view.renderTable(products);
-              $('.modal').modal();
-              const form = document.getElementById("form-product");
-              const btnAddProduct = document.getElementById("add-product");
-              
-              let methodForm = "PUT";
+    findAllController: async function(){
+      let products;
+      try{
+        products  = await model.fetchProducts();
+      }catch(error){
+        Materialize.toast(error, 1000);
+      }
+      view.renderTable(products);
+      $('.modal').modal();
+      const form = document.getElementById("form-product");
+      const btnAddProduct = document.getElementById("add-product");
+      
+      let methodForm = "PUT";
 
-              btnAddProduct.addEventListener("click", function(){
-                form.reset();
-                methodForm = "POST";
-                view.modifyPopup("Adicionar Produto");
-              })
+      btnAddProduct.addEventListener("click", function(){
+        form.reset();
+        methodForm = "POST";
+        view.modifyPopup("Adicionar Produto");
+      })
 
-              form.addEventListener('submit', async function(event){
-                event.preventDefault();
-                const productSaved = await model.fetchSaveProduct(controller.getDataForm(), methodForm);
-                if (productSaved){
-                  tools.closeModalAndUpdateGrid();
-                  tools.updateGrid();
-                }
-              })
-          });
+      form.addEventListener('submit', async function(event){
+        event.preventDefault();
+        let productSaved;
+        try{
+          productSaved = await model.fetchSaveProduct(controller.getDataForm(), methodForm);
+        }catch(error){
+          Materialize.toast(error, 1000);
+        }
+        if (productSaved){
+          tools.closeModal();
+          tools.updateGrid();
+        }
+      })
     },
-    findController: function(key){
-     // console.log(key);
-      model.fetchProductsByKey(key)
-      .then(products => {
-        console.log(products);
+    findController: async function(key){
+      try{
+        const products = await model.fetchProductsByKey(key);
         view.renderTable(products);
-      });
+      }catch(error){
+        Materialize.toast(error, 1000);
+      }
     },
     getDataForm: function(){
         //Obtem dados do formulário de produto
@@ -258,20 +247,24 @@ const model = {
   };
 
   const tools = {
-    closeModalAndUpdateGrid: function (){
+    closeModal: function (){
       $('#modal1').modal('close');
     },
-    updateGrid: function(){
-      model.fetchProducts()
-          .then(products => {
-            view.renderTable(products);
-          })
+    updateGrid: async function(){
+      let products;
+      try{
+        products =  await model.fetchProducts();
+      } catch(error){
+        Materialize.toast(error, 1000);
+      }
+      if(products){
+        view.renderTable(products);
+      }
     }
   }
   
   // Inicialização do Controller
   let headerModal;
-  console.log(sessionStorage);
   controller.init();
 
 
