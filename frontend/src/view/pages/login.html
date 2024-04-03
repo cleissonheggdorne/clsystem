@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acesso Ao Sistema ClSystem</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+</head>
+<body>
+    <div class="col s2">
+        <ul class="collection" id="routes">
+            <!-- <li class="collection-item"><a href="../../../index.html">Venda</a><span class="badge btn" id="open-close-cashier"></span></li> -->
+            <!-- <li class="collection-item"><a href="../../../src/view/pages/product_registration.html">Cadastro de Produtos</a></li> -->
+            <!-- <li class="collection-item"><a href="../../../src/view/pages/employee.html">Cadastro de Funcionários</a></li> -->
+        </ul>
+    </div>
+  <div class="container">
+    <div class="row">
+      <div class="col s12 m6 offset-m3">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">Entrar</span>
+            <div class="row">
+              <form class="col s12">
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input id="input-user" type="text" class="validate">
+                    <label for="input-user">Usuário CPF/ID</label>
+                  </div>
+                </div>
+                <!-- <div class="row">
+                  <div class="input-field col s12">
+                    <input id="password" type="password" class="validate">
+                    <label for="password">Senha</label>
+                  </div>
+                </div> -->
+                <div class="row">
+                  <div class="col s6">
+                    <a href="/index" class="btn-flat">Voltar</a>
+                  </div>
+                  <div class="col s6">
+                    <a href="/entrar" class="btn waves-effect waves-light" id="btn-enter-login" type="submit" name="action">Entrar</a>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Adicione o jQuery antes do MaterializeJS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Adicione o MaterializeJS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+  <!-- <script type="module" src="../../assets/js/login.js"></script> -->
+  <script type="module" src="../../../routes.js"></script>
+</body>
+</html>
