@@ -10,28 +10,28 @@ class HeaderCustom extends HTMLElement{
                                     </div>
                             </nav>
                         </div>`;
-        (UtilsStorage.userLogged)?NavbarUtils.fillInformationLoggin(UtilsStorage.getUser()):"";
-        (UtilsStorage.openedCashier)?NavbarUtils.fillInformationCashier(UtilsStorage.getCashier()):"";
+        //(UtilsStorage.userLogged)?NavbarUtils.fillInformationLoggin(UtilsStorage.getUser()):"";
+        //(UtilsStorage.openedCashier)?NavbarUtils.fillInformationCashier(UtilsStorage.getCashier()):"";
 
     }
 }
 class NavbarCustom extends HTMLElement{
     connectedCallback(){
         this.innerHTML = `<div class="col s2">
-                            <ul class="collection">
-                                <li class="collection-item"><a href="http://127.0.0.1:5500/frontend/src/view/pages/sale.html">Venda</a><span class="badge btn" id="open-close-cashier"></span></li>
-                                <li class="collection-item"><a href="http://127.0.0.1:5500/frontend/src/view/pages/product_registration.html">Cadastro de Produtos</a></li>
-                                <li class="collection-item"><a href="http://127.0.0.1:5500/frontend/src/view/pages/employee.html">Cadastro de Funcionários</a></li>
+                            <ul class="collection" id="routes">
+                                <li class="collection-item"><a href="/sale">Venda</a><span class="badge btn" id="open-close-cashier"></span></li>
+                                <li class="collection-item"><a href="/products">Cadastro de Produtos</a></li>
+                                <li class="collection-item"><a href="/employee">Cadastro de Funcionários</a></li>
+                                <li class="collection-item"><a href="/history">Histórico de Caixa</a></li>
                             </ul>
                         </div>`;
-        //const navBarUtils = new NavbarUtils();
-        NavbarUtils.fillButtonOpenCloseCashier(UtilsStorage.openedCashier?"close":"open");
+       NavbarUtils.fillButtonOpenCloseCashier(UtilsStorage.openedCashier()?"close":"open");
     }
     getSessionStorage(){
         return sessionStorage;
     }
 }
-class NavbarUtils{
+export default class NavbarUtils{
     constructor(){ }
     
     static fillButtonOpenCloseCashier(openClose){
@@ -62,5 +62,4 @@ class NavbarUtils{
 
 customElements.define("header-custom", HeaderCustom);
 customElements.define("navbar-custom", NavbarCustom);
-
 
