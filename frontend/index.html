@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acesso Ao Sistema ClSystem</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+</head>
+<body>
+    <div class="col s2">
+        <ul class="collection" id="routes">
+            <li class="collection-item"><a href="/index">Index</a><span class="badge btn" id="open-close-cashier"></span></li>
+            <li class="collection-item"><a href="/login">Login</a><span class="badge btn" id="open-close-cashier"></span></li>
+            <li class="collection-item"><a href="/sale">Venda</a><span class="badge btn" id="open-close-cashier"></span></li>
+            <li class="collection-item"><a href="/products">Cadastro de Produtos</a></li>
+            <li class="collection-item"><a href="/employee">Cadastro de Funcionários</a></li>
+        </ul>
+    </div>
+  <div class="col s10 container">
+    <p>Teste</p>
+  </div>
+   <!-- Modal Trigger -->
+   <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Modal</a>
+
+   <!-- Modal Structure -->
+   <div id="modal1" class="modal">
+     <div class="modal-content">
+       <h4>Modal Header</h4>
+       <p>A bunch of text</p>
+     </div>
+     <div class="modal-footer">
+       <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+     </div>
+   </div>
+
+  <!-- Adicione o jQuery antes do MaterializeJS -->
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <!-- Adicione o MaterializeJS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+  <script type="module" src="./routes.js"></script>
+</body>
+</html>
