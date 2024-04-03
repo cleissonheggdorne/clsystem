@@ -1,7 +1,10 @@
 import { controller as controllerCashier} from './cashier.js';
+import UtilsStorage from './Utils/UtilsStorage.js';
+import ModalCustom from './Utils/UtilsModal.js';
+
 import { controller as controllerLogin} from './login.js';
-
-
+import NavbarUtils from './commonComponents/navbarCustom.js';
+import {handleRoute} from '../../../routes.js';
 
 const model = {
 
@@ -129,22 +132,14 @@ const model = {
       }else {
         throw new Error("Erro ao fechar venda.");
       }
-    },
-    fetchSummaryByCashier: async function(idCahier) {
-      const response = await fetch('http://localhost:8080/api/sale/summary-by-cashier?idCashier=' + idCahier);
-      if (response.ok && response.text !== "") {
-         return await response.json();
-      } else {
-         throw new Error("Não foi possível obter o resumo de fechamento deste caixa!");
-      }
-   },
+    }
 }
 const view = {
   init: function(){
-     user = JSON.parse(sessionStorage.getItem("user"));
-     cashier = JSON.parse(sessionStorage.getItem("cashier"));
-     this.eventsSale();
-
+    NavbarUtils.fillInformationLoggin(user);
+    //Inicializa componente de modal
+    ModalCustom.initComponent();
+    this.eventsSale();
    },
   eventsSale: function(){
 
@@ -176,8 +171,8 @@ const view = {
      if(btnOpenClosecashier.textContent.includes("Fechar")){
        let summaryByCashier;
        try{
-           summaryByCashier = await  model.fetchSummaryByCashier(cashier.idCashier);
-       }catch(error){
+           summaryByCashier = await controllerCashier.resumeByCashier(cashier.idCashier);
+        }catch(error){
            Materialize.toast(error, 1000);
        }
        view.modalOpenCloseCashier("open", "Fechamento de Caixa", "", true, summaryByCashier);
@@ -198,7 +193,7 @@ const view = {
     payment.addEventListener('click', function(){
       const btnBackModalPayment = document.getElementById("back");
       btnBackModalPayment.addEventListener('click', function(){
-        $('#modal').modal('close');
+        $('#modal-payment').modal('close');
       })
       
       view.fillModalPayment();
@@ -256,10 +251,8 @@ const view = {
         view.modalCustom("open","ATENÇÃO","Deseja realmente cancelar esta venda?", true);
         view.addButonActionInModalCustom();
         $('#modal-custom').modal("open");
-
         const  btnActionModalCustom = document.getElementById("btn-action-modal-custom");
         btnActionModalCustom.addEventListener("click", async function(){
-          console.log("cancelamento de venda")
           
           const saleCancel = await controller.cancelSale();
           if(saleCancel != null && saleCancel.idSale != null){
@@ -445,22 +438,11 @@ const view = {
     $('#modal-return-money').val(moneyChange);
   },
   modalCustom: function(openClose, title, content, moreComponents){
-    const modal = document.getElementById("modal-custom");
-    const modalContent = modal.querySelector(".modal-content");
-    modalContent.innerHTML = "";
-    const h4Title = document.createElement('h4');
-    const paragraph = document.createElement('p');
-    h4Title.textContent = title;
-    paragraph.textContent = content;
-    modalContent.appendChild(h4Title);
-    modalContent.appendChild(paragraph);
-    
-    $('#modal-custom').modal(openClose);
-    return {"modal":modal, "modalContent":modalContent, "h4title":h4Title, "paragraph":paragraph};
+    return ModalCustom.modalCustom(title,content);
   },
   modalOpenCloseCashier: function(openClose, title, content, moreComponents, summaryByCashier){
-    const modal = this.modalCustom("close", title,content, moreComponents);
-    
+    //const modal = this.modalCustom("close", title,content, moreComponents);
+    const modal = ModalCustom.modalCustom(title, content);
     if(moreComponents && summaryByCashier == null){
        modal.modalContent.appendChild(this.addComponentsMoldalCustom());
        const  btnActionModalCustom = document.getElementById("btn-action-modal-custom");
@@ -473,8 +455,8 @@ const view = {
       const  btnActionModalCustom = document.getElementById("btn-action-modal-custom");
        btnActionModalCustom.addEventListener("click", function(){
         const inputValueModal = document.getElementById("input-value-initial");
-        const amounthReportedAtClosed = inputValueModal.value;
-        controller.closeCashier(amounthReportedAtClosed);
+        //const amounthReportedAtClosed = inputValueModal.value;
+        controller.closeCashier();
       })
     }
     
@@ -610,14 +592,22 @@ const view = {
 }
 const controller = { 
    
-     componentEntry: function(){
+     componentEntry: async function(){
+         if(!UtilsStorage.userLogged()){
+            handleRoute("/login");
+         }
          view.init();
-         console.log(cashier);
-         this.findItensSaleController("", cashier.idCashier);
+         cashier = await this.verifyCashier(user.idEmployee);
+         NavbarUtils.fillButtonOpenCloseCashier("open"); 
+         if(cashier != null){
+          NavbarUtils.fillButtonOpenCloseCashier("close"); 
+          this.findItensSaleController("", cashier.idCashier);
+         }
      },
       verifyCashier: async function(idEmployee){
         try{
           const cashierReturned = await controllerCashier.verifyCashierOpen(idEmployee);
+          NavbarUtils.fillInformationCashier(cashierReturned);
           return cashierReturned;
         }catch(error){
           throw error;
@@ -637,11 +627,12 @@ const controller = {
           throw error;
         }
       },
-      closeCashier: async function(finalValue){
+      closeCashier: async function(){
         try{
-          cashier = await model.fetchCloseCashier(cashier.idCashier, finalValue);
+          cashier = await model.fetchCloseCashier(cashier.idCashier);
           if(cashier !== null){
-              view.modalCustom("close", "", "", false);
+              sessionStorage.removeItem("cashier");
+              NavbarUtils.fillButtonOpenCloseCashier("open");
               location.reload();
           }else{
               view.modalCustom("open", "Atenção", "Não foi possível fechar o caixa corretamente. Tente novamente", true);
@@ -673,10 +664,10 @@ const controller = {
       findItensSaleController: async function(idSale, idCashier){
         try{
           const items = await model.fetchItensSale(idSale, idCashier);
-          quantityItensInSale = items.length;
+          //quantityItensInSale = items.length;
           if(items.length >= 1){
             idSaleReal = items[0].idSale.idSale;
-            sale = items[0].idSale;
+            //sale = items[0].idSale;
             view.renderTable(items);
             total = Number(items.reduce((sum, item) => sum + item.amount, 0)).toFixed(2);
             view.renderAmount(total);
@@ -706,8 +697,8 @@ const controller = {
 
 let total;
 let idSaleReal = null;
-let user = null;
-let cashier = null;
+let user = UtilsStorage.getUser();
+let cashier = UtilsStorage.getCashier();
 
 controller.componentEntry();
 

@@ -7,7 +7,7 @@
             <!--Import materialize.css-->
         <!-- Compiled and minified CSS -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
-        <link rel="stylesheet" href="/frontend/src/assets/css/style.css">
+        <link rel="stylesheet" href="../../assets/css/style.css">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>CL SYSTEM</title>        
     </head>
@@ -79,16 +79,16 @@
             </div>
             <div class="row">
                 <div class="col l3 right">
-                    <a class="waves-effect waves-light green btn right modal-trigger" id="btn-payment" href="#modal">Pagamento (f2)</a>
+                    <a class="waves-effect waves-light green btn right btn modal-trigger" id="btn-payment" data-target="modal-payment">Pagamento (f2)</a>
                 </div>
                 <div class="col l3 right">
-                    <a class="waves-effect waves-light red btn right" id="btn-cancel">Cancelamento (f12)</a>
+                    <button class="waves-effect waves-light red btn right" id="btn-cancel">Cancelamento (f12)</button>
                 </div>
             </div>
         </div>       
       </div>
 
-      <div id="modal" class="modal">
+      <div id="modal-payment" class="modal">
         <div class="modal-content">
           <h4>Fechar Compra</h4>
           <!-- Dropdown Trigger -->
@@ -134,33 +134,20 @@
         </div>
       </div>
 
-  <!-- Modal Structure -->
-  <div id="modal-select-user" class="modal">
-    <div class="modal-content">
-      <h4>Usuário</h4>
-      <!-- input entry product -->
-      <div class="input-field">
-        <input value="" id="input-user" type="text" class="validate">
-        <label class="active" for="input-user">CPF</label>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <a href="#!" class="waves-effect waves-green btn-flat" id="btn-enter">ENTRAR</a>
-    </div>
-  </div>
 <!-- Modal Structure -->
   <div id="modal-custom" class="modal">
     <div class="modal-content">
       
     </div>
     <div class="modal-footer">
-      <a href="#!" class="waves-effect waves-green btn-flat" id="btn-modal-custom">Ok</a>
+        <button class="waves-effect waves-green btn-flat" data-target="modal-custom" class="btn modal-trigger" id="btn-modal-custom">Ok</button>
+      <!-- <a href="#!" class="waves-effect waves-green btn-flat" id="btn-modal-custom">Ok</a> -->
     </div>
   </div>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
-    <script type="module" src="/frontend/src/assets/js/commonComponents/navbarCustom.js"></script>
-    <script type="module" src="/frontend/src/assets/js/sale.js"></script>
-
+    <script type="module" src="../../assets/js/commonComponents/navbarCustom.js"></script>
+    <script type="module" src="../../assets/js/sale.js"></script>
+    <script type="module" src="../../../routes.js"></script>
 </body>
 </html>
