@@ -7,7 +7,7 @@
      <!--Import materialize.css-->
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
-    <script type="module" src="/frontend/src/assets/js/employee.js"></script>
+    <script type="module" src="../../assets/js/employee.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CL SYSTEM</title>
 </head>
@@ -35,7 +35,7 @@
                             <th>Nome</th>
                             <th>Documento</th>
                             <th>Data Inicial</th>
-                            <th>Data Final</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
           
@@ -70,10 +70,6 @@
                         <input id="initial-date" type="date" class="validate">
                         <label for="initial-date">Data Inicial</label>
                     </div>
-                    <div class="col l3">
-                        <input type="date" id="final-date" class="validate">
-                        <label for="final-date">Data Final</label>
-                    </div>
                 <!-- </div> -->
                 <!-- <div class="row"> -->
                     <button class="btn-large waves-effect waves-light col l2" type="submit" name="action">Salvar
@@ -96,7 +92,8 @@
   </div>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
-    <script type="module" src="/frontend/src/assets/js/commonComponents/navbarCustom.js"></script>
-  
+    <script type="module" src="../../assets/js/commonComponents/navbarCustom.js"></script>
+    <script type="module" src="../../../routes.js"></script>
+
 </body>
 </html>
