@@ -1,7 +1,14 @@
 package br.com.clsystem.CLSystem.model.entities.projection;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public interface EmployeeProjection {
     Long getIdEmployee();
     String getNameEmployee();
     String getdocument();
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    Date getInitialDate();
 }

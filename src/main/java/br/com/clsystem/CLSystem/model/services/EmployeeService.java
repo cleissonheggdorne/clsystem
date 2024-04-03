@@ -44,7 +44,7 @@ public class EmployeeService {
 		}
 	}
 	
-	public List<EmployeeRecord> findAll(){
+	public List<Optional<EmployeeProjection>> findAll(){
 		try {
 			List<EmployeeRecord> listEmployeeRecord = new ArrayList<>(); 
 			List<Employee> listEmployee = employeeRepository.findAll();
@@ -56,7 +56,7 @@ public class EmployeeService {
 								listEmployeeRecord.add(employeeRecord);
 								
 							});
-			return listEmployeeRecord;
+			return employeeRepository.findByIdEmployeeIsNotNull();
 		}catch(Exception e) {
 			throw new DataBaseException("", e);
 		}
