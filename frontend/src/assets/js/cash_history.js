@@ -1,5 +1,5 @@
 import { controller as controllerCashier} from './cashier.js';
-import ModalCustom from './Utils/UtilsModal.js';
+import UtilsModal from './Utils/UtilsModal.js';
 import UtilsStorage from './Utils/UtilsStorage.js';
 import {handleRoute} from '../../../routes.js';
 
@@ -23,6 +23,14 @@ const model = {
 }
 
 const view = {
+    eventsSale: function(){
+
+      // const btnModalCustom = document.getElementById("btn-modal-custom");
+      // //UtilsModal.initComponent();
+      // btnModalCustom.addEventListener("click", function(){
+      //   $('.modal').modal('close');
+      // });
+    },
     renderTable: function(cashiers) {
         const table = document.getElementById("table-cashier");
         const tbody = table.querySelector("tbody");
@@ -49,7 +57,7 @@ const view = {
           
           btnDetail.appendChild(icon);
           //btnDetail.addEventListener('click', this.handleViewDetailButtonClick);
-          icon.addEventListener('click', this.handleViewDetailButtonClick);
+          btnDetail.addEventListener('click', this.handleViewDetailButtonClick);
           
           cellId.textContent = cashier.idCashier;
           cellCodeEmployee.textContent = cashier.employee.idEmployee;
@@ -84,22 +92,22 @@ const view = {
       //REUTILIZAR
       modalOpenCloseCashier: function(openClose, title, content, moreComponents, summaryByCashier){
         //const modal = this.modalCustom("close", title,content, moreComponents);
-        const modal = ModalCustom.modalCustom(title, content);
+        const modal = UtilsModal.modalCustom(title, content);
         if(moreComponents && summaryByCashier == null){
-           modal.modalContent.appendChild(this.addComponentsMoldalCustom());
+           modal.modalContent.appendChild(UtilsModal.addComponentsMoldalCustom());//.addComponentsMoldalCustom());
            const  btnActionModalCustom = document.getElementById("btn-action-modal-custom");
            btnActionModalCustom.addEventListener("click", function(){
             const inputValueModal = document.getElementById("input-value-initial");
             controller.openCashier(inputValueModal.value);
           })
         }else{
-            this.addComponentsForCloseCashier(modal,  summaryByCashier)
-          const  btnActionModalCustom = document.getElementById("btn-action-modal-custom");
-           btnActionModalCustom.addEventListener("click", function(){
-            const inputValueModal = document.getElementById("input-value-initial");
-            //const amounthReportedAtClosed = inputValueModal.value;
-            controller.closeCashier();
-          })
+           this.addComponentsForCloseCashier(modal,  summaryByCashier)
+           //const  btnActionModalCustom = document.getElementById("btn-action-modal-custom");
+          //  btnActionModalCustom.addEventListener("click", function(){
+          //  const inputValueModal = document.getElementById("input-value-initial");
+          //   //const amounthReportedAtClosed = inputValueModal.value;
+          //   controller.closeCashier();
+          // })
         }
         
         $('#modal-custom').modal(openClose);
@@ -107,7 +115,7 @@ const view = {
       //REUTILIZAR
       addComponentsForOpenCashier: function(){
     
-        const divInputLabel = this.createInputNumber();
+        const divInputLabel = UtilsModal.createInputNumber("Valor de Entrada")//this.createInputNumber();
     
         //Alteração de botão padrão do modal custom
         const btnOkModalCustom = document.getElementById("btn-modal-custom")
@@ -115,7 +123,7 @@ const view = {
         const footerModalCustom = btnOkModalCustom.parentElement;
         //Adição de botão de ação
         if(!document.getElementById("btn-action-modal-custom")){
-          const btnActionModalCustom = this.createButtonWithAction();
+          const btnActionModalCustom = UtilsModal.createButtonWithAction("Confirmar");//this.createButtonWithAction();
           btnActionModalCustom.addEventListener("click", function(){
             controller.openCashier(divInputLabel.input.value);
           })
@@ -131,7 +139,7 @@ const view = {
         modal.paragraph.textContent = "Movimentação Registrada: ";
     
         modal.modalContent.appendChild(this.constroiTabela(summaryByCashier))
-        this.addComponentsMoldalCustom();
+        //UtilsModal.addComponentsMoldalCustom();
       },
       //Reutilizar
       constroiTabela: function(dados){
@@ -158,54 +166,56 @@ const view = {
         return tabela;
     },
     //Reutilizar
-    addComponentsMoldalCustom: function(){
-        const divInputLabel = this.createInputNumber();
+    // addComponentsMoldalCustom: function(){
+    //     const divInputLabel = UtilsModal.createInputNumber("Valor de Entrada");//this.createInputNumber();
     
-        //Alteração de botão padrão do modal custom
-        const btnOkModalCustom = document.getElementById("btn-modal-custom")
-        btnOkModalCustom.textContent = "Cancelar";
-        const footerModalCustom = btnOkModalCustom.parentElement;
-        //Adição de botão de ação
-        if(!document.getElementById("btn-action-modal-custom")){
-          const btnActionModalCustom = this.createButtonWithAction();
-          footerModalCustom.appendChild(btnActionModalCustom);
-        }
-        divInputLabel.div.appendChild(divInputLabel.input);
-        divInputLabel.div.appendChild(divInputLabel.label);
-        return divInputLabel.div;
-      },
+    //     //Alteração de botão padrão do modal custom
+    //     const btnOkModalCustom = document.getElementById("btn-modal-custom")
+    //     btnOkModalCustom.textContent = "Cancelar";
+    //     const footerModalCustom = btnOkModalCustom.parentElement;
+    //     //Adição de botão de ação
+    //     if(!document.getElementById("btn-action-modal-custom")){
+    //       const btnActionModalCustom = UtilsModal.createButtonWithAction("Confirmar");//this.createButtonWithAction();
+    //       footerModalCustom.appendChild(btnActionModalCustom);
+    //     }
+    //     divInputLabel.div.appendChild(divInputLabel.input);
+    //     divInputLabel.div.appendChild(divInputLabel.label);
+    //     return divInputLabel.div;
+    //   },
       //Reutilizar
-      createInputNumber: function(){
-        const divInputFild = document.createElement("div");
-        divInputFild.setAttribute("class", "input-field col s6");
-        const input  = document.createElement('input')
-        input.setAttribute("type", "number");;
-        input.setAttribute("min", "0");
-        input.setAttribute("class", "validate");
-        input.setAttribute("id", "input-value-initial")
-        const label = document.createElement('label');
-        label.setAttribute("class", "active");
-        label.setAttribute("for", "input-value-initial");
-        label.textContent = "Valor de Entrada";
-        return {"div": divInputFild, 
-                "input": input,
-                "label": label
-                };
-      },
+      // createInputNumber: function(){
+      //   const divInputFild = document.createElement("div");
+      //   divInputFild.setAttribute("class", "input-field col s6");
+      //   const input  = document.createElement('input')
+      //   input.setAttribute("type", "number");;
+      //   input.setAttribute("min", "0");
+      //   input.setAttribute("class", "validate");
+      //   input.setAttribute("id", "input-value-initial")
+      //   const label = document.createElement('label');
+      //   label.setAttribute("class", "active");
+      //   label.setAttribute("for", "input-value-initial");
+      //   label.textContent = "Valor de Entrada";
+      //   return {"div": divInputFild, 
+      //           "input": input,
+      //           "label": label
+      //           };
+      // },
       //Reutilizar
-      createButtonWithAction: function(){
-        const btnActionModalCustom = document.createElement("a");
-        btnActionModalCustom.setAttribute("href", "#!");
-        btnActionModalCustom.setAttribute("class", "waves-effect waves-green btn");
-        btnActionModalCustom.setAttribute("id", "btn-action-modal-custom");
-        btnActionModalCustom.textContent = "Confirmar";
+      // createButtonWithAction: function(){
+      //   const btnActionModalCustom = document.createElement("a");
+      //   btnActionModalCustom.setAttribute("href", "#!");
+      //   btnActionModalCustom.setAttribute("class", "waves-effect waves-green btn");
+      //   btnActionModalCustom.setAttribute("id", "btn-action-modal-custom");
+      //   btnActionModalCustom.textContent = "Confirmar";
         
-        return btnActionModalCustom;
-      },
+      //   return btnActionModalCustom;
+      // },
 }
 
 const controller = {
     init: function() {
+      UtilsModal.initComponent();
+      view.eventsSale();
       if(!UtilsStorage.userLogged()){
         handleRoute("/login");
       }

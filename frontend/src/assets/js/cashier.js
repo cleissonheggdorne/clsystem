@@ -1,31 +1,25 @@
 import UtilsStorage from './Utils/UtilsStorage.js';
-import {handleRoute} from '../../../routes.js';
+import UtilsModal from './Utils/UtilsModal.js';
+
+//import {handleRoute} from '../../../routes.js';
 
 const model = {
-    fetchOpenCashier: function(idCashier, initialValue) {
-        return fetch('http://localhost:8080/api/cashier/open', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            initialValue: initialValue,
-            idCashier: idCashier
-          })  
-          })
-          .then(response => {
-            if (response.ok) {
-              return response.json();
-            } else {
-              throw new Error("Erro ao abrir caixa. Contate o suporte técnico.");
-            }
-          })
-          .then(data => {
-            return data;
-          })
-          .catch(error => {
-              Materialize.toast(error, 1000)
-          });
+    fetchOpenCashier: async function(idEmployee, initialValue) {
+      const response = await fetch('http://localhost:8080/api/cashier/open', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          initialValue: initialValue,
+          idEmployee: idEmployee
+        })  
+        });
+        if (response.ok && response.text !== "") {
+          return response.json();
+        } else {
+            throw new Error("Erro ao abrir caixa. Contate o suporte técnico.");
+        }
       },
       fetchCloseCashier: function(idCashier) {
         return fetch('http://localhost:8080/api/cashier/close', {
@@ -69,6 +63,62 @@ const model = {
     },
 }
 
+const view= {
+    modalOpenCloseCashier: function(openClose, title, content, moreComponents, summaryByCashier){
+        //const modal = this.modalCustom("close", title,content, moreComponents);
+        UtilsModal.addButonActionInModalCustom();
+        const modal = UtilsModal.modalCustom(title, content);
+        if(moreComponents && summaryByCashier == null){
+          modal.modalContent.appendChild(UtilsModal.addComponentsMoldalCustom());//this.addComponentsMoldalCustom());
+          const  btnActionModalCustom = document.getElementById("btn-action-modal-custom");
+          btnActionModalCustom.addEventListener("click", function(){
+            const inputValueModal = document.getElementById("input-value-initial");
+            controller.openCashier(user.idEmployee, inputValueModal.value);
+          })
+        }else{
+            this.addComponentsForCloseCashier(modal,  summaryByCashier)
+            const  btnActionModalCustom = document.getElementById("btn-action-modal-custom");
+            btnActionModalCustom.addEventListener("click", function(){
+              const inputValueModal = document.getElementById("input-value-initial");
+            //const amounthReportedAtClosed = inputValueModal.value;
+              controller.closeCashier();
+          })
+        }
+        
+        $('#modal-custom').modal(openClose);
+      },
+      addComponentsForCloseCashier:  function(modal, summaryByCashier){
+        modal.h4title.textContent = "Fechamento de Caixa";
+        modal.paragraph.textContent = "Movimentação Registrada: ";
+    
+        modal.modalContent.appendChild(this.buildTableForResume(summaryByCashier))
+        UtilsModal.addComponentsMoldalCustom();
+      },
+      buildTableForResume: function(dados){
+    
+        const tabela = document.createElement('table');
+        tabela.className = "responsive-table striped";
+  
+        dados.forEach(item => {
+          const tipo = Object.keys(item)[0]; // Obtém o tipo (Quantidade, Valor, Resumo)
+          const valores = Object.values(item)[0][0]; // Obtém os valores
+          
+          const linha = tabela.insertRow(); 
+          
+          // Adiciona o tipo como o cabeçalho da linha
+          const cabecalho = linha.insertCell();
+          cabecalho.textContent = tipo;
+          
+          // Adiciona os valores como células na linha
+          for (const chave in valores) {
+            const celula = linha.insertCell();
+            celula.textContent = `${chave}: ${valores[chave]}`;
+          }
+        });
+        return tabela;
+    },
+}
+
 const controller= {
     init: function(){
 
@@ -76,6 +126,7 @@ const controller= {
     verifyCashierOpen: async function(idEmployee){
        try{
         const cashier = await model.fetchFindOpenCashier(idEmployee);
+        UtilsStorage.setCashier(cashier);
         return cashier;
        }catch(error){
         throw error;
@@ -87,7 +138,28 @@ const controller= {
        }catch(error){
         throw error;
        }
-    }
+    },
+    openCashier: async function(idEmployee, initialValue){
+      try{
+        const cashier = await model.fetchOpenCashier(idEmployee, initialValue);
+        UtilsStorage.setCashier(cashier);
+        // if(cashier !== null){
+        //     view.modalCustom("close", "", "", false);
+        // }else{
+        //     view.modalCustom("open", "Atenção", "Não há um caixa aberto para esse usuário. Uma venda só poderá ser feita quando houver a abertura de um.", true);
+        // }
+      }catch(error){
+        throw error;
+      }
+    },
+    modalOpenCloseCashier: async function(openClose, title, content, moreComponents, summaryByCashier){
+      return await view.modalOpenCloseCashier(openClose, title, content, moreComponents, summaryByCashier);
+    },
+    addComponentsForCloseCashier:  function(modal, summaryByCashier){
+      return view.addComponentsForCloseCashier(modal, summaryByCashier);
+    },
 }
+
+//controller.verifyCashierOpen(UtilsStorage.getUser());
 
 export { controller };

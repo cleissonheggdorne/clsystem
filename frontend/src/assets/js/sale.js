@@ -1,8 +1,8 @@
 import { controller as controllerCashier} from './cashier.js';
 import UtilsStorage from './Utils/UtilsStorage.js';
-import ModalCustom from './Utils/UtilsModal.js';
+import UtilsModal from './Utils/UtilsModal.js';
 
-import { controller as controllerLogin} from './login.js';
+//import { controller as controllerLogin} from './login.js';
 import NavbarUtils from './commonComponents/navbarCustom.js';
 import {handleRoute} from '../../../routes.js';
 
@@ -136,21 +136,20 @@ const model = {
 }
 const view = {
   init: function(){
-    NavbarUtils.fillInformationLoggin(user);
     //Inicializa componente de modal
-    ModalCustom.initComponent();
+    UtilsModal.initComponent();
     this.eventsSale();
    },
   eventsSale: function(){
 
-    const btnModalCustom = document.getElementById("btn-modal-custom");
+    // const btnModalCustom = document.getElementById("btn-modal-custom");
     
-    btnModalCustom.addEventListener("click", function(){
-      if(btnModalCustom.textContent.toUpperCase() == "CONFIRMAR"){
-        (cashier !== null)? controller.findItensSaleController("", cashier.idCashier) : null;
-      }
-      view.modalCustom("close");
-    });
+    // btnModalCustom.addEventListener("click", function(){
+    //   if(btnModalCustom.textContent.toUpperCase() == "CONFIRMAR"){
+    //     (cashier !== null)? controller.findItensSaleController("", cashier.idCashier) : null;
+    //   }
+    //   $('.modal').modal('close');
+    // });
 
     const inputSearch = document.getElementById("input-product");
     inputSearch.focus();
@@ -164,22 +163,22 @@ const view = {
       }
     });
 
-    // Abrir/Fechar Caixa
-    const btnOpenClosecashier = document.getElementById("open-close-cashier");
-    btnOpenClosecashier.addEventListener('click', async function(event){
+    // // Abrir/Fechar Caixa
+    // const btnOpenClosecashier = document.getElementById("open-close-cashier");
+    // btnOpenClosecashier.addEventListener('click', async function(event){
        
-     if(btnOpenClosecashier.textContent.includes("Fechar")){
-       let summaryByCashier;
-       try{
-           summaryByCashier = await controllerCashier.resumeByCashier(cashier.idCashier);
-        }catch(error){
-           Materialize.toast(error, 1000);
-       }
-       view.modalOpenCloseCashier("open", "Fechamento de Caixa", "", true, summaryByCashier);
-     }else{
-        view.modalOpenCloseCashier("open", "Abertura de Caixa", "Você está prestes a iniciar um caixa.", true, null);
-     }
-    });
+    //  if(btnOpenClosecashier.textContent.includes("Fechar")){
+    //    let summaryByCashier;
+    //    try{
+    //        summaryByCashier = await controllerCashier.resumeByCashier(cashier.idCashier);
+    //     }catch(error){
+    //        Materialize.toast(error, 1000);
+    //    }
+    //    view.modalOpenCloseCashier("open", "Fechamento de Caixa", "", true, summaryByCashier);
+    //  }else{
+    //     view.modalOpenCloseCashier("open", "Abertura de Caixa", "Você está prestes a iniciar um caixa.", true, null);
+    //  }
+    // });
     
     //Pagamento
     const payment  = document.getElementById("btn-payment");
@@ -249,7 +248,7 @@ const view = {
      btnCancel.addEventListener("click", async function(){
       try{
         view.modalCustom("open","ATENÇÃO","Deseja realmente cancelar esta venda?", true);
-        view.addButonActionInModalCustom();
+        UtilsModal.addButonActionInModalCustom();
         $('#modal-custom').modal("open");
         const  btnActionModalCustom = document.getElementById("btn-action-modal-custom");
         btnActionModalCustom.addEventListener("click", async function(){
@@ -279,12 +278,9 @@ const view = {
         let row = btnEditItemSale.parentNode; // Linha da tabela
         let cells = row.getElementsByTagName('td');
 
-        
         for (let i = 0; i < cells.length -1; i++) {
           if(cells[i].id == "table-itens-quantity"){
             this.transformCellToInput(cells[i]);
-
-
             btnEditItemSale.textContent = 'SALVAR';
             btnEditItemSale.removeEventListener("click", this.handleEditclick);        
             break;
@@ -438,60 +434,33 @@ const view = {
     $('#modal-return-money').val(moneyChange);
   },
   modalCustom: function(openClose, title, content, moreComponents){
-    return ModalCustom.modalCustom(title,content);
+    return UtilsModal.modalCustom(title,content);
   },
-  modalOpenCloseCashier: function(openClose, title, content, moreComponents, summaryByCashier){
-    //const modal = this.modalCustom("close", title,content, moreComponents);
-    const modal = ModalCustom.modalCustom(title, content);
-    if(moreComponents && summaryByCashier == null){
-       modal.modalContent.appendChild(this.addComponentsMoldalCustom());
-       const  btnActionModalCustom = document.getElementById("btn-action-modal-custom");
-       btnActionModalCustom.addEventListener("click", function(){
-        const inputValueModal = document.getElementById("input-value-initial");
-        controller.openCashier(inputValueModal.value);
-      })
-    }else{
-        this.addComponentsForCloseCashier(modal,  summaryByCashier)
-      const  btnActionModalCustom = document.getElementById("btn-action-modal-custom");
-       btnActionModalCustom.addEventListener("click", function(){
-        const inputValueModal = document.getElementById("input-value-initial");
-        //const amounthReportedAtClosed = inputValueModal.value;
-        controller.closeCashier();
-      })
-    }
+  // modalOpenCloseCashier: function(openClose, title, content, moreComponents, summaryByCashier){
+  //   //const modal = this.modalCustom("close", title,content, moreComponents);
+  //   const modal = UtilsModal.modalCustom(title, content);
+  //   if(moreComponents && summaryByCashier == null){
+  //      modal.modalContent.appendChild(UtilsModal.addComponentsMoldalCustom());//this.addComponentsMoldalCustom());
+  //      const  btnActionModalCustom = document.getElementById("btn-action-modal-custom");
+  //      btnActionModalCustom.addEventListener("click", function(){
+  //       const inputValueModal = document.getElementById("input-value-initial");
+  //       controller.openCashier(user.idEmployee, inputValueModal.value);
+  //     })
+  //   }else{
+  //       this.addComponentsForCloseCashier(modal,  summaryByCashier)
+  //     const  btnActionModalCustom = document.getElementById("btn-action-modal-custom");
+  //      btnActionModalCustom.addEventListener("click", function(){
+  //       const inputValueModal = document.getElementById("input-value-initial");
+  //       //const amounthReportedAtClosed = inputValueModal.value;
+  //       controller.closeCashier();
+  //     })
+  //   }
     
-    $('#modal-custom').modal(openClose);
-  },
-  
-  createInputNumber: function(){
-    const divInputFild = document.createElement("div");
-    divInputFild.setAttribute("class", "input-field col s6");
-    const input  = document.createElement('input')
-    input.setAttribute("type", "number");;
-    input.setAttribute("min", "0");
-    input.setAttribute("class", "validate");
-    input.setAttribute("id", "input-value-initial")
-    const label = document.createElement('label');
-    label.setAttribute("class", "active");
-    label.setAttribute("for", "input-value-initial");
-    label.textContent = "Valor de Entrada";
-    return {"div": divInputFild, 
-            "input": input,
-            "label": label
-            };
-  },
-  createButtonWithAction: function(){
-    const btnActionModalCustom = document.createElement("a");
-    btnActionModalCustom.setAttribute("href", "#!");
-    btnActionModalCustom.setAttribute("class", "waves-effect waves-green btn");
-    btnActionModalCustom.setAttribute("id", "btn-action-modal-custom");
-    btnActionModalCustom.textContent = "Confirmar";
-    
-    return btnActionModalCustom;
-  },
+  //   $('#modal-custom').modal(openClose);
+  // },
   addComponentsForOpenCashier: function(){
     
-    const divInputLabel = this.createInputNumber();
+    const divInputLabel = UtilsModal.createInputNumber("Valor Inicial");
 
     //Alteração de botão padrão do modal custom
     const btnOkModalCustom = document.getElementById("btn-modal-custom")
@@ -499,7 +468,7 @@ const view = {
     const footerModalCustom = btnOkModalCustom.parentElement;
     //Adição de botão de ação
     if(!document.getElementById("btn-action-modal-custom")){
-      const btnActionModalCustom = this.createButtonWithAction();
+      const btnActionModalCustom = UtilsModal.createButtonWithAction("Confirmar");//this.createButtonWithAction();
       btnActionModalCustom.addEventListener("click", function(){
         controller.openCashier(divInputLabel.input.value);
       })
@@ -509,82 +478,54 @@ const view = {
     divInputLabel.div.appendChild(divInputLabel.label);
     return divInputLabel.div;
   },
-  addButonActionInModalCustom: function(){
-    //Alteração de botão padrão do modal custom
-    const btnOkModalCustom = document.getElementById("btn-modal-custom")
-    btnOkModalCustom.textContent = "Cancelar";
-    const footerModalCustom = btnOkModalCustom.parentElement;
-    //Adição de botão de ação
-    if(!document.getElementById("btn-action-modal-custom")){
-      const btnActionModalCustom = this.createButtonWithAction();
+  // addButonActionInModalCustom: function(){
+  //   //Alteração de botão padrão do modal custom
+  //   const btnOkModalCustom = document.getElementById("btn-modal-custom")
+  //   btnOkModalCustom.textContent = "Cancelar";
+  //   const footerModalCustom = btnOkModalCustom.parentElement;
+  //   //Adição de botão de ação
+  //   if(!document.getElementById("btn-action-modal-custom")){
+  //     const btnActionModalCustom = UtilsModal.createButtonWithAction("Confirmar");//this.createButtonWithAction();
      
-      footerModalCustom.appendChild(btnActionModalCustom);
-    }
-   
-  },
-  addComponentsMoldalCustom: function(){
-    const divInputLabel = this.createInputNumber();
+  //     footerModalCustom.appendChild(btnActionModalCustom);
+  //   }
+  // },
+  // addComponentsForCloseCashier:  function(modal, summaryByCashier){
+  //   modal.h4title.textContent = "Fechamento de Caixa";
+  //   modal.paragraph.textContent = "Movimentação Registrada: ";
 
-    //Alteração de botão padrão do modal custom
-    const btnOkModalCustom = document.getElementById("btn-modal-custom")
-    btnOkModalCustom.textContent = "Cancelar";
-    const footerModalCustom = btnOkModalCustom.parentElement;
-    //Adição de botão de ação
-    if(!document.getElementById("btn-action-modal-custom")){
-      const btnActionModalCustom = this.createButtonWithAction();
-      footerModalCustom.appendChild(btnActionModalCustom);
-    }
-    divInputLabel.div.appendChild(divInputLabel.input);
-    divInputLabel.div.appendChild(divInputLabel.label);
-    return divInputLabel.div;
-  },
-  addComponentsForCloseCashier:  function(modal, summaryByCashier){
-    modal.h4title.textContent = "Fechamento de Caixa";
-    modal.paragraph.textContent = "Movimentação Registrada: ";
-
-    modal.modalContent.appendChild(this.constroiTabela(summaryByCashier))
-    this.addComponentsMoldalCustom();
-  },
-  constroiTabela: function(dados){
+  //   modal.modalContent.appendChild(this.constroiTabela(summaryByCashier))
+  //   UtilsModal.addComponentsMoldalCustom();
+  // },
+  // constroiTabela: function(dados){
     
-      const tabela = document.createElement('table');
-      tabela.className = "responsive-table striped";
+  //     const tabela = document.createElement('table');
+  //     tabela.className = "responsive-table striped";
 
-      dados.forEach(item => {
-        const tipo = Object.keys(item)[0]; // Obtém o tipo (Quantidade, Valor, Resumo)
-        const valores = Object.values(item)[0][0]; // Obtém os valores
+  //     dados.forEach(item => {
+  //       const tipo = Object.keys(item)[0]; // Obtém o tipo (Quantidade, Valor, Resumo)
+  //       const valores = Object.values(item)[0][0]; // Obtém os valores
         
-        const linha = tabela.insertRow(); 
+  //       const linha = tabela.insertRow(); 
         
-        // Adiciona o tipo como o cabeçalho da linha
-        const cabecalho = linha.insertCell();
-        cabecalho.textContent = tipo;
+  //       // Adiciona o tipo como o cabeçalho da linha
+  //       const cabecalho = linha.insertCell();
+  //       cabecalho.textContent = tipo;
         
-        // Adiciona os valores como células na linha
-        for (const chave in valores) {
-          const celula = linha.insertCell();
-          celula.textContent = `${chave}: ${valores[chave]}`;
-        }
-      });
-      return tabela;
-  },
+  //       // Adiciona os valores como células na linha
+  //       for (const chave in valores) {
+  //         const celula = linha.insertCell();
+  //         celula.textContent = `${chave}: ${valores[chave]}`;
+  //       }
+  //     });
+  //     return tabela;
+  // },
   fillInformationCashier: function(){
     const navInformation = document.getElementById("nav");
     const liCashier = document.createElement("li");
     liCashier.innerHTML = "";
     liCashier.textContent = (cashier != null)? " Caixa: " + cashier.status + " Hora Abertura: "+cashier.dateHourOpenFormatted: "Não Há Registro de Caixa em Aberto";
     navInformation.appendChild(liCashier); 
-  },
-  fillButtonOpenCloseCashier: function(openClose){
-    const btnSpanOpenCloseCashier = document.getElementById("open-close-cashier");
-    btnSpanOpenCloseCashier.classList.add("white-text");
-    if(openClose === "open"){
-      btnSpanOpenCloseCashier.textContent = "Abrir Caixa";
-      btnSpanOpenCloseCashier.classList.add("light-green");
-    }else{
-      btnSpanOpenCloseCashier.textContent = "Fechar Caixa";
-      btnSpanOpenCloseCashier.classList.add("light-gray");
-    } 
   },
   openModalPayment: function(){
     
@@ -598,41 +539,35 @@ const controller = {
          }
          view.init();
          cashier = await this.verifyCashier(user.idEmployee);
-         NavbarUtils.fillButtonOpenCloseCashier("open"); 
          if(cashier != null){
-          NavbarUtils.fillButtonOpenCloseCashier("close"); 
           this.findItensSaleController("", cashier.idCashier);
          }
      },
       verifyCashier: async function(idEmployee){
         try{
           const cashierReturned = await controllerCashier.verifyCashierOpen(idEmployee);
-          NavbarUtils.fillInformationCashier(cashierReturned);
           return cashierReturned;
         }catch(error){
           throw error;
         }
       },
-      openCashier: async function(initialValue){
-        try{
-          cashier = await model.fetchOpenCashier(user.idEmployee, initialValue);
+       openCashier: async function(idEmployee, initialValue){
+         try{
+          cashier = await controllerCashier.openCashier(idEmployee, initialValue);
           if(cashier !== null){
               view.modalCustom("close", "", "", false);
-              view.fillInformationCashier();
-              view.fillButtonOpenCloseCashier("close");
           }else{
               view.modalCustom("open", "Atenção", "Não há um caixa aberto para esse usuário. Uma venda só poderá ser feita quando houver a abertura de um.", true);
           }
-        }catch(error){
-          throw error;
-        }
-      },
+         }catch(error){
+           throw error;
+         }
+       },
       closeCashier: async function(){
         try{
           cashier = await model.fetchCloseCashier(cashier.idCashier);
           if(cashier !== null){
               sessionStorage.removeItem("cashier");
-              NavbarUtils.fillButtonOpenCloseCashier("open");
               location.reload();
           }else{
               view.modalCustom("open", "Atenção", "Não foi possível fechar o caixa corretamente. Tente novamente", true);
@@ -664,10 +599,8 @@ const controller = {
       findItensSaleController: async function(idSale, idCashier){
         try{
           const items = await model.fetchItensSale(idSale, idCashier);
-          //quantityItensInSale = items.length;
           if(items.length >= 1){
             idSaleReal = items[0].idSale.idSale;
-            //sale = items[0].idSale;
             view.renderTable(items);
             total = Number(items.reduce((sum, item) => sum + item.amount, 0)).toFixed(2);
             view.renderAmount(total);

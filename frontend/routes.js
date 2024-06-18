@@ -1,8 +1,8 @@
 import UtilsStorage from './src/assets/js/Utils/UtilsStorage.js';
 import {controller as controllerLogin } from './src/assets/js/login.js';
-
+import{controller as controllerCashier} from './src/assets/js/cashier.js';
 async function handleRoute(route) {
-    const ROOT_URL = 'http://127.0.0.1:5501';
+    const ROOT_URL = 'http://127.0.0.1:5501/frontend';
 
     switch (route) {
         case '/index':
@@ -28,6 +28,7 @@ async function handleRoute(route) {
             break;
         case '/entrar':
             await controllerLogin.entry();
+            await controllerCashier.verifyCashierOpen(UtilsStorage.getUser().idEmployee);
             (UtilsStorage.userLogged())?
              window.location.href = `${ROOT_URL}/src/view/pages/sale.html`:
              Materialize.toast("Necessário login para acessar esta funcionalidade", 1000);
@@ -38,7 +39,9 @@ async function handleRoute(route) {
                 Materialize.toast("Necessário login para acessar esta funcionalidade", 1000);
             break;
         default:
-            //Definir página de erros
+            if(route != '#!'){
+                //window.location.href = `${ROOT_URL}/src/view/pages/error.html`;
+            }
     }
 }
 
@@ -50,7 +53,15 @@ function initRouter() {
         handleRoute(path);
       });
     });
+    // evento de clique nos botões de avançar e retroceder no navegador e mudança de url manual
+    window.addEventListener('popstate', () => {
+        handleRoute(window.location.pathname);
+    });
+
+    // evento inicial
+    handleRoute(window.location.pathname);
   }
+  
 initRouter();
 
 export{

@@ -1,3 +1,5 @@
+//import { controller as controllerCashier} from './cashier.js';
+
 export default class StorageUtils {
     static setUser(user) {
       sessionStorage.setItem("user", JSON.stringify(user));
@@ -12,6 +14,7 @@ export default class StorageUtils {
     }
     
     static getCashier() {
+        //controllerCashier.verifyCashierOpen()
         return JSON.parse(sessionStorage.getItem("cashier"));
     }
 
@@ -21,10 +24,10 @@ export default class StorageUtils {
       return user != "";
     }
     static openedCashier(){
-      const cashier = StorageUtils.existsPropertyStorage() ? 
+      const cashier = StorageUtils.existsPropertyStorage("cashier") ? 
                   JSON.parse(sessionStorage.getItem("cashier"))
                     : "";
-      return (cashier != "");
+      return (cashier != null && cashier != "");
     }
     static existsPropertyStorage(property){
       return sessionStorage.getItem(property) != undefined;
