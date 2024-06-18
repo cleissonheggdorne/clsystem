@@ -12,5 +12,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 	List<Employee> findByNameEmployeeContainingIgnoreCaseOrDocumentContainingIgnoreCase(String name, String document);
 	Optional<EmployeeProjection> findByIdEmployeeOrDocument(Long id, String document);
 	List<Optional<EmployeeProjection>> findByIdEmployeeIsNotNull();
-
+	Optional<Employee> findByDocument(String document);
 }

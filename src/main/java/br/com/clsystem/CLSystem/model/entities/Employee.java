@@ -45,4 +45,7 @@ public class Employee implements Serializable {
 	@Column(name="initial_date")
 	@Temporal(TemporalType.DATE)
 	private Date initialDate;
+
+	@Column(name="password")
+	private String password; 
 }

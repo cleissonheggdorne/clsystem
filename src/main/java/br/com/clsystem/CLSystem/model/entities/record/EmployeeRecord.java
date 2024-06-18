@@ -14,6 +14,8 @@ public record EmployeeRecord(
 		String nameEmployee,
 		@NotBlank
 		String document,
-		Date initialDate
+		Date initialDate,
+		@NotBlank(message = "Senha deve ser inserida!")
+		String password
 		) {
 }

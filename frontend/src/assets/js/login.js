@@ -1,9 +1,5 @@
 import  NavbarUtils  from '../js/commonComponents/navbarCustom.js';
 import UtilsStorage from './Utils/UtilsStorage.js';
-import ModalCustom from './Utils/UtilsModal.js';
-import {handleRoute} from '../../../routes.js';
-
-import { controller as controllerCashier} from './cashier.js';
 
 const model = {
     fetchEntry: async function(idOrDocument) {
@@ -45,14 +41,14 @@ const controller = {
         user = UtilsStorage.getUser();
         (user === null)? view.modalUser("open"): this.entry(user.idEmployee);
     },
-    verifyCashier: async function(idEmployee){
-        try{
-            const cashierReturned = await controllerCashier.verifyCashierOpen(idEmployee);
-            return cashierReturned;
-        }catch(error){
-            throw error;
-        }
-    },
+    // verifyCashier: async function(idEmployee){
+    //     try{
+    //         const cashierReturned = await controllerCashier.verifyCashierOpen(idEmployee);
+    //         return cashierReturned;
+    //     }catch(error){
+    //         throw error;
+    //     }
+    // },
 }
 let user= null;
 export { controller};
