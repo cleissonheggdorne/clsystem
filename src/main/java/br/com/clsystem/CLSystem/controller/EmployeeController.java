@@ -86,5 +86,14 @@ public class EmployeeController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
 	}
+
+	@PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestParam String document, @RequestParam String password) {
+        if (employeeService.validateUser(document, password)) {
+            return "Login successful!";
+        } else {
+            return "Invalid username or password.";
+        }
+    }
 	
 }

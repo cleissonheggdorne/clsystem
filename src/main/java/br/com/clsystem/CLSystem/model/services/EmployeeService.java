@@ -1,12 +1,14 @@
 package br.com.clsystem.CLSystem.model.services;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
@@ -19,14 +21,18 @@ import br.com.clsystem.CLSystem.model.repositories.EmployeeRepository;
 public class EmployeeService {
 
 	final EmployeeRepository employeeRepository;
+	final PasswordEncoder passwordEncoder;
 	
-	public EmployeeService(EmployeeRepository employeeRepository) {
+	public EmployeeService(EmployeeRepository employeeRepository,
+						PasswordEncoder passwordEncoder) {
 		this.employeeRepository = employeeRepository;
+		this.passwordEncoder = passwordEncoder;
 	}
 	
 	public ResponseEntity<?> save(EmployeeRecord employeeRecord){
 		Employee employee = new Employee();
 		BeanUtils.copyProperties(employeeRecord, employee);
+		employee.setPassword(passwordEncoder.encode(employee.getPassword()));
 		try {
 		      return ResponseEntity.ok(employeeRepository.saveAndFlush(employee));
 		} catch (DataIntegrityViolationException dive) {		
@@ -116,5 +122,33 @@ public class EmployeeService {
 		}
 	}
 	
+	public EmployeeProjection validateUser(String document, String rawPassword) {
+        Optional<Employee> employee = employeeRepository.findByDocument(document);
+        if (!employee.isPresent()) {
+            return null;
+        }
+        Boolean logged = passwordEncoder.matches(rawPassword, employee.get().getPassword());
+		if(logged){
+			EmployeeProjection employe = new EmployeeProjection() {
+				@Override
+				public Long getIdEmployee() {
+					return employee.get().getIdEmployee();
+				}
+				@Override
+				public Date getInitialDate() {
+					return employee.get().getInitialDate();
+				}
+				@Override
+				public String getNameEmployee() {
+					return employee.get().getNameEmployee();
+				}
+				@Override
+				public String getdocument() {
+					return employee.get().getDocument();
+				}
+			};
+			return employe;
+		}
+	}
 
 }
