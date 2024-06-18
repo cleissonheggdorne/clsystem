@@ -17,7 +17,7 @@
         <navbar-custom></navbar-custom>
         
         <!-- Conteúdo -->
-        <div class="col s10"> 
+        <div class="col s12 m8 l9">  
             <div class="card-panel teal">
                 <span class="white-text">Cadastro de Funcionários</span>
                 <a href="#modal1" id="add-employee" class="waves-effect right btn modal-trigger">Adicionar</a>
@@ -80,16 +80,17 @@
       </form>
     </div>
   </div>
-   <!-- Modal Structure For Delete Product -->
-   <div id="modal-delete" class="modal">
-    <div class="modal-content">
-      <h4>ATENÇÃO</h4>
-      <p>Deseja realmente excluir?</p>
+    <!-- Modal Structure For Delete Product -->
+    <div id="modal-delete" class="modal">
+        <div class="modal-content">
+        <h4>ATENÇÃO</h4>
+        <p>Deseja realmente excluir?</p>
+        </div>
+        <div class="modal-footer">
+        <a href="#!" id="modal-delete-btn-yes" class="modal-close waves-effect waves-green btn-flat">Sim</a>
+        </div>
     </div>
-    <div class="modal-footer">
-      <a href="#!" id="modal-delete-btn-yes" class="modal-close waves-effect waves-green btn-flat">Sim</a>
-    </div>
-  </div>
+    <modal-custom></modal-custom>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
     <script type="module" src="../../assets/js/commonComponents/navbarCustom.js"></script>
