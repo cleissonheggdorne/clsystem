@@ -1,7 +1,6 @@
 package br.com.clsystem.CLSystem.model.services;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,7 +57,8 @@ public class EmployeeService {
 						        EmployeeRecord employeeRecord = new EmployeeRecord(employee.getIdEmployee(),
 						        		                                        employee.getNameEmployee(),
 						        		                                        employee.getDocument(),
-						        		                                        employee.getInitialDate());
+						        		                                        employee.getInitialDate(),
+																				employee.getPassword());
 								listEmployeeRecord.add(employeeRecord);
 								
 							});
@@ -102,7 +102,8 @@ public class EmployeeService {
 						        EmployeeRecord employeeRecord = new EmployeeRecord(employee.getIdEmployee(),
 						        													employee.getNameEmployee(),
 						        													employee.getDocument(),
-						        		                                        employee.getInitialDate());
+						        		                                        employee.getInitialDate(),
+																				employee.getPassword());
 						        listEmployeeRecord.add(employeeRecord);
 								
 							});
@@ -119,35 +120,6 @@ public class EmployeeService {
 		      return ResponseEntity.ok().build();
 		} catch (DataIntegrityViolationException dive) {		
 			throw new DataBaseException("", dive);
-		}
-	}
-	
-	public EmployeeProjection validateUser(String document, String rawPassword) {
-        Optional<Employee> employee = employeeRepository.findByDocument(document);
-        if (!employee.isPresent()) {
-            return null;
-        }
-        Boolean logged = passwordEncoder.matches(rawPassword, employee.get().getPassword());
-		if(logged){
-			EmployeeProjection employe = new EmployeeProjection() {
-				@Override
-				public Long getIdEmployee() {
-					return employee.get().getIdEmployee();
-				}
-				@Override
-				public Date getInitialDate() {
-					return employee.get().getInitialDate();
-				}
-				@Override
-				public String getNameEmployee() {
-					return employee.get().getNameEmployee();
-				}
-				@Override
-				public String getdocument() {
-					return employee.get().getDocument();
-				}
-			};
-			return employe;
 		}
 	}
 

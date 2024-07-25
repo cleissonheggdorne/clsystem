@@ -20,18 +20,19 @@ import br.com.clsystem.CLSystem.model.entities.record.EmployeeRecord;
 import br.com.clsystem.CLSystem.model.services.EmployeeService;
 import jakarta.validation.Valid;
 
+
 @RestController
 @CrossOrigin(origins="*", maxAge = 3600) //Permitir ser acessado de Qualquer fonte
-@RequestMapping("/api/employee")
+@RequestMapping("/api")
 public class EmployeeController {
 
 	final EmployeeService employeeService;
-	
+
 	public EmployeeController(EmployeeService employeeService) {
 		this.employeeService = employeeService;
 	}
 	
-	@PostMapping("/save")
+	@PostMapping("/employee/save")
 	public ResponseEntity<?> saveController(@Valid @RequestBody EmployeeRecord employeeRecord, BindingResult br){
 		try {
 			return employeeService.save(employeeRecord);
@@ -40,7 +41,7 @@ public class EmployeeController {
 		}
 	}
 	
-	@PutMapping("/save")
+	@PutMapping("/employee/save")
 	public ResponseEntity<?> updateController(@Valid @RequestBody EmployeeRecord employeeRecord, BindingResult br){
 		try {
 			return employeeService.update(employeeRecord);
@@ -49,7 +50,7 @@ public class EmployeeController {
 		}
 	}
 	
-	@GetMapping("/findall")
+	@GetMapping("/employee/findall")
 	public ResponseEntity<?> findController(){
 		try {
 			return ResponseEntity.ok().body(employeeService.findAll());
@@ -58,7 +59,7 @@ public class EmployeeController {
 		}
 	}
 	
-	@DeleteMapping("/delete")
+	@DeleteMapping("/employee/delete")
 	public ResponseEntity<?> deleteController(@RequestBody Map<String, Long> requestBody){
 		try {
 			 employeeService.delete(requestBody.get("id"));
@@ -68,7 +69,7 @@ public class EmployeeController {
 		}
 	}
 	
-	@GetMapping("/find")
+	@GetMapping("/employee/find")
 	public ResponseEntity<?> findController(@RequestParam(name = "key") String key){
 		try {
 			System.out.println(key);
@@ -77,7 +78,8 @@ public class EmployeeController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
 	}
-	@GetMapping("/entry")
+
+	@GetMapping("/public/employee/entry")
 	public ResponseEntity<?> entryController(@RequestParam(name = "idOrDocument") String idOrDocument){
 		try {
 			//System.out.println(idOrDocument);
@@ -87,13 +89,6 @@ public class EmployeeController {
 		}
 	}
 
-	@PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestParam String document, @RequestParam String password) {
-        if (employeeService.validateUser(document, password)) {
-            return "Login successful!";
-        } else {
-            return "Invalid username or password.";
-        }
-    }
+	
 	
 }
