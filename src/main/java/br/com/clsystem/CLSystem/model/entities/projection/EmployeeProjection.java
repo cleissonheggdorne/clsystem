@@ -1,6 +1,5 @@
 package br.com.clsystem.CLSystem.model.entities.projection;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;

@@ -1,6 +1,5 @@
 package br.com.clsystem.CLSystem.model.repositories;
 
-import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 

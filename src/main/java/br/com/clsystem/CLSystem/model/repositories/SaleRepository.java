@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import br.com.clsystem.CLSystem.model.entities.Cashier;
 import br.com.clsystem.CLSystem.model.entities.Sale;
-import br.com.clsystem.CLSystem.model.entities.projection.SaleProjection;
 import br.com.clsystem.CLSystem.types.StatusSale;
 
 public interface SaleRepository extends JpaRepository<Sale, Long> {

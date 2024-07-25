@@ -3,7 +3,6 @@ package br.com.clsystem.CLSystem.model.services;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -15,7 +14,6 @@ import br.com.clsystem.CLSystem.model.entities.ItemSale;
 import br.com.clsystem.CLSystem.model.entities.Product;
 import br.com.clsystem.CLSystem.model.entities.Sale;
 import br.com.clsystem.CLSystem.model.entities.projection.ItemSaleProjection;
-import br.com.clsystem.CLSystem.model.entities.projection.SaleProjection;
 import br.com.clsystem.CLSystem.model.entities.record.ItemSaleRecord;
 import br.com.clsystem.CLSystem.model.repositories.ItemSaleRepository;
 import jakarta.transaction.Transactional;

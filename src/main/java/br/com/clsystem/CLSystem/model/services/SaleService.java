@@ -1,27 +1,18 @@
 package br.com.clsystem.CLSystem.model.services;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
 import br.com.clsystem.CLSystem.model.entities.Cashier;
-import br.com.clsystem.CLSystem.model.entities.ItemSale;
 import br.com.clsystem.CLSystem.model.entities.Sale;
-import br.com.clsystem.CLSystem.model.entities.projection.SaleProjection;
 import br.com.clsystem.CLSystem.model.repositories.SaleRepository;
 import br.com.clsystem.CLSystem.types.FormPayment;
 import br.com.clsystem.CLSystem.types.StatusSale;
-import scala.Array;
 
 @Service
 public class SaleService {
