@@ -2,10 +2,19 @@ import  NavbarUtils  from '../js/commonComponents/navbarCustom.js';
 import UtilsStorage from './Utils/UtilsStorage.js';
 
 const model = {
-    fetchEntry: async function(idOrDocument) {
-        const response = await fetch('http://localhost:8080/api/employee/entry?idOrDocument=' + idOrDocument);
-        if (response.ok && response.text !== "") {
-           return await response.json();
+    fetchEntry: async function(user, password) {
+        const auth = btoa(`${user}:${password}`)
+        const response = await fetch('http://localhost:8080/api/public/employee/authenticate', {
+            method: "POST",
+            headers: {
+                'Authorization': `Basic ${auth}`
+            }
+        })
+
+        if (response.ok) {
+            const token = await response.json(); // Lê o token como texto
+            //console.log("Token JWT recebido:", token);
+            return token;
         } else {
            throw new Error("Usuário Inexistente!");
         }
@@ -19,21 +28,43 @@ const view = {
         $('.modal').modal({
           dismissible: false
         });
+        console.log("entrou");
+        document.getElementById('login-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Previne o comportamento padrão do formulário
+
+            // Cria um objeto FormData a partir do formulário
+            const formData = new FormData(this);
+
+            // Converte FormData para um objeto JavaScript (opcional)
+            const dados = {};
+            formData.forEach((value, key) => {
+                dados[key] = value;
+            });
+
+            console.log('Dados do formulário:', dados);
+        });
     },
 }
 
 const controller = {
     entry: async function(){
-        const idOrDocument = document.getElementById("input-user").value;
-        if(idOrDocument !== "" && idOrDocument !== null){
-            try{
-                user = await model.fetchEntry(idOrDocument);
-                UtilsStorage.setUser(user);
-            }catch(error){
-              Materialize.toast(error, 1000);
-            }
-        }else{
-          Materialize.toast("Preencha os dados", 1000);
+        const formHtml = document.getElementById('login-form');//.addEventListener('submit', function(event) {
+        const form = new FormData(formHtml);
+        const user = form.get("user"); //necessario attributo name
+        const password = form.get("password");
+
+        console.log('Dados do formulário:', user + password);
+        try{
+            const token = await model.fetchEntry(user, password);
+            let user1 = null;
+            Object.entries(token).forEach(([chave, employee]) => {
+                console.log(`Chave: ${chave}, Nome: ${employee.nome}, Cargo: ${employee.cargo}`);
+                user1 = employee;
+            });
+            //const user1  = token[1];
+            UtilsStorage.setUser(user1);
+        }catch(error){
+            Materialize.toast(error, 1000);
         }
     },
     init: function(){
@@ -51,4 +82,5 @@ const controller = {
     // },
 }
 let user= null;
+//controller.init();
 export { controller};
