@@ -1,5 +1,5 @@
 import UtilsStorage from './UtilsStorage.js';
-
+import { handleRoute } from '../../../../routes.js';
 // Salva uma referência para o fetch original
 const defaultFetch = window.fetch;
 
@@ -23,7 +23,7 @@ window.fetch = async (url, options = {}) => {
         if (response.status === 401) {
             console.warn("Token expirado. Redirecionando para login...");
             // Exemplo: Redireciona para a tela de login
-            window.location.href = "/login.html";
+            handleRoute(window.location.href);
         }
 
         return response;

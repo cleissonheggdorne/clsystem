@@ -1,6 +1,8 @@
 import UtilsStorage from './Utils/UtilsStorage.js';
 import UtilsModal from './Utils/UtilsModal.js';
 import config from './config/config.js';
+import StorageUtils from './Utils/UtilsStorage.js';
+import { handleRoute } from '../../../routes.js';
 
 //import {handleRoute} from '../../../routes.js';
 
@@ -74,7 +76,7 @@ const view= {
           const  btnActionModalCustom = document.getElementById("btn-action-modal-custom");
           btnActionModalCustom.addEventListener("click", function(){
             const inputValueModal = document.getElementById("input-value-initial");
-            controller.openCashier(user.idEmployee, inputValueModal.value);
+            controller.openCashier(StorageUtils.getUser().idEmployee, inputValueModal.value);
           })
         }else{
             this.addComponentsForCloseCashier(modal,  summaryByCashier)
@@ -151,6 +153,12 @@ const controller= {
         // }
       }catch(error){
         throw error;
+      }
+    },
+    async closeCashier(){
+      const res = await model.fetchCloseCashier(StorageUtils.getUser().idEmployee);
+      if(res != null){
+       handleRoute("/sale");
       }
     },
     modalOpenCloseCashier: async function(openClose, title, content, moreComponents, summaryByCashier){
