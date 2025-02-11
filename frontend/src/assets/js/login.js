@@ -1,10 +1,11 @@
 import  NavbarUtils  from '../js/commonComponents/navbarCustom.js';
 import UtilsStorage from './Utils/UtilsStorage.js';
+import config from './config/config.js';
 
 const model = {
     fetchEntry: async function(user, password) {
         const auth = btoa(`${user}:${password}`)
-        const response = await fetch('http://localhost:8080/api/public/employee/authenticate', {
+        const response = await fetch(`${config.backendBaseUrl}/api/public/employee/authenticate`, {
             method: "POST",
             headers: {
                 'Authorization': `Basic ${auth}`
@@ -55,14 +56,19 @@ const controller = {
 
         console.log('Dados do formulário:', user + password);
         try{
-            const token = await model.fetchEntry(user, password);
+            const data = await model.fetchEntry(user, password);
+            let token = null;
             let user1 = null;
-            Object.entries(token).forEach(([chave, employee]) => {
+            Object.entries(data).forEach(([chave, employee]) => {
                 console.log(`Chave: ${chave}, Nome: ${employee.nome}, Cargo: ${employee.cargo}`);
                 user1 = employee;
+                token = chave;
             });
             //const user1  = token[1];
             UtilsStorage.setUser(user1);
+            UtilsStorage.setTokenJwt(token);
+            console.log("usr: "+ user1);
+            console.log("token: "+ token);
         }catch(error){
             Materialize.toast(error, 1000);
         }

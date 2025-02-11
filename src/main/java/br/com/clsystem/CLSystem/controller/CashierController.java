@@ -20,7 +20,6 @@ import br.com.clsystem.CLSystem.model.services.CashierService;
 import jakarta.validation.Valid;
 
 @RestController
-@CrossOrigin(origins="*", maxAge = 3600) //Permitir ser acessado de Qualquer fonte
 @RequestMapping("/api/cashier")
 public class CashierController {
 

@@ -2,10 +2,11 @@ import { controller as controllerCashier} from './cashier.js';
 import UtilsModal from './Utils/UtilsModal.js';
 import UtilsStorage from './Utils/UtilsStorage.js';
 import {handleRoute} from '../../../routes.js';
+import config from './config/config.js';
 
 const model = {
     fetchCashiers: async function() {
-        const response = await fetch('http://localhost:8080/api/cashier/findall')
+        const response = await fetch(`${config.backendBaseUrl}/api/cashier/findall`)
         if (response.ok) {
           return response.json();
         } else {
@@ -13,7 +14,7 @@ const model = {
         }
       },
       fetchCashiersByKey: async function(key) {
-        const response = await fetch('http://localhost:8080/api/cashier/find?key='+key)
+        const response = await fetch(`${config.backendBaseUrl}/api/cashier/find?key='+key`)
         if (response.ok) {
           return response.json();
         } else {

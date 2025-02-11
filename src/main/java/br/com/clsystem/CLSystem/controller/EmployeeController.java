@@ -22,7 +22,6 @@ import jakarta.validation.Valid;
 
 
 @RestController
-@CrossOrigin(origins="*", maxAge = 3600) //Permitir ser acessado de Qualquer fonte
 @RequestMapping("/api")
 public class EmployeeController {
 

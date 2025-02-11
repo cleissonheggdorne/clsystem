@@ -29,6 +29,13 @@ export default class StorageUtils {
                     : "";
       return (cashier != null && cashier != "");
     }
+    static setTokenJwt(token){
+      sessionStorage.setItem("jwttoken", JSON.stringify(token));
+    }
+    static getJwtToken(){
+      return StorageUtils.existsPropertyStorage("jwttoken")? 
+                  JSON.parse(sessionStorage.getItem("jwttoken")) : "";
+    }
     static existsPropertyStorage(property){
       return sessionStorage.getItem(property) != undefined;
     }

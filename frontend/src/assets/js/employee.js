@@ -1,11 +1,12 @@
 //import { controller as controllerLogin} from './login.js';
 import UtilsStorage from './Utils/UtilsStorage.js';
 import {handleRoute} from '../../../routes.js';
+import config from './config/config.js';
 
 const model = {
     listEmployees: [],
     fetchEmployees: async function() {
-      const response = await fetch('http://localhost:8080/api/employee/findall');
+      const response = await fetch(`${config.backendBaseUrl}/api/employee/findall`);
       if(response.ok){
         const data = await response.json();
         this.listEmployees = data;
@@ -15,7 +16,7 @@ const model = {
       } 
     },
     fetchEmployeesByKey: async function(key) {
-     const response = await fetch('http://localhost:8080/api/employee/find?key='+key)
+     const response = await fetch(`${config.backendBaseUrl}/api/employee/find?key=${key}`)
      if(response.ok){
         const data = await response.json();
         this.listEmployees = data;
@@ -28,7 +29,7 @@ const model = {
       return this.listEmployees.find(employee => employee.idEmployee == id);
     },
     fetchSaveEmployee: async function(data, methodForm){
-        const response = await fetch('http://localhost:8080/api/employee/save', {
+        const response = await fetch(`${config.backendBaseUrl}/api/employee/save`, {
             method: methodForm,
             headers: {
                 'Content-Type': 'application/json'
@@ -42,7 +43,7 @@ const model = {
         }
     },
     fetchDelete: async function(id){
-      const response = await fetch('http://localhost:8080/api/employee/delete', {
+      const response = await fetch(`${config.backendBaseUrl}/api/employee/delete`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'

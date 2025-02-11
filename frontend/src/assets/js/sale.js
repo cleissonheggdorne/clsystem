@@ -1,6 +1,7 @@
 import { controller as controllerCashier} from './cashier.js';
 import UtilsStorage from './Utils/UtilsStorage.js';
 import UtilsModal from './Utils/UtilsModal.js';
+import config from './config/config.js';
 
 //import { controller as controllerLogin} from './login.js';
 import NavbarUtils from './commonComponents/navbarCustom.js';
@@ -10,7 +11,7 @@ const model = {
 
   fetchOpenCashier: async function(idEmployee, initialValue) {
     
-    const response = await fetch('http://localhost:8080/api/cashier/open', {
+    const response = await fetch(`${config.backendBaseUrl}/api/cashier/open`, {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json'
@@ -27,7 +28,7 @@ const model = {
       }
   },
   fetchCloseCashier: async function(idCashier) {
-    const response = await fetch('http://localhost:8080/api/cashier/close', {
+    const response = await fetch(`${config.backendBaseUrl}/api/cashier/close`, {
       method: 'PUT',
       headers: {
           'Content-Type': 'application/json'
@@ -44,7 +45,7 @@ const model = {
   },
     fetchItensSale: async function(idSale, idCashier) {
       const urlIds = "?idSale="+idSale+"&idCashier="+idCashier;
-      const response = await fetch('http://localhost:8080/api/itemsale/finditenssale' + urlIds);
+      const response = await fetch(`${config.backendBaseUrl}/api/itemsale/finditenssale${urlIds}`);
       if(response.ok){
         return await response.json();
       } else if (!response.ok){
@@ -52,7 +53,7 @@ const model = {
       } 
     },
     fetchProductsByKey: function(key) {
-      return fetch('http://localhost:8080/api/product/find?key='+key)
+      return fetch(`${config.backendBaseUrl}/api/product/find?key=${key}`)
         .then(response => {
           if (response.ok) {
             return response.json();
@@ -68,7 +69,7 @@ const model = {
         });
     },
     fetchSave: async function(item) {
-      const response = await fetch('http://localhost:8080/api/itemsale/save', {
+      const response = await fetch(`${config.backendBaseUrl}/api/itemsale/save`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -82,7 +83,7 @@ const model = {
         }
     },
     fetchUpdateItem: async function(item) {
-      const response = await fetch('http://localhost:8080/api/itemsale/save', {
+      const response = await fetch(`${config.backendBaseUrl}/api/itemsale/save`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
@@ -99,7 +100,7 @@ const model = {
       return entryValue-total;
     },
     fetchCloseSale: async function(idCashier, idSale, formPayment){
-      const saleClosed = await fetch('http://localhost:8080/api/sale/closesale', {
+      const saleClosed = await fetch(`${config.backendBaseUrl}/api/sale/closesale`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
@@ -117,7 +118,7 @@ const model = {
       }
     },
     fetchCancelSale: async function(idCashier, idSale){
-      const saleCancel = await fetch('http://localhost:8080/api/sale/cancel-sale', {
+      const saleCancel = await fetch(`${config.backendBaseUrl}/api/sale/cancel-sale`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'

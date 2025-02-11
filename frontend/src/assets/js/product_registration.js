@@ -1,11 +1,12 @@
 import { controller as controllerLogin} from './login.js';
 import UtilsStorage from './Utils/UtilsStorage.js';
 import {handleRoute} from '../../../routes.js';
+import config from './config/config.js';
 
 const model = {
     listProducts: [],
     fetchProducts: async function() {
-      const response = await fetch('http://localhost:8080/api/product/findall')
+      const response = await fetch(`${config.backendBaseUrl}/api/product/findall`)
           if (response.ok) {
             this.listProducts = await response.json();
             return this.listProducts;
@@ -14,7 +15,7 @@ const model = {
           }
     },
     fetchProductsByKey: async function(key) {
-      const response = await fetch('http://localhost:8080/api/product/find?key='+key);
+      const response = await fetch(`${config.backendBaseUrl}/api/product/find?key=${key}`);
           if (response.ok) {
             this.listProducts = await response.json();
             return this.listProducts;
@@ -26,7 +27,7 @@ const model = {
       return this.listProducts.find(product => product.idProduct == id);
     },
     fetchSaveProduct: async function(data, methodForm){
-        const response = await fetch('http://localhost:8080/api/product/save', {
+        const response = await fetch(`${config.backendBaseUrl}/api/product/save`, {
             method: methodForm,
             headers: {
                 'Content-Type': 'application/json'
@@ -40,7 +41,7 @@ const model = {
         }
     },
     fetchDelete: async function(id){
-      const response = await fetch('http://localhost:8080/api/product/delete', {
+      const response = await fetch(`${config.backendBaseUrl}/api/product/delete`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'

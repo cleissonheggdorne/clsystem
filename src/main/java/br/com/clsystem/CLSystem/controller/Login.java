@@ -18,7 +18,6 @@ import br.com.clsystem.CLSystem.tools.AuthenticationService;
 import br.com.clsystem.CLSystem.tools.UserAuthenticated;
 
 @RestController
-@CrossOrigin(origins="*", maxAge = 3600) //Permitir ser acessado de Qualquer fonte
 @RequestMapping("/api")
 public class Login {
     

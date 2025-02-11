@@ -1,11 +1,12 @@
 import UtilsStorage from './Utils/UtilsStorage.js';
 import UtilsModal from './Utils/UtilsModal.js';
+import config from './config/config.js';
 
 //import {handleRoute} from '../../../routes.js';
 
 const model = {
     fetchOpenCashier: async function(idEmployee, initialValue) {
-      const response = await fetch('http://localhost:8080/api/cashier/open', {
+      const response = await fetch(`${config.backendBaseUrl}/api/cashier/open`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -22,7 +23,7 @@ const model = {
         }
       },
       fetchCloseCashier: function(idCashier) {
-        return fetch('http://localhost:8080/api/cashier/close', {
+        return fetch(`${config.backendBaseUrl}/api/cashier/close`, {
           method: 'PUT',
           headers: {
               'Content-Type': 'application/json'
@@ -46,7 +47,7 @@ const model = {
           });
       },
       fetchFindOpenCashier: async function(idEmployee) {
-        const response = await fetch('http://localhost:8080/api/cashier/find-open?id='+idEmployee)
+        const response = await fetch(`${config.backendBaseUrl}/api/cashier/find-open?id=${idEmployee}`)
         if(response.ok && response.text !== ""){
           return response.json();
         }else{
@@ -54,7 +55,7 @@ const model = {
         }
       },
       fetchSummaryByCashier: async function(idCahier) {
-        const response = await fetch('http://localhost:8080/api/cashier/summary-by-cashier?idCashier=' + idCahier);
+        const response = await fetch(`${config.backendBaseUrl}/api/cashier/summary-by-cashier?idCashier=${idCahier}`);
         if (response.ok && response.text !== "") {
           return await response.json();
         } else {

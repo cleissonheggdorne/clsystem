@@ -17,7 +17,6 @@ import br.com.clsystem.CLSystem.model.services.ItemSaleService;
 import br.com.clsystem.CLSystem.model.services.SaleService;
 
 @RestController
-@CrossOrigin(origins="*", maxAge = 3600) //Permitir ser acessado de Qualquer fonte
 @RequestMapping("/api/sale")
 public class SaleController {
 

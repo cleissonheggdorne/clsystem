@@ -29,9 +29,9 @@ async function handleRoute(route) {
         case '/entrar':
             await controllerLogin.entry();
             await controllerCashier.verifyCashierOpen(UtilsStorage.getUser().idEmployee);
-            // (UtilsStorage.userLogged())?
-            //  window.location.href = `${ROOT_URL}/src/view/pages/sale.html`:
-            //  Materialize.toast("Necessário login para acessar esta funcionalidade", 1000);
+             (UtilsStorage.userLogged())?
+              window.location.href = `${ROOT_URL}/src/view/pages/sale.html`:
+              Materialize.toast("Necessário login para acessar esta funcionalidade", 1000);
             break;
         case '/history':
             (UtilsStorage.userLogged())?
