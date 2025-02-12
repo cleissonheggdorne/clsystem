@@ -38,6 +38,10 @@ async function handleRoute(route) {
                 window.location.href = `${ROOT_URL}/src/view/pages/cash_history.html`:
                 Materialize.toast("Necessário login para acessar esta funcionalidade", 1000);
             break;
+        case '/logout':
+            UtilsStorage.removeUser();
+            UtilsStorage.removeTokenJwt();
+           handleRoute("/login");
         default:
             if(route != '#!'){
                 //window.location.href = `${ROOT_URL}/src/view/pages/error.html`;
@@ -57,11 +61,10 @@ function initRouter() {
     window.addEventListener('popstate', () => {
         handleRoute(window.location.pathname);
     });
-
     // evento inicial
     handleRoute(window.location.pathname);
   }
-  
+
 initRouter();
 
 export{

@@ -1,4 +1,5 @@
 import UtilsStorage from '../Utils/UtilsStorage.js';
+import { handleRoute } from '../../../../routes.js';
 import UtilsModal from '../Utils/UtilsModal.js';
 
 import { controller as controllerCashier} from '../cashier.js';
@@ -10,13 +11,22 @@ class HeaderCustom extends HTMLElement{
                                     <a href="" class="brand-logo">CLSYSTEM</a>
                                     <ul id="nav" class="right right hide-on-med-and-down">
                                     </ul>
+                                    <a href="/logout" id="logout" class="right">Sair</a>
                                     </div>
                             </nav>
                         </div>`;
+        this.handleButtonLogout();
+        console.log('teste');
         //(UtilsStorage.userLogged)?NavbarUtils.fillInformationLoggin(UtilsStorage.getUser()):"";
         //(UtilsStorage.openedCashier)?NavbarUtils.fillInformationCashier(UtilsStorage.getCashier()):"";
-
     }
+    handleButtonLogout(){
+        const logout = document.getElementById("logout");
+        logout.addEventListener('click', async function(event){
+            handleRoute("/logout");
+        });
+    }
+
 }
 class NavbarCustom extends HTMLElement{
     connectedCallback(){

@@ -24,8 +24,8 @@ const model = {
             throw new Error("Erro ao abrir caixa. Contate o suporte técnico.");
         }
       },
-      fetchCloseCashier: function(idCashier) {
-        return fetch(`${config.backendBaseUrl}/api/cashier/close`, {
+      fetchCloseCashier: async function(idCashier) {
+        const response = await fetch(`${config.backendBaseUrl}/api/cashier/close`, {
           method: 'PUT',
           headers: {
               'Content-Type': 'application/json'
@@ -34,19 +34,11 @@ const model = {
             idCashier: idCashier
           })  
           })
-          .then(response => {
-            if (response.ok) {
-              return response.json();
-            } else {
+          if (response.ok && response.text !== "") {
+            return response.json();
+          } else {
               throw new Error("Erro ao fechar caixa. Contate o suporte técnico.");
-            }
-          })
-          .then(data => {
-            return data;
-          })
-          .catch(error => {
-              Materialize.toast(error, 1000)
-          });
+          }
       },
       fetchFindOpenCashier: async function(idEmployee) {
         const response = await fetch(`${config.backendBaseUrl}/api/cashier/find-open?id=${idEmployee}`)
@@ -156,9 +148,10 @@ const controller= {
       }
     },
     async closeCashier(){
-      const res = await model.fetchCloseCashier(StorageUtils.getUser().idEmployee);
+      const res = await model.fetchCloseCashier(StorageUtils.getCashier().idCashier);
       if(res != null){
-       handleRoute("/sale");
+        StorageUtils.removeCashier();
+        handleRoute("/sale");
       }
     },
     modalOpenCloseCashier: async function(openClose, title, content, moreComponents, summaryByCashier){

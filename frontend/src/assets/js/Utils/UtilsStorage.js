@@ -9,8 +9,16 @@ export default class StorageUtils {
       return JSON.parse(sessionStorage.getItem("user"));
     }
 
+    static removeUser(){
+      sessionStorage.removeItem("user");
+    }
+
     static setCashier(cashier) {
         sessionStorage.setItem("cashier", JSON.stringify(cashier));
+    }
+
+    static removeCashier(){
+      sessionStorage.removeItem(cashier);
     }
     
     static getCashier() {
@@ -31,6 +39,9 @@ export default class StorageUtils {
     }
     static setTokenJwt(token){
       sessionStorage.setItem("jwttoken", JSON.stringify(token));
+    }
+    static removeTokenJwt(){
+      sessionStorage.removeItem("jwttoken");
     }
     static getJwtToken(){
       return StorageUtils.existsPropertyStorage("jwttoken")? 
