@@ -40,6 +40,8 @@ public class SecurityBasicAuth {
     private RSAPublicKey key;
     @Value("${jwt.private.key}")
     private RSAPrivateKey priv;
+    @Value("${url.frontend}")
+    private String urlCors;
 
     //private final PasswordEncoder passwordEncoder;
 
@@ -87,7 +89,7 @@ public class SecurityBasicAuth {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://127.0.0.1:5501")); // Libera apenas o frontend
+        configuration.setAllowedOrigins(List.of(urlCors)); // Libera apenas o frontend
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true); // Permite cookies/tokens

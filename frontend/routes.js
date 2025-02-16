@@ -1,8 +1,10 @@
 import UtilsStorage from './src/assets/js/Utils/UtilsStorage.js';
+import config from './src/assets/js/config/config.js';
 import {controller as controllerLogin } from './src/assets/js/login.js';
 import{controller as controllerCashier} from './src/assets/js/cashier.js';
+
 async function handleRoute(route) {
-    const ROOT_URL = 'http://127.0.0.1:5501/frontend';
+    const ROOT_URL = config.frontendUrl;
 
     switch (route) {
         case '/index':

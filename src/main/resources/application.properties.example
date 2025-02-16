@@ -1,0 +1,23 @@
+# Configurações do banco de dados PostgreSQL
+spring.datasource.url=
+spring.datasource.username=
+spring.datasource.password=
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+#Server
+server.port=8081
+
+# Hibernate configurações
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto=update
+
+# Outras configurações do JPA e Hibernate
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+#jwt
+jwt.private.key=classpath:app.key
+jwt.public.key=classpath:app.pub
+
+#cors url utilizada pelo frontend
+url.frontend=http://127.0.0.1:5501
