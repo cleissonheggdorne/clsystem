@@ -76,6 +76,12 @@ export default class ModalCustom{
         $('.modal').modal('close');
       });
     }
+    static addActionCloseInModalCustom(){
+      const btnModalCustom = document.getElementById("btn-modal-custom");
+      btnModalCustom.addEventListener("click", function(){
+        $('.modal').modal('close');
+      });
+    }
 
     
 }

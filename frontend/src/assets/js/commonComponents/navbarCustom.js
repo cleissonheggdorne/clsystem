@@ -58,7 +58,6 @@ class ModalCustom extends HTMLElement{
                         </div>
                         <div class="modal-footer">
                             <button class="waves-effect waves-green btn-flat" data-target="modal-custom" class="btn modal-trigger" id="btn-modal-custom">Ok</button>
-                            <!-- <a href="#!" class="waves-effect waves-green btn-flat" id="btn-modal-custom">Ok</a> -->
                         </div>
                         </div>`;
                     }

@@ -138,24 +138,22 @@ const controller= {
       try{
         const cashier = await model.fetchOpenCashier(idEmployee, initialValue);
         UtilsStorage.setCashier(cashier);
-        // if(cashier !== null){
-        //     view.modalCustom("close", "", "", false);
-        // }else{
-        //     view.modalCustom("open", "Atenção", "Não há um caixa aberto para esse usuário. Uma venda só poderá ser feita quando houver a abertura de um.", true);
-        // }
+        if(cashier !== null){
+          handleRoute("/sale")
+        }
       }catch(error){
         throw error;
       }
     },
     async closeCashier(){
-      const res = await model.fetchCloseCashier(StorageUtils.getCashier().idCashier);
-      if(res != null){
+      const cashier = await model.fetchCloseCashier(StorageUtils.getCashier().idCashier);
+      if(cashier != null){
         StorageUtils.removeCashier();
         handleRoute("/sale");
       }
     },
     modalOpenCloseCashier: async function(openClose, title, content, moreComponents, summaryByCashier){
-      return await view.modalOpenCloseCashier(openClose, title, content, moreComponents, summaryByCashier);
+      view.modalOpenCloseCashier(openClose, title, content, moreComponents, summaryByCashier);
     },
     addComponentsForCloseCashier:  function(modal, summaryByCashier){
       return view.addComponentsForCloseCashier(modal, summaryByCashier);

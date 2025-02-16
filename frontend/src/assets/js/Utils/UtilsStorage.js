@@ -18,7 +18,7 @@ export default class StorageUtils {
     }
 
     static removeCashier(){
-      sessionStorage.removeItem(cashier);
+      sessionStorage.removeItem("cashier");
     }
     
     static getCashier() {
