@@ -1,4 +1,4 @@
-import  NavbarUtils  from '../js/commonComponents/navbarCustom.js';
+import  * as NavbarUtils  from '../js/commonComponents/navbarCustom.js';
 import UtilsStorage from './Utils/UtilsStorage.js';
 import config from './config/config.js';
 

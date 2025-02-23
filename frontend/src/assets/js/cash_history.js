@@ -3,6 +3,7 @@ import UtilsModal from './Utils/UtilsModal.js';
 import UtilsStorage from './Utils/UtilsStorage.js';
 import {handleRoute} from '../../../routes.js';
 import config from './config/config.js';
+import * as NavbarUtils from './commonComponents/navbarCustom.js';
 
 const model = {
     fetchCashiers: async function() {
@@ -168,7 +169,6 @@ const controller = {
             const key = event.target.value;
             if(key.length >= 3){
               controller.findController(key);
-              
             }else{
               controller.findAllController();
             }
@@ -179,6 +179,7 @@ const controller = {
         let cashiers;
         try{
           cashiers = await model.fetchCashiers();
+
         }catch(error){
           Materialize.toast(error, 1000);
         }
@@ -198,5 +199,4 @@ const controller = {
         }
       }
 }
-
 controller.init()

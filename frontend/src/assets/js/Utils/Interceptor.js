@@ -1,5 +1,6 @@
 import UtilsStorage from './UtilsStorage.js';
 import { handleRoute } from '../../../../routes.js';
+import * as NavbarUtils from '../commonComponents/navbarCustom.js';
 // Salva uma referência para o fetch original
 const defaultFetch = window.fetch;
 
@@ -17,7 +18,9 @@ window.fetch = async (url, options = {}) => {
     }
 
     try {
+        NavbarUtils.ProgressCustom.setVisibleProgress();
         const response = await defaultFetch(url, options);
+        NavbarUtils.ProgressCustom.setHiddenProgress();
 
         // Se o token estiver expirado, pode tratar aqui
         if (response.status === 401) {

@@ -7,6 +7,19 @@
     height: 50vh; 
     overflow-y: auto;
 } 
+
+/* Cabeçalho fixo */
+table thead {
+  position: sticky; /* Fixa o cabeçalho */
+  top: 0; /* Cola no topo do container */
+  background-color: white; /* Cor de fundo para sobrepor o conteúdo */
+  z-index: 1; /* Garante que o cabeçalho fique acima do corpo */
+}
+
+#not-sale-in-progress {
+  display: none;  
+} 
+
 #modal-select-user{
     height: 50vh;
 }

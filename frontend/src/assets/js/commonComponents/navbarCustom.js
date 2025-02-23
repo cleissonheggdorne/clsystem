@@ -1,7 +1,6 @@
 import UtilsStorage from '../Utils/UtilsStorage.js';
 import { handleRoute } from '../../../../routes.js';
 import UtilsModal from '../Utils/UtilsModal.js';
-
 import { controller as controllerCashier} from '../cashier.js';
 class HeaderCustom extends HTMLElement{
     connectedCallback(){
@@ -16,7 +15,7 @@ class HeaderCustom extends HTMLElement{
                             </nav>
                         </div>`;
         this.handleButtonLogout();
-        console.log('teste');
+       // console.log('teste');
         //(UtilsStorage.userLogged)?NavbarUtils.fillInformationLoggin(UtilsStorage.getUser()):"";
         //(UtilsStorage.openedCashier)?NavbarUtils.fillInformationCashier(UtilsStorage.getCashier()):"";
     }
@@ -62,7 +61,26 @@ class ModalCustom extends HTMLElement{
                         </div>`;
                     }
 }
-export default class NavbarUtils{
+
+export class ProgressCustom extends HTMLElement{
+    connectedCallback(){
+        this.innerHTML = ` <div class="progress">
+                            <div class="indeterminate"></div>
+                        </div>`;
+            
+        }
+    
+    static setHiddenProgress(){
+        const loading = document.querySelector('.progress');
+        loading.style.visibility = "hidden";
+    } 
+    static setVisibleProgress(){
+        const loading = document.querySelector('.progress');
+        loading.style.visibility = "";
+    }               
+
+}
+export class NavbarUtils{
     constructor(){// Abrir/Fechar Caixa
     }
     
@@ -113,5 +131,5 @@ export default class NavbarUtils{
 customElements.define("header-custom", HeaderCustom);
 customElements.define("navbar-custom", NavbarCustom);
 customElements.define("modal-custom", ModalCustom);
-
+customElements.define("progress-custom", ProgressCustom);
 

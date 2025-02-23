@@ -4,7 +4,7 @@ import UtilsModal from './Utils/UtilsModal.js';
 import config from './config/config.js';
 
 //import { controller as controllerLogin} from './login.js';
-import NavbarUtils from './commonComponents/navbarCustom.js';
+import * as NavbarUtils from './commonComponents/navbarCustom.js';
 import {handleRoute} from '../../../routes.js';
 
 const model = {
@@ -143,15 +143,6 @@ const view = {
    },
   eventsSale: function(){
 
-    // const btnModalCustom = document.getElementById("btn-modal-custom");
-    
-    // btnModalCustom.addEventListener("click", function(){
-    //   if(btnModalCustom.textContent.toUpperCase() == "CONFIRMAR"){
-    //     (cashier !== null)? controller.findItensSaleController("", cashier.idCashier) : null;
-    //   }
-    //   $('.modal').modal('close');
-    // });
-
     const inputSearch = document.getElementById("input-product");
     inputSearch.focus();
     
@@ -163,23 +154,6 @@ const view = {
         view.AutoComplete(products);
       }
     });
-
-    // // Abrir/Fechar Caixa
-    // const btnOpenClosecashier = document.getElementById("open-close-cashier");
-    // btnOpenClosecashier.addEventListener('click', async function(event){
-       
-    //  if(btnOpenClosecashier.textContent.includes("Fechar")){
-    //    let summaryByCashier;
-    //    try{
-    //        summaryByCashier = await controllerCashier.resumeByCashier(cashier.idCashier);
-    //     }catch(error){
-    //        Materialize.toast(error, 1000);
-    //    }
-    //    view.modalOpenCloseCashier("open", "Fechamento de Caixa", "", true, summaryByCashier);
-    //  }else{
-    //     view.modalOpenCloseCashier("open", "Abertura de Caixa", "Você está prestes a iniciar um caixa.", true, null);
-    //  }
-    // });
     
     //Pagamento
     const payment  = document.getElementById("btn-payment");
@@ -375,7 +349,7 @@ const view = {
       const cellDelete = document.createElement("td");
       const btnEdit = document.createElement("a");
       const btnDelete = document.createElement("a");
-      btnEdit.setAttribute('class', 'waves-effect waves-teal btn-flat  btn modal-trigger');
+      btnEdit.setAttribute('class', 'waves-teal btn-flat  btn modal-trigger');
       btnEdit.setAttribute('id', 'btn-edit-item-sale');
       btnEdit.setAttribute('data-id-item', item.idItemSale);
       btnEdit.setAttribute('href', '#modal1');
@@ -384,7 +358,7 @@ const view = {
         view.saleEventsDinamicsComponents.handleEditclickFunction(btnEdit);
        });
       
-      btnDelete.setAttribute('class', 'waves-effect waves-teal btn-flat  btn modal-trigger');
+      btnDelete.setAttribute('class', 'waves-teal btn-flat  btn modal-trigger');
       btnDelete.setAttribute('id', 'btn-delete');
       btnDelete.setAttribute('data-id-item', ''); 
       btnDelete.setAttribute('href', '#modal-delete');
@@ -401,7 +375,8 @@ const view = {
       line.appendChild(cellNameProduct);
       line.appendChild(cellUnitaryValue);
       line.appendChild(cellAmount);
-      line.appendChild(btnEdit);
+      line.appendChild(cellEdit);
+      line.appendChild(cellDelete);
       table.querySelector('tbody').appendChild(line);
       view.moveScroll();
 
@@ -531,6 +506,14 @@ const view = {
   openModalPayment: function(){
     
   },
+  notSaleInProgressCard: function(){
+    const table = document.getElementById("not-sale-in-progress");
+    table.style.display = "block";
+  },
+  saleInProgressCard: function(){
+    const table = document.getElementById("not-sale-in-progress");
+    table.style.display = "none";
+  }
 }
 const controller = { 
    
@@ -599,12 +582,18 @@ const controller = {
       },
       findItensSaleController: async function(idSale, idCashier){
         try{
+          //const tableitens = document.getElementById("table-itens");
+          // const progress = document.createElement("progress-custom")
+          // tableitens.appendChild(progress);
           const items = await model.fetchItensSale(idSale, idCashier);
           if(items.length >= 1){
+            view.saleInProgressCard();
             idSaleReal = items[0].idSale.idSale;
             view.renderTable(items);
             total = Number(items.reduce((sum, item) => sum + item.amount, 0)).toFixed(2);
             view.renderAmount(total);
+          }else{
+            view.notSaleInProgressCard();
           }
         }catch(error){
           throw error;
