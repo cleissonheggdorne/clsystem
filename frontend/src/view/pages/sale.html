@@ -12,6 +12,7 @@
         <title>CL SYSTEM</title>        
     </head>
 <body>
+
     <header-custom></header-custom>
     <div class="row">
         <navbar-custom></navbar-custom>
@@ -60,12 +61,19 @@
                                     <th>Descrição</th>
                                     <th>Valor Unitário</th>
                                     <th>Total</th>
+                                    <th class="center">Editar</th>
+                                    <th class="center">Excluir</th>
+
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="">
                                 <!-- Products -->
+                                <progress-custom></progress-custom>
                             </tbody>
                         </table>
+                        <div class="card-panel" id="not-sale-in-progress">
+                            <span class="red-text text-darken-2">Não existe venda em aberto</span>
+                        </div>
                     </div>
                 </div> 
             </div>
