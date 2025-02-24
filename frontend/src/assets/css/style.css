@@ -1,4 +1,6 @@
-
+/* .main{
+  height: 100vh; 
+} */
 /* Sale */
 .autocomplete-content{
     position: absolute;
@@ -8,6 +10,20 @@
     overflow-y: auto;
 } 
 
+.section-table-products{
+  height: 75vh; 
+  overflow-y: auto;
+} 
+
+.section-table-employee{
+  height: 75vh; 
+  overflow-y: auto;
+}
+
+.section-table-history{
+  height: 75vh; 
+  overflow-y: auto;
+}
 /* Cabeçalho fixo */
 table thead {
   position: sticky; /* Fixa o cabeçalho */

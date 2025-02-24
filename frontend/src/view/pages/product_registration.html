@@ -7,14 +7,14 @@
      <!--Import materialize.css-->
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CL SYSTEM</title>
 </head>
 <body>
     <header-custom></header-custom>
-    <div class="row">
+    <div class="row main">
         <navbar-custom></navbar-custom>
-        <!-- Conteúdo -->
         <!-- Conteúdo -->
         <div class="col s12 m8 l9">  
             <div class="card-panel teal">
@@ -23,27 +23,33 @@
             </div>
             <div class="divider"></div>
             <div class="row">
-                <table class="striped" id="table-products">
-                    <thead>
-                        <div class="input-field">
-                            <input type="text" id="input-search" class="validate">
-                            <label for="input-search">Buscar Produto</label>
-                        </div>
-                        <progress-custom></progress-custom>
-                        <tr>
-                            <th>Código Produto</th>
-                            <th>Produto</th>
-                            <th>Valor Custo</th>
-                            <th>Valor Venda</th>
-                        </tr>
-                    </thead>
-          
-                    <tbody>
-                        <!-- Products -->
-                    </tbody>
-                </table>
+                <div class="col s12 m12 l12 section-table-products right">
+                    <div class="row">
+
+                        <table class="striped" id="table-products">
+                            <thead>
+                                <div class="input-field">
+                                    <input type="text" id="input-search" class="validate">
+                                    <label for="input-search">Buscar Produto</label>
+                                </div>
+                                <progress-custom></progress-custom>
+                                <tr>
+                                    <th>Código Produto</th>
+                                    <th>Produto</th>
+                                    <th>Valor Custo</th>
+                                    <th>Valor Venda</th>
+                                </tr>
+                            </thead>
+                
+                            <tbody>
+                                <!-- Products -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>   
+        </div> 
+    </div>  
     
   <!-- Modal Structure For Insert And Update Product -->
   <div id="modal1" class="modal bottom-sheet">
@@ -104,5 +110,5 @@
     <script type="module" src="../../assets/js/product_registration.js"></script>
     <script type="module" src="../../../routes.js"></script>
 
-</body>
+    </body>
 </html>
