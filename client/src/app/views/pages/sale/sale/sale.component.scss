@@ -1,0 +1,91 @@
+.dropdown {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+// .dropdown-menu {
+//   max-height: 300px;
+//   overflow-y: auto;
+//   width: 100%;
+//   z-index: 1000;
+//   background-color: white;
+//   border: 1px solid rgba(0, 0, 0, 0.15);
+//   border-radius: 0.25rem;
+//   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+//   padding: 0.5rem 0;
+//   margin: 0.125rem 0 0;
+//   position: absolute;
+//   top: 100%;
+//   left: 0;
+// }
+
+.dropdown-menu.show {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.dropdown-item {
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  display: block;
+  width: 100%;
+  clear: both;
+  font-weight: 400;
+  color: #ffffff;
+  text-align: inherit;
+  white-space: nowrap;
+  background-color: transparent;
+  border: 0;
+  
+  &:hover {
+    opacity: 0.8;
+    color: #004080;
+    text-decoration: none;
+  }
+  
+  .product-name {
+    font-weight: 500;
+    color: #ffffff;
+  }
+  
+  .product-price {
+    font-weight: bold;
+    color: #28a745;
+  }
+}
+
+.dropdown-item.disabled {
+  color: #6c757d;
+  cursor: default;
+  pointer-events: none;
+  background-color: transparent;
+  
+  &:hover {
+    background-color: transparent;
+  }
+}
+
+/* Estilos adicionais para garantir visibilidade */
+.visible-dropdown {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Estilos para o input de busca com spinner */
+.input-group {
+  position: relative;
+  
+  .input-group-text {
+    background-color: transparent;
+    border-left: none;
+    padding: 0.375rem 0.75rem;
+  }
+  
+  c-spinner {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}

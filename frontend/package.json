@@ -1,0 +1,17 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "main": "routes.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Cleisson Heggdorne",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express-session": "^1.18.1",
+    "express.js": "^1.0.0",
+    "path": "^0.12.7"
+  },
+  "type": "module"
+}

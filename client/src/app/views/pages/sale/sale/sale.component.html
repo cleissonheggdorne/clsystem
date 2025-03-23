@@ -1,0 +1,220 @@
+<c-card>
+  <c-card-header>
+    <h4>Venda</h4>
+  </c-card-header>
+  <c-card-body>
+    <!-- Campo de busca de produtos (12/12) -->
+    <c-row class="mb-3">
+      <c-col xs="12">
+        <div class="dropdown w-100">
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Buscar produtos (digite pelo menos 3 caracteres)..."
+              [(ngModel)]="searchTerm"
+              (keyup)="onSearchKeyUp()"
+              (keydown.enter)="selectFirstProduct()"
+            />
+            <span class="input-group-text" *ngIf="isSearching">
+              <c-spinner size="sm" color="primary"></c-spinner>
+            </span>
+          </div>
+          <div class="dropdown-menu w-100" [ngClass]="{'show': showProductsDropdown}" style="display: block !important; visibility: visible !important;" *ngIf="showProductsDropdown">
+            <ng-container *ngIf="!isSearching">
+              <button 
+                *ngFor="let product of filteredProducts"
+                class="dropdown-item" 
+                type="button" 
+                (click)="selectProduct(product)"
+              >
+                <span class="product-name">{{ product.nameProduct }}</span> - 
+                <span class="product-price">{{ formatCurrency(product.valueSale) }}</span>
+              </button>
+              <div *ngIf="filteredProducts.length === 0 && showProductsDropdown" class="dropdown-item disabled">
+                Nenhum produto encontrado
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </c-col>
+    </c-row>
+
+    <!-- Layout principal: esquerda (4/12) e direita (8/12) -->
+    <c-row>
+      <!-- Coluna da esquerda (4/12) -->
+      <c-col md="4">
+        <!-- Campos de quantidade e valor unitário -->
+        <c-card class="mb-3">
+          <c-card-body>
+            <c-row>
+              <c-col xs="6">
+                <label cLabel>Quantidade</label>
+                <input
+                  cFormControl
+                  type="number"
+                  placeholder="Quantidade"
+                  [(ngModel)]="selectedProduct.quantity"
+                />
+              </c-col>
+              <c-col xs="6">
+                <label cLabel>Valor Unitário</label>
+                <input
+                  cFormControl
+                  type="number"
+                  placeholder="Valor Unitário"
+                  [(ngModel)]="selectedProduct.unitaryValue"
+                  readonly
+                />
+              </c-col>
+            </c-row>
+            <c-row class="mt-3">
+              <c-col xs="12">
+                <button cButton color="success" class="w-100" (click)="addProductToSale()">
+                  Adicionar à Venda
+                </button>
+              </c-col>
+            </c-row>
+          </c-card-body>
+        </c-card>
+
+        <!-- Resumo da última seleção -->
+        <c-card>
+          <c-card-header>
+            <h6 class="mb-0">Resumo Última Seleção</h6>
+          </c-card-header>
+          <c-card-body>
+            <p>
+              {{ selectedProduct.idProductNameProduct || 'Nenhum produto selecionado' }}<br>
+              Quantidade: {{ selectedProduct.quantity || 0 }}<br>
+              Valor: {{ formatCurrency(selectedProduct.unitaryValue || 0) }}
+            </p>
+          </c-card-body>
+        </c-card>
+      </c-col>
+
+      <!-- Coluna da direita (8/12) -->
+      <c-col md="8">
+        @if (isLoading) {
+          <div class="text-center py-4">
+            <c-spinner color="primary"></c-spinner>
+          </div>
+        } @else if (!tableItems || tableItems.length === 0) {
+          <div class="text-center py-4">
+            <p class="text-muted">Nenhum produto encontrado</p>
+          </div>
+        }@else {
+          <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover">
+              <thead>
+                <tr>
+                  @for (header of tableHeaders; track header.key) {
+                    <th>{{ header.text }}</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of tableItems; track item[0].text) {
+                  <tr>
+                    @for (cell of item; track cell) {
+                        @if (cell.html) {
+                          <td>
+                          <button cButton color="primary" size="sm">
+                            <svg cIcon name="cilPencil"></svg>
+                          </button>
+                        </td>
+                        <td>
+                          <button cButton color="danger" size="sm" (click)="deleteItem(Number(item[0].text))">
+                            <svg cIcon name="cilTrash"></svg>
+                          </button>
+                        </td>
+                        } @else {
+                          <td>
+                            {{ cell.text }}
+                          </td>
+                        }
+                      <!-- </td> -->
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          @if (totalPages > 1) {
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <div class="text-muted">
+                Mostrando {{ (currentPage - 1) * itemsPerPage + 1 }} a 
+                {{ Math.min(currentPage * itemsPerPage, totalItems) }} de 
+                {{ totalItems }} produtos
+              </div>
+              <nav>
+                <ul class="pagination mb-0">
+                  <li class="page-item" [class.disabled]="currentPage === 1">
+                    <button class="page-link" (click)="previousPage()">
+                      <i class="cil-chevron-left"></i>
+                    </button>
+                  </li>
+                  @for (page of [].constructor(totalPages); track page; let i = $index) {
+                    <li class="page-item" [class.active]="currentPage === i + 1">
+                      <button class="page-link" (click)="goToPage(i + 1)">
+                        {{ i + 1 }}
+                      </button>
+                    </li>
+                  }
+                  <li class="page-item" [class.disabled]="currentPage === totalPages">
+                    <button class="page-link" (click)="nextPage()">
+                      <i class="cil-chevron-right"></i>
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          }
+        }
+
+        <!-- Total e botões de ação -->
+        <c-card class="mt-3">
+          <c-card-body>
+            <div class="bg-info text-white p-2 rounded mb-3">
+              <strong>Total: {{ calculateTotal() | currency:'BRL' }}</strong>
+            </div>
+            <div class="d-flex justify-content-end">
+              <button cButton color="danger" class="me-2" (click)="cancelSale()">
+                CANCELAMENTO (F12)
+              </button>
+              <button cButton color="success" (click)="closeSale()">
+                PAGAMENTO (F2)
+              </button>
+            </div>
+          </c-card-body>
+        </c-card>
+      </c-col>
+    </c-row>
+  </c-card-body>
+</c-card>
+
+<!-- Modal de edição -->
+<c-modal [visible]="modalVisible" (visibleChange)="modalVisible = $event">
+  <c-modal-header>
+    <h5 cModalTitle>Editar Item</h5>
+  </c-modal-header>
+  <c-modal-body>
+    <div class="mb-3">
+      <label cLabel>Quantidade</label>
+      <input cFormControl type="number" [(ngModel)]="selectedProduct.quantity" />
+    </div>
+    <div class="mb-3">
+      <label cLabel>Valor Unitário</label>
+      <input cFormControl type="number" [(ngModel)]="selectedProduct.unitaryValue" />
+    </div>
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton color="secondary" (click)="modalVisible = false">
+      Cancelar
+    </button>
+    <button cButton color="primary" (click)="saveItemChanges()">
+      Salvar
+    </button>
+  </c-modal-footer>
+</c-modal>
