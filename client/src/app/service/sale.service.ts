@@ -73,7 +73,7 @@ export class SaleService {
   }
 
   // Atualizar um item de venda
-  updateItem(item: ItemSale): Observable<any> {
+  updateItem(item: any): Observable<any> {
     return this.http.put(`${this.apiUrlDev}/api/itemsale/save`, item);
   }
 
@@ -97,9 +97,8 @@ export class SaleService {
   }
 
   // Excluir um item de venda
-  deleteItem(idItemSale: number): Observable<any> {
-    return this.http.delete(`${this.apiUrlDev}/api/itemsale/delete`, { 
-      body: { idItemSale }
-    });
+  deleteItem(itemSale: any): Observable<any> {
+    console.log("itemSale:"+itemSale);
+    return this.http.put(`${this.apiUrlDev}/api/itemsale/delete`,itemSale);
   }
 }

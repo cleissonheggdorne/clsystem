@@ -90,7 +90,6 @@ public class ItemSaleService {
 
 		itemSale.get().setQuantity(itemSaleRecord.quantity());
 		itemSale.get().setAmount(amount);
-		
 
 		try {
 			ItemSale itemSaleSaved = itemSaleRepository.saveAndFlush(itemSale.get());
@@ -99,6 +98,14 @@ public class ItemSaleService {
 		} catch (DataIntegrityViolationException dive) {		
 			throw new DataBaseException("", dive);
 		}
+	}
+
+	public void deleteItem(ItemSaleRecord itemSaleRecord){
+		Optional<ItemSale> itemSale = itemSaleRepository.findById(itemSaleRecord.idItemSale());
+		if(!itemSale.isPresent()){
+			throw new DataBaseException("Não foi encontrado o item de venda");
+		}
+		itemSaleRepository.delete(itemSale.get());
 	}
 	
 	@Transactional

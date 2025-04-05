@@ -108,35 +108,32 @@
             <table class="table table-striped table-bordered table-hover">
               <thead>
                 <tr>
-                  @for (header of tableHeaders; track header.key) {
-                    <th>{{ header.text }}</th>
-                  }
+                  <th *ngFor="let header of tableHeaders; trackBy: trackByHeaderKey">
+                    {{ header.text }}
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                @for (item of tableItems; track item[0].text) {
-                  <tr>
-                    @for (cell of item; track cell) {
-                        @if (cell.html) {
-                          <td>
-                          <button cButton color="primary" size="sm">
-                            <svg cIcon name="cilPencil"></svg>
-                          </button>
-                        </td>
-                        <td>
-                          <button cButton color="danger" size="sm" (click)="deleteItem(Number(item[0].text))">
-                            <svg cIcon name="cilTrash"></svg>
-                          </button>
-                        </td>
-                        } @else {
-                          <td>
-                            {{ cell.text }}
-                          </td>
-                        }
-                      <!-- </td> -->
+                <tr *ngFor="let item of tableItems; trackBy: trackByItemId">
+                  <td *ngFor="let cell of item; trackBy: trackByCellIndex">
+                    @if (cell.html) {
+                      <td>
+                        <button cButton color="primary" size="sm" (click)="editItem(Number(item[0].text))">
+                          <svg cIcon name="cilPencil"></svg>
+                        </button>
+                      </td>
+                      <td>
+                        <button cButton color="danger" size="sm" (click)="deleteItemDataModal(Number(item[0].text))">
+                          <svg cIcon name="cilTrash"></svg>
+                        </button>
+                      </td>
+                    } @else {
+                      <td>
+                        {{ cell.text }}
+                      </td>
                     }
-                  </tr>
-                }
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -195,26 +192,55 @@
 </c-card>
 
 <!-- Modal de edição -->
-<c-modal [visible]="modalVisible" (visibleChange)="modalVisible = $event">
+<c-modal [visible]="editItemModalVisible" (visibleChange)="editItemModalVisible = $event">
   <c-modal-header>
     <h5 cModalTitle>Editar Item</h5>
   </c-modal-header>
   <c-modal-body>
     <div class="mb-3">
-      <label cLabel>Quantidade</label>
-      <input cFormControl type="number" [(ngModel)]="selectedProduct.quantity" />
+      <label cLabel>Produto</label>
+      <input cFormControl type="text" [(ngModel)]="editingItem.idProductNameProduct" disabled />
     </div>
     <div class="mb-3">
-      <label cLabel>Valor Unitário</label>
-      <input cFormControl type="number" [(ngModel)]="selectedProduct.unitaryValue" />
+      <label cLabel>Quantidade</label>
+      <input cFormControl type="number" [(ngModel)]="editingItem.quantity" />
     </div>
   </c-modal-body>
   <c-modal-footer>
-    <button cButton color="secondary" (click)="modalVisible = false">
+    <button cButton color="secondary" (click)="editItemModalVisible = false">
       Cancelar
     </button>
     <button cButton color="primary" (click)="saveItemChanges()">
       Salvar
+    </button>
+  </c-modal-footer>
+</c-modal>
+
+!-- Modal de Exclusão -->
+<c-modal [visible]="deleteItemModalVisible" (visibleChange)="deleteItemModalVisible = $event">
+  <c-modal-header>
+    <h5 cModalTitle>Editar Item</h5>
+  </c-modal-header>
+  <c-modal-body>
+    <div class="mb-3">
+      <label cLabel>Produto</label>
+      <input cFormControl type="text" [(ngModel)]="editingItem.idProductNameProduct" disabled />
+    </div>
+    <div class="mb-3">
+      <label cLabel>Quantidade</label>
+      <input cFormControl type="number" [(ngModel)]="editingItem.quantity" disabled/>
+    </div>
+    <div class="mb-3">
+      <label cLabel>Total</label>
+      <input cFormControl type="number" [(ngModel)]="editingItem.amount" disabled/>
+    </div>
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton color="secondary" (click)="deleteItemModalVisible = false">
+      Cancelar
+    </button>
+    <button cButton color="danger" (click)="deleteItem()">
+      REMOVER
     </button>
   </c-modal-footer>
 </c-modal>

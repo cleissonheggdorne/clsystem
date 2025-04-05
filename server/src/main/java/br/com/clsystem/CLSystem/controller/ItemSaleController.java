@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -55,6 +56,16 @@ public class ItemSaleController {
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
+	}
+	
+	@PutMapping("/delete")
+	public ResponseEntity<?> deleteController(@Valid @RequestBody ItemSaleRecord itemSaleRecord, BindingResult br) {
+	    try {
+	        itemSaleService.deleteItem(itemSaleRecord);
+	        return ResponseEntity.ok().body("Item de venda deletado com sucesso");
+	    } catch (DataBaseException e) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
+	    }
 	}
 
 	@GetMapping("/finditenssale")

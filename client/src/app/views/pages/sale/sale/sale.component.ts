@@ -86,7 +86,18 @@ export class SaleComponent implements OnInit {
   };
   
   // Controle do modal
-  modalVisible = false;
+  editItemModalVisible = false;
+  deleteItemModalVisible = false;
+  // Propriedades para o modal de edição
+ 
+  editingItem: ItemSale = {
+    idItemSale: 0,
+    quantity: 0,
+    amount: 0,
+    unitaryValue: 0,
+    idProductNameProduct: "",
+    idSale: 0,
+  };
 
   constructor(
     private saleService: SaleService,
@@ -333,59 +344,70 @@ export class SaleComponent implements OnInit {
   }
 
   // Método para editar um item
-  editItem(item: ItemSale): void {
-    // Criar uma cópia do item para edição
-    this.selectedProduct = { 
-      ...item,
-      // Garantir que todos os campos necessários estejam presentes
-      idProductNameProduct: item.idProductNameProduct,
-      quantity: item.quantity,
-      unitaryValue: item.unitaryValue,
-      idItemSale: item.idItemSale,
-      idSale: item.idSale
-    };
-    
-    this.modalVisible = true;
+  editItem(idItemSale: number): void {
+    const itemSale = this.saleItems.find(p => p.idItemSale === idItemSale);
+    console.log("item sale:"+itemSale);
+    if (itemSale) {
+       this.editingItem = { ...itemSale }; // Cria uma cópia do produto
+       this.editItemModalVisible = true;
+    }
   }
-
-  // Método para deletar um item
-  deleteItem(idItemSale: number): void {
-    if (confirm('Tem certeza que deseja excluir este item?')) {
+  
+  // Método para salvar alterações do modal
+  saveItemChanges(): void {
+    if (this.editingItem) {
+      const itemEdited = {
+        "idItemSale" : this.editingItem.idItemSale,
+        "quantity" : this.editingItem.quantity,
+        "idCashier": this.currentSale.idCashier
+      }
       this.isLoading = true;
-      
-      // Implementar lógica de exclusão
-      console.log('Deletando item:', idItemSale);
-      
-      // Chamar o serviço para excluir o item no backend
-      this.saleService.deleteItem(idItemSale).subscribe({
-        next: (response) => {
-          console.log('Item excluído com sucesso:', response);
-          
-          // Remover o item localmente para feedback imediato
-          this.saleItems = this.saleItems.filter(i => i.idItemSale !== idItemSale);
-          
-          // Atualizar o total da venda
-          this.calculateTotal();
-          
-          this.isLoading = false;
+      this.saleService.updateItem(itemEdited).subscribe({
+        next: () => {
+          this.loadSaleItems(this.currentSale.idSale!, this.currentSale.idCashier!);
+          this.editItemModalVisible = false;
         },
         error: (error) => {
-          console.error('Erro ao excluir item:', error);
+          console.error('Erro ao atualizar produto:', error);
           this.isLoading = false;
-          alert('Erro ao excluir o item. Por favor, tente novamente.');
         }
       });
     }
   }
-
-  // Método para salvar alterações do modal
-  saveItemChanges(): void {
-    if (this.selectedProduct) {
-      this.updateItem(this.selectedProduct);
-      this.modalVisible = false;
+  
+  
+  // Método para deletar um item
+  deleteItemDataModal(idItemSale: number): void {
+    const itemSale = this.saleItems.find(p => p.idItemSale === idItemSale);
+    console.log("item sale:"+itemSale);
+    if (itemSale) {
+      this.editingItem = { ...itemSale }; // Cria uma cópia do produto
+      this.deleteItemModalVisible = true;
     }
   }
 
+  deleteItem(): void {
+    if (this.editingItem) {
+      console.log("item sale editing:"+this.editingItem);
+      const itemEdited = {
+        "idItemSale" : this.editingItem.idItemSale,
+        "quantity" : this.editingItem.quantity,
+        "idCashier": this.currentSale.idCashier
+      }
+      console.log("item sale edited id:"+itemEdited.idItemSale)
+      this.isLoading = true;
+      this.saleService.deleteItem(itemEdited).subscribe({
+        next: () => {
+          this.loadSaleItems(this.currentSale.idSale!, this.currentSale.idCashier!);
+          this.deleteItemModalVisible = false;
+        },
+        error: (error) => {
+          console.error('Erro ao excluir produto:', error);
+          this.isLoading = false;
+        }
+      });
+    }
+  }
   // Formatar valor em reais
   formatCurrency(value: number): string {
     return value.toLocaleString('pt-BR', {
@@ -480,5 +502,17 @@ export class SaleComponent implements OnInit {
       isLoading: this.isLoading,
       isSearching: this.isSearching
     });
+  }
+
+  trackByHeaderKey(index: number, header: any): string {
+    return header.key;
+  }
+
+  trackByItemId(index: number, item: any): any {
+    return item[0]?.text || index; // Use um identificador único ou o índice como fallback
+  }
+
+  trackByCellIndex(index: number, cell: any): number {
+    return index; // Use o índice como chave única para células
   }
 }
