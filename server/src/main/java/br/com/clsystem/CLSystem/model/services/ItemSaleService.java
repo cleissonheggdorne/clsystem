@@ -36,7 +36,7 @@ public class ItemSaleService {
 	}
 	
 	@Transactional
-	public ItemSale saveItem(ItemSaleRecord itemSaleRecord){
+	public ItemSaleProjection saveItem(ItemSaleRecord itemSaleRecord){
 		BigDecimal amount = new BigDecimal(0.0);
 		Integer quantity;
 		Optional<Sale> sale = saleService.findBySaleOpen(itemSaleRecord.idCashier());
@@ -70,15 +70,15 @@ public class ItemSaleService {
 		itemSale.get().setIdSale(sale.get());
 		try {
 			ItemSale itemSaleSaved = itemSaleRepository.saveAndFlush(itemSale.get());
-			System.out.println(itemSaleSaved.getIdItemSale());
-			return itemSaleSaved;
+			Optional<ItemSaleProjection> itemSaleProjection = itemSaleRepository.findByIdItemSale(itemSaleSaved.getIdItemSale());
+			return itemSaleProjection.get();
 		} catch (DataIntegrityViolationException dive) {		
 			throw new DataBaseException("", dive);
 		}
 	}
 
 	@Transactional
-	public ItemSale updateItem(ItemSaleRecord itemSaleRecord){
+	public ItemSaleProjection updateItem(ItemSaleRecord itemSaleRecord){
 		BigDecimal amount = new BigDecimal(0.0);
 		Integer quantity;
 		
@@ -93,8 +93,8 @@ public class ItemSaleService {
 
 		try {
 			ItemSale itemSaleSaved = itemSaleRepository.saveAndFlush(itemSale.get());
-			System.out.println(itemSaleSaved.getIdItemSale());
-			return itemSaleSaved;
+			Optional<ItemSaleProjection> itemSaleUpdated = itemSaleRepository.findByIdItemSale(itemSaleSaved.getIdItemSale());
+			return itemSaleUpdated.get();
 		} catch (DataIntegrityViolationException dive) {		
 			throw new DataBaseException("", dive);
 		}
