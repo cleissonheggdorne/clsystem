@@ -1,6 +1,7 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import {
   ButtonModule,
   CardModule,
@@ -13,8 +14,9 @@ import {
 } from '@coreui/angular';
 import { IconModule, IconSetService } from '@coreui/icons-angular';
 import { cilPencil, cilTrash } from '@coreui/icons';
-import { SaleService, ItemSale, Sale } from '../../../../service/sale.service';
+import { SaleService, ItemSale, Sale, SaleWithItems } from '../../../../service/sale.service';
 import { CashierService } from '../../../../service/cashier.service';
+import { PaymentModalComponent } from '../payment-modal/payment-modal.component'; // Adicione esta linha no topo
 
 @Component({
   selector: 'app-sale',
@@ -30,7 +32,8 @@ import { CashierService } from '../../../../service/cashier.service';
     TableDirective,
     ModalModule,
     SpinnerModule,
-    IconModule
+    IconModule,
+    PaymentModalComponent
   ],
   templateUrl: './sale.component.html',
   styleUrl: './sale.component.scss',
@@ -64,8 +67,7 @@ export class SaleComponent implements OnInit {
     { text: 'Descrição', key: 'description' },
     { text: 'Valor Unitário', key: 'unitaryValue' },
     { text: 'Total', key: 'total' },
-    { text: 'Editar', key: 'actions' },
-    { text: 'Excluir', key: 'actions' }
+    { text: 'Ações', key: 'actions' },
   ];
 
   // Dados da venda atual
@@ -78,11 +80,22 @@ export class SaleComponent implements OnInit {
   // Itens da venda
   saleItems: ItemSale[] = [];
   
+  saleWithItems: SaleWithItems[] = [];
+
+
   // Produto selecionado para adicionar
   selectedProduct: any = {
-    quantity: 0,
-    unitaryValue: 0,
-    idProductNameProduct: ''
+    quantity: 1,
+    unitaryValue: 0.00,
+    nameProduct: '',
+    idProduct: 0
+  };
+  // Último produto selecionado
+  selectedLastProduct: any = {
+    quantity: 1,
+    unitaryValue: 0.00,
+    nameProduct: '',
+    idProduct: 0
   };
   
   // Controle do modal
@@ -90,14 +103,16 @@ export class SaleComponent implements OnInit {
   deleteItemModalVisible = false;
   // Propriedades para o modal de edição
  
-  editingItem: ItemSale = {
+  editingItem: any = {
     idItemSale: 0,
     quantity: 0,
     amount: 0,
     unitaryValue: 0,
-    idProductNameProduct: "",
+    nameProduct: "",
     idSale: 0,
   };
+
+  showPaymentModal = false;
 
   constructor(
     private saleService: SaleService,
@@ -111,7 +126,7 @@ export class SaleComponent implements OnInit {
     // Obter o ID do caixa com a propriedade correta
     const cashier = this.cashierService.getCashier();
     this.currentSale.idCashier = cashier ? cashier.idCashier : 0;
-    this.loadSaleItems (this.currentSale.idSale!, this.currentSale.idCashier!);
+    this.loadSaleItemsV2 (this.currentSale.idSale!, this.currentSale.idCashier!);
   }
 
   // Buscar itens de uma venda específica
@@ -119,11 +134,35 @@ export class SaleComponent implements OnInit {
     this.isLoading = true;
     this.saleService.getItensSale(idSale, idCashier).subscribe({
       next: (items) => {
-        console.log('Itens carregados:', items);
+        this.currentSale.idSale = items[0].idSale.idSale
         this.saleItems = items;
         this.totalItems = items.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
         this.updateTable();
+        this.isLoading=false;
+      },
+      error: (error) => {
+        console.error('Erro ao carregar itens:', error);
+      },
+      complete: () => {
+        this.isLoading = false;
+      }
+    });
+  }
+
+  loadSaleItemsV2(idSale: number, idCashier: number): void {
+    this.isLoading = true;
+    this.saleService.getItensSaleV2(idSale, idCashier).subscribe({
+      next: (item) => {
+        if(item.length === 0){
+          return;
+        }
+        this.saleWithItems = item;
+        this.currentSale.idSale = item[0].idSale
+        this.saleItems = item[0].listItems;
+        this.totalItems = item[0].listItems.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+        this.updateTableV2();
         this.isLoading=false;
       },
       error: (error) => {
@@ -147,9 +186,31 @@ export class SaleComponent implements OnInit {
       this.tableItems = pageItems.map(item => [
         { text: item.idItemSale.toString() },
         { text: item.quantity.toString() },
-        { text: item.idProductNameProduct },
+      //  { text: item.idProductNameProduct },
         { text: `R$ ${item.unitaryValue.toFixed(2)}` },
-        { text: `R$ ${item.amount.toFixed(2)}` },
+     //   { text: `R$ ${item.amount.toFixed(2)}` },
+        { html: true } // Marca a última coluna como HTML para renderizar os botões
+      ]);
+    } else {
+      this.tableItems = [];
+    }
+  }
+
+  updateTableV2() {
+    if (this.saleItems && this.saleItems.length > 0) {
+      // Calcula o índice inicial e final para a página atual
+      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+      const endIndex = startIndex + this.itemsPerPage;
+      
+      // Pega apenas os produtos da página atual
+      const pageItems = this.saleItems.slice(startIndex, endIndex);
+      
+      this.tableItems = pageItems.map(item => [
+        { text: item.idItemSale.toString() },
+        { text: item.quantity.toString() },
+        { text: item.idProduct.nameProduct },
+        { text: `R$ ${item.unitaryValue.toFixed(2)}` },
+        { text: `R$ ${(item.unitaryValue*item.quantity).toFixed(2)}` },
         { html: true } // Marca a última coluna como HTML para renderizar os botões
       ]);
     } else {
@@ -160,7 +221,7 @@ export class SaleComponent implements OnInit {
   goToPage(page: number) {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
-      this.updateTable();
+      this.updateTableV2();
     }
   }
 
@@ -198,20 +259,13 @@ export class SaleComponent implements OnInit {
     
     this.saleService.searchProducts(this.searchTerm).subscribe({
       next: (products) => {
-        console.log('Produtos encontrados:', products);
         this.filteredProducts = products || [];
-        
-        // Garantir que o dropdown permaneça aberto se houver resultados
         this.showProductsDropdown = true;
-        
-        // Log para debug
-        console.log('Dropdown visível:', this.showProductsDropdown);
-        console.log('Produtos filtrados:', this.filteredProducts);
+
       },
       error: (error) => {
         console.error('Erro na busca:', error);
         this.filteredProducts = [];
-        // Manter o dropdown aberto mesmo com erro, para mostrar a mensagem
         this.showProductsDropdown = true;
       },
       complete: () => {
@@ -229,18 +283,17 @@ export class SaleComponent implements OnInit {
 
   // Selecionar um produto da lista
   selectProduct(product: any): void {
-    console.log('Produto selecionado:', product);
     
-    // Fechar o dropdown imediatamente
     this.showProductsDropdown = false;
     
-    // Atualizar o produto selecionado
     this.selectedProduct = {
-      idProductNameProduct: product.nameProduct,
-      quantity: 1,
-      unitaryValue: product.valueSale || 0,
-      idProduct: product.idProduct
+      nameProduct: product.nameProduct,
+      quantity: this.selectedProduct.quantity || 1,
+      idProduct: product.idProduct,
+      unitaryValue: product.valueSale,
     };
+
+    this.selectedLastProduct = {...this.selectedProduct}; //Replica Objeto
     
     // Atualizar o campo de busca
     this.searchTerm = product.nameProduct;
@@ -256,8 +309,7 @@ export class SaleComponent implements OnInit {
     this.isLoading = true;
     this.saleService.saveItem(item).subscribe({
       next: (savedItem) => {
-        console.log('Item salvo:', savedItem);
-        this.loadSaleItems(this.currentSale.idSale!, this.currentSale.idCashier!);
+        this.loadSaleItemsV2(this.currentSale.idSale!, this.currentSale.idCashier!);
       },
       error: (error) => {
         console.error('Erro ao salvar item:', error);
@@ -274,7 +326,7 @@ export class SaleComponent implements OnInit {
     this.saleService.updateItem(item).subscribe({
       next: (updatedItem) => {
         console.log('Item atualizado:', updatedItem);
-        this.loadSaleItems(this.currentSale.idSale!, this.currentSale.idCashier!);
+        this.loadSaleItemsV2(this.currentSale.idSale!, this.currentSale.idCashier!);
       },
       error: (error) => {
         console.error('Erro ao atualizar item:', error);
@@ -292,21 +344,18 @@ export class SaleComponent implements OnInit {
       return;
     }
 
-    this.isLoading = true;
     this.saleService.closeSale(
       this.currentSale.idCashier,
       this.currentSale.idSale,
       this.currentSale.formPayment
     ).subscribe({
       next: (result) => {
-        console.log('Venda fechada com sucesso:', result);
-        // Lógica após fechar a venda
+        alert("Vendaa fechada com sucesso!");
       },
       error: (error) => {
-        console.error('Erro ao fechar venda:', error);
+        alert("Erro ao fechar venda!");
       },
       complete: () => {
-        this.isLoading = false;
       }
     });
   }
@@ -317,30 +366,28 @@ export class SaleComponent implements OnInit {
       console.error('Dados incompletos para cancelar a venda');
       return;
     }
+    this.saleService.cancelSale(this.currentSale.idCashier, this.currentSale.idSale).subscribe({
+      next: (result) => {
+        alert("Venda cancelada com sucesso!");
+      },
+      error: (error) => {
+        alert("Erro ao cancelar venda!");
+      },
+      complete: () => {
+        this.updateTableV2();
+      }
+    });
 
-    if (confirm('Tem certeza que deseja cancelar esta venda?')) {
-      this.isLoading = true;
-      this.saleService.cancelSale(
-        this.currentSale.idCashier,
-        this.currentSale.idSale
-      ).subscribe({
-        next: (result) => {
-          console.log('Venda cancelada com sucesso:', result);
-          // Lógica após cancelar a venda
-        },
-        error: (error) => {
-          console.error('Erro ao cancelar venda:', error);
-        },
-        complete: () => {
-          this.isLoading = false;
-        }
-      });
-    }
   }
 
   // Métodos auxiliares
   calculateTotal(): number {
-    return this.saleItems.reduce((total, item) => total + (item.amount || 0), 0);
+    return this.saleItems.reduce((total, item) => {
+      const quantity = Number(item.quantity);
+      const unitaryValue = Number(item.unitaryValue);
+      const itemTotal = quantity * unitaryValue;
+      return total + itemTotal;
+    }, 0);
   }
 
   // Método para editar um item
@@ -348,7 +395,11 @@ export class SaleComponent implements OnInit {
     const itemSale = this.saleItems.find(p => p.idItemSale === idItemSale);
     console.log("item sale:"+itemSale);
     if (itemSale) {
-       this.editingItem = { ...itemSale }; // Cria uma cópia do produto
+       this.editingItem = {
+         idItemSale: itemSale.idItemSale,
+         quantity: itemSale.quantity,
+         nameProduct: itemSale.idProduct.nameProduct,
+        }; 
        this.editItemModalVisible = true;
     }
   }
@@ -361,15 +412,17 @@ export class SaleComponent implements OnInit {
         "quantity" : this.editingItem.quantity,
         "idCashier": this.currentSale.idCashier
       }
-      this.isLoading = true;
       this.saleService.updateItem(itemEdited).subscribe({
-        next: () => {
-          this.loadSaleItems(this.currentSale.idSale!, this.currentSale.idCashier!);
+        next: (itemEdited) => {
+          if(itemEdited){
+            this.saleItems = this.saleItems.filter(item => item.idItemSale !== itemEdited.idItemSale);
+            this.saleItems.push(itemEdited);
+          }
+          this.updateTableV2();
           this.editItemModalVisible = false;
         },
         error: (error) => {
           console.error('Erro ao atualizar produto:', error);
-          this.isLoading = false;
         }
       });
     }
@@ -381,29 +434,32 @@ export class SaleComponent implements OnInit {
     const itemSale = this.saleItems.find(p => p.idItemSale === idItemSale);
     console.log("item sale:"+itemSale);
     if (itemSale) {
-      this.editingItem = { ...itemSale }; // Cria uma cópia do produto
+      this.editingItem = {
+        idItemSale: itemSale.idItemSale,
+        quantity: itemSale.quantity,
+        nameProduct: itemSale.idProduct.nameProduct,
+        amount:itemSale.quantity*itemSale.unitaryValue
+       };
       this.deleteItemModalVisible = true;
     }
   }
 
   deleteItem(): void {
     if (this.editingItem) {
-      console.log("item sale editing:"+this.editingItem);
       const itemEdited = {
         "idItemSale" : this.editingItem.idItemSale,
         "quantity" : this.editingItem.quantity,
         "idCashier": this.currentSale.idCashier
       }
-      console.log("item sale edited id:"+itemEdited.idItemSale)
-      this.isLoading = true;
+      //this.isLoading = true;
       this.saleService.deleteItem(itemEdited).subscribe({
-        next: () => {
-          this.loadSaleItems(this.currentSale.idSale!, this.currentSale.idCashier!);
-          this.deleteItemModalVisible = false;
+        next: (msg) => {
+         this.saleItems = this.saleItems.filter(item => item.idItemSale !== this.editingItem.idItemSale);
+         this.updateTableV2();
+         this.deleteItemModalVisible = false;
         },
         error: (error) => {
-          console.error('Erro ao excluir produto:', error);
-          this.isLoading = false;
+         console.error('Erro ao atualizar produto:', error);
         }
       });
     }
@@ -418,7 +474,7 @@ export class SaleComponent implements OnInit {
 
   // Método para adicionar produto à venda
   addProductToSale(): void {
-    if (!this.selectedProduct.idProductNameProduct) {
+    if (!this.selectedProduct.nameProduct) {
       alert('Selecione um produto primeiro!');
       return;
     }
@@ -430,34 +486,23 @@ export class SaleComponent implements OnInit {
 
     // Criar item de venda
     const item: any = {
-      idItemSale: null, // Será gerado pelo backend
+      idItemSale: null, // Será gerado pelo server
       quantity: this.selectedProduct.quantity,
-      //unitaryValue: this.selectedProduct.unitaryValue,
-      //amount: this.selectedProduct.quantity * this.selectedProduct.unitaryValue,
       idProduct: this.selectedProduct.idProduct,
       idSale: this.currentSale.idSale || null,
-      idCashier: 6//this.currentSale.idCashier || null
+      idCashier: this.currentSale.idCashier || null
     };
 
-    console.log('Item a ser salvo:', item);
-
     // Salvar item
-    this.isLoading = true;
+   // this.isLoading = true;
     this.saleService.saveItem(item).subscribe({
-      next: (savedItem) => {
-        console.log('Item salvo:', savedItem);
-        
+      next: (savedItem) => {        
         // Adicionar o item à lista local para atualização imediata
         if (savedItem) {
-          // Se o backend retornou o item salvo, usamos ele
           this.saleItems.push(savedItem);
-        } else {
-          // Caso contrário, usamos o item que enviamos
-          this.saleItems.push(item);
-        }
-        
-        // Recarregar a lista completa do backend
-        this.loadSaleItems(this.currentSale.idSale!, this.currentSale.idCashier!);
+        } 
+        // Atualizar a tabela de itens
+        this.updateTableV2()        
         
         // Limpar o campo de busca
         this.searchTerm = '';
@@ -467,8 +512,9 @@ export class SaleComponent implements OnInit {
         alert('Erro ao adicionar item à venda. Tente novamente.');
       },
       complete: () => {
-        this.isLoading = false;
-        
+        //this.isLoading = false;
+        this.updateTableV2()        
+
         // Limpar seleção
         this.selectedProduct = {
           quantity: 0,
@@ -487,9 +533,7 @@ export class SaleComponent implements OnInit {
     // Não fechar se o clique foi dentro do dropdown ou no input de busca
     if (target.closest('.dropdown') || target.classList.contains('form-control')) {
       return;
-    }
-    
-    console.log('Clique fora do dropdown, fechando...');
+    }    
     this.showProductsDropdown = false;
   }
 
@@ -514,5 +558,18 @@ export class SaleComponent implements OnInit {
 
   trackByCellIndex(index: number, cell: any): number {
     return index; // Use o índice como chave única para células
+  }
+
+  openPaymentModal(): void {
+    if (!this.currentSale.idSale || !this.currentSale.idCashier) {
+         console.error('Dados incompletos para cancelar a venda');
+         return;
+    }
+    this.showPaymentModal = true;
+  }
+  
+  handlePaymentComplete(paymentDetails: any): void {
+    this.currentSale.formPayment = paymentDetails.paymentMethod;
+    this.closeSale();
   }
 }

@@ -85,9 +85,9 @@
           </c-card-header>
           <c-card-body>
             <p>
-              {{ selectedProduct.idProductNameProduct || 'Nenhum produto selecionado' }}<br>
-              Quantidade: {{ selectedProduct.quantity || 0 }}<br>
-              Valor: {{ formatCurrency(selectedProduct.unitaryValue || 0) }}
+              {{ selectedLastProduct.nameProduct || 'Nenhum produto selecionado' }}<br>
+              Quantidade: {{ selectedLastProduct.quantity || 0 }}<br>
+              Valor Unitário: {{ formatCurrency(selectedLastProduct.unitaryValue || 0) }}
             </p>
           </c-card-body>
         </c-card>
@@ -180,7 +180,7 @@
               <button cButton color="danger" class="me-2" (click)="cancelSale()">
                 CANCELAMENTO (F12)
               </button>
-              <button cButton color="success" (click)="closeSale()">
+              <button cButton color="success" (click)="openPaymentModal()">
                 PAGAMENTO (F2)
               </button>
             </div>
@@ -199,7 +199,7 @@
   <c-modal-body>
     <div class="mb-3">
       <label cLabel>Produto</label>
-      <input cFormControl type="text" [(ngModel)]="editingItem.idProductNameProduct" disabled />
+      <input cFormControl type="text" [(ngModel)]="editingItem.nameProduct" disabled />
     </div>
     <div class="mb-3">
       <label cLabel>Quantidade</label>
@@ -216,7 +216,6 @@
   </c-modal-footer>
 </c-modal>
 
-!-- Modal de Exclusão -->
 <c-modal [visible]="deleteItemModalVisible" (visibleChange)="deleteItemModalVisible = $event">
   <c-modal-header>
     <h5 cModalTitle>Editar Item</h5>
@@ -224,7 +223,7 @@
   <c-modal-body>
     <div class="mb-3">
       <label cLabel>Produto</label>
-      <input cFormControl type="text" [(ngModel)]="editingItem.idProductNameProduct" disabled />
+      <input cFormControl type="text" [(ngModel)]="editingItem.nameProduct" disabled />
     </div>
     <div class="mb-3">
       <label cLabel>Quantidade</label>
@@ -244,3 +243,8 @@
     </button>
   </c-modal-footer>
 </c-modal>
+<app-payment-modal
+  [(visible)]="showPaymentModal"
+  [total]="calculateTotal()"
+  (onConclude)="handlePaymentComplete($event)">
+</app-payment-modal>
