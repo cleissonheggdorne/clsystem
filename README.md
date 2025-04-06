@@ -1,5 +1,16 @@
 
-# CLSystem
+# CLSystem PDV Simples
+
+# Funções
+- **Login/Logout**
+- **Cadastro de Produtos**
+- **Cadastro de Funcionários**:  Funcionário como usuário em implementação
+- **Cadastro de Vendas**
+- **Edição/Exclusão de item de uma venda em andamento**
+- **Fechamento/Cancelamento de uma venda em andamento**
+- **Auxílio com troco e escolha de método de pagamento**
+- **Abertura/Fechamento de Caixa** : Em implementação
+- **Histórico de Vendas por Caixa**
 
 ## Tecnologias Utilizadas
 
