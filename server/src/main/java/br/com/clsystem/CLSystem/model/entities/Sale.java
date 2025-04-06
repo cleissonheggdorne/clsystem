@@ -77,4 +77,11 @@ public class Sale implements Serializable {
 		.map(ItemSale::getAmount)
 		.reduce(new BigDecimal(0.0), BigDecimal::add);
 	}
+
+	public BigDecimal getAmount(){
+		return listItems
+		.stream()
+		.map(ItemSale::getAmount)
+		.reduce(new BigDecimal(0.0), BigDecimal::add);
+	}
 }

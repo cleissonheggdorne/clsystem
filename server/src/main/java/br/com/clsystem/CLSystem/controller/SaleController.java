@@ -1,18 +1,21 @@
 package br.com.clsystem.CLSystem.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
 import br.com.clsystem.CLSystem.model.entities.Sale;
+import br.com.clsystem.CLSystem.model.entities.projection.SaleProjection;
 import br.com.clsystem.CLSystem.model.services.ItemSaleService;
 import br.com.clsystem.CLSystem.model.services.SaleService;
 
@@ -57,5 +60,22 @@ public class SaleController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
 	}
-	
+
+	@GetMapping("/list-itens-by-sale")
+	public ResponseEntity<?> listItensBySaleController(@RequestParam(name = "idSale") Long idSaleRequest, @RequestParam(name = "idCashier") Long idCashierRequest){
+		try {
+			List<SaleProjection> listSaleItems = saleService.listItensBySale(idSaleRequest, idCashierRequest);
+			if(listSaleItems == null || listSaleItems.isEmpty()){
+				return ResponseEntity.status(HttpStatus.NO_CONTENT)
+					.header("X-Sale-Status", "empty")
+					.body(null);
+			} else {
+				return ResponseEntity.ok()
+					.header("X-Sale-Count", String.valueOf(listSaleItems.size()))
+					.body(listSaleItems);
+			}
+		}catch(DataBaseException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
+		}
+	}
 }

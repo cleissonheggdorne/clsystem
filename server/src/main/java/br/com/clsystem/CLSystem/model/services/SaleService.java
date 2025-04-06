@@ -1,6 +1,8 @@
 package br.com.clsystem.CLSystem.model.services;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
 import br.com.clsystem.CLSystem.model.entities.Cashier;
 import br.com.clsystem.CLSystem.model.entities.Sale;
+import br.com.clsystem.CLSystem.model.entities.projection.SaleProjection;
 import br.com.clsystem.CLSystem.model.repositories.SaleRepository;
 import br.com.clsystem.CLSystem.types.FormPayment;
 import br.com.clsystem.CLSystem.types.StatusSale;
@@ -94,4 +97,21 @@ public class SaleService {
 			throw new DataBaseException("", dive);
 		}
     }
+
+	public List<SaleProjection> listItensBySale(Long idSale, Long idCashier) {
+		try {
+			Optional<Sale> sale = saleRepository.findById(idSale != null? idSale : 0);
+			if(sale.isPresent()){
+				return saleRepository.findByIdSaleAndIdCashierIdCashier(sale.get().getIdSale(), idCashier);
+			}else{
+				sale = findBySaleOpen(idCashier);
+				if(sale.isPresent()){
+					return saleRepository.findByIdSaleAndIdCashierIdCashier(sale.get().getIdSale(), idCashier);
+				}
+				return new ArrayList<>();
+			}
+		}catch(Exception e) {
+			throw new DataBaseException("", e);
+		}
+	}
 }
