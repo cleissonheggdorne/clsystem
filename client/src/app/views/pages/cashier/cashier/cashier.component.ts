@@ -104,7 +104,6 @@ export class CashierComponent implements OnInit {
     this.isLoading = true;
     this.cashierService.getCashiers().subscribe({
       next: (cashiers) => {
-        console.log('Caixas carregados:', cashiers);
         this.cashiers = cashiers;
         this.totalItems = cashiers.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
