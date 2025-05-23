@@ -177,11 +177,11 @@
               <strong>Total: {{ calculateTotal() | currency:'BRL' }}</strong>
             </div>
             <div class="d-flex justify-content-end">
-              <button cButton color="danger" class="me-2" (click)="cancelSale()">
-                CANCELAMENTO (F12)
+              <button cButton color="danger" class="me-2" (click)="modalCancelSale = true">
+                CANCELAMENTO
               </button>
               <button cButton color="success" (click)="openPaymentModal()">
-                PAGAMENTO (F2)
+                PAGAMENTO
               </button>
             </div>
           </c-card-body>
@@ -248,3 +248,15 @@
   [total]="calculateTotal()"
   (onConclude)="handlePaymentComplete($event)">
 </app-payment-modal>
+
+<!-- Modal de Cancelamento de Venda -->
+<app-custom-modal
+  [visible]="modalCancelSale"
+  (visibleChange)="modalCancelSale = $event"
+  [title]="cancelSaleModalTitle"
+  [description]="cancelSaleModalDescription"
+  [primaryButtonText]="'Confirmar Cancelamento'"
+  [secondaryButtonText]="'Voltar'"
+  (primaryAction)="cancelSale()">
+</app-custom-modal>
+

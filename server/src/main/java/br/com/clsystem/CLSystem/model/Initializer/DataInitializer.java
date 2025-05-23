@@ -19,7 +19,6 @@ public class DataInitializer implements CommandLineRunner {
 
     @Autowired
     private EmployeeRepository employeeRepository; 
-
     @Override
     @Transactional
     public void run(String... args) throws Exception {

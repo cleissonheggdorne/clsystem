@@ -1,6 +1,7 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ModalField } from 'src/app/shared/components/custom-modal/custom-modal.component';
 
 import {
   ButtonModule,
@@ -17,6 +18,7 @@ import { cilPencil, cilTrash } from '@coreui/icons';
 import { SaleService, ItemSale, Sale, SaleWithItems } from '../../../../service/sale.service';
 import { CashierService } from '../../../../service/cashier.service';
 import { PaymentModalComponent } from '../payment-modal/payment-modal.component'; // Adicione esta linha no topo
+import { CustomModalComponent } from '../../../../shared/components/custom-modal/custom-modal.component';
 
 @Component({
   selector: 'app-sale',
@@ -33,7 +35,8 @@ import { PaymentModalComponent } from '../payment-modal/payment-modal.component'
     ModalModule,
     SpinnerModule,
     IconModule,
-    PaymentModalComponent
+    PaymentModalComponent,
+    CustomModalComponent
   ],
   templateUrl: './sale.component.html',
   styleUrl: './sale.component.scss',
@@ -82,7 +85,6 @@ export class SaleComponent implements OnInit {
   
   saleWithItems: SaleWithItems[] = [];
 
-
   // Produto selecionado para adicionar
   selectedProduct: any = {
     quantity: 1,
@@ -101,8 +103,9 @@ export class SaleComponent implements OnInit {
   // Controle do modal
   editItemModalVisible = false;
   deleteItemModalVisible = false;
+  showPaymentModal = false;
+
   // Propriedades para o modal de edição
- 
   editingItem: any = {
     idItemSale: 0,
     quantity: 0,
@@ -112,7 +115,11 @@ export class SaleComponent implements OnInit {
     idSale: 0,
   };
 
-  showPaymentModal = false;
+  // Propriedades para modal de cancelamento de venda
+  modalCancelSale: boolean = false;
+  cancelSaleModalTitle = 'Você está prestes a cancelar a venda por completo.'
+  cancelSaleModalDescription = 'Deseja continuar?'
+
 
   constructor(
     private saleService: SaleService,
@@ -368,13 +375,17 @@ export class SaleComponent implements OnInit {
     }
     this.saleService.cancelSale(this.currentSale.idCashier, this.currentSale.idSale).subscribe({
       next: (result) => {
-        alert("Venda cancelada com sucesso!");
+        this.updateTableV2();
+        this.saleItems = [];
+        this.modalCancelSale = false;
       },
       error: (error) => {
         alert("Erro ao cancelar venda!");
       },
       complete: () => {
         this.updateTableV2();
+        this.saleItems = [];
+        this.modalCancelSale = false;
       }
     });
 
@@ -562,7 +573,7 @@ export class SaleComponent implements OnInit {
 
   openPaymentModal(): void {
     if (!this.currentSale.idSale || !this.currentSale.idCashier) {
-         console.error('Dados incompletos para cancelar a venda');
+         console.error('Dados incompletos para finalizar a venda');
          return;
     }
     this.showPaymentModal = true;

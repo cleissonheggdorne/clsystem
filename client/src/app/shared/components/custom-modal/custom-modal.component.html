@@ -1,0 +1,69 @@
+<c-modal [visible]="visible" (visibleChange)="visibleChange.emit($event)">
+  <c-modal-header>
+    <h5 cModalTitle>{{ title }}</h5>
+  </c-modal-header>
+  <c-modal-body>
+    <p *ngIf="description" class="mb-3">{{ description }}</p>
+    
+    <div *ngFor="let field of fields" class="mb-3">
+      <label cLabel>{{ field.label }}</label>
+      
+      <!-- Input de texto -->
+      <input *ngIf="field.type === 'text'" 
+             cFormControl 
+             type="text" 
+             [(ngModel)]="data[field.key]" 
+             [disabled]="field.disabled"
+             [placeholder]="field.placeholder || ''" />
+      
+      <!-- Input numérico -->
+      <input *ngIf="field.type === 'number'" 
+             cFormControl 
+             type="number" 
+             [(ngModel)]="data[field.key]" 
+             [disabled]="field.disabled"
+             [placeholder]="field.placeholder || ''" />
+      
+      <!-- Textarea -->
+      <textarea *ngIf="field.type === 'textarea'" 
+                cFormControl 
+                [(ngModel)]="data[field.key]" 
+                [disabled]="field.disabled"
+                [placeholder]="field.placeholder || ''"></textarea>
+      
+      <!-- Select -->
+      <select *ngIf="field.type === 'select'" 
+              cSelect 
+              [(ngModel)]="data[field.key]" 
+              [disabled]="field.disabled">
+        <option *ngFor="let option of field.options" [value]="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+      
+      <!-- Checkbox -->
+      <div *ngIf="field.type === 'checkbox'" class="form-check">
+        <input cFormCheck
+               type="checkbox"
+               [(ngModel)]="data[field.key]"
+               [disabled]="field.disabled" />
+        <label cFormCheckLabel>{{ field.label }}</label>
+      </div>
+      
+      <!-- Date -->
+      <input *ngIf="field.type === 'date'" 
+             cFormControl 
+             type="date" 
+             [(ngModel)]="data[field.key]" 
+             [disabled]="field.disabled" />
+    </div>
+  </c-modal-body>
+  <c-modal-footer>
+    <button *ngIf="showSecondaryButton" cButton color="secondary" (click)="onSecondaryAction()">
+      {{ secondaryButtonText }}
+    </button>
+    <button cButton color="primary" (click)="onPrimaryAction()">
+      {{ primaryButtonText }}
+    </button>
+  </c-modal-footer>
+</c-modal>
