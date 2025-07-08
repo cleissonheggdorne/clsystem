@@ -45,14 +45,17 @@ export class EmployeeComponent implements OnInit {
   totalItems = 0;
   totalPages = 0;
 
-// Modal de edição
+// Modal de edição /Novo
+newEmployee = false;
 editModalVisible = false;
-editingEmployee: Employee = {
+editingEmployeeVazio: Employee = {
   idEmployee: 0,
   nameEmployee: '',
   document: '',
-  initialDate: new Date(),
+  initialDate: this.formatDate(new Date()),
+  password:''
 };
+editingEmployee = { ...this.editingEmployeeVazio };
   // Adicionando Math e Number como propriedades do componente
   protected Math = Math;
   protected Number = Number;
@@ -155,15 +158,23 @@ editingEmployee: Employee = {
     const employee = this.employees.find(emp => emp.idEmployee === id);
     if (employee) {
       this.editingEmployee = { ...employee };
+      this.newEmployee = false;
       this.editModalVisible = true;
     }
   }
 
+  openCreateEmployee():void{
+    this.editingEmployee = { ...this.editingEmployeeVazio };
+    this.newEmployee = true;
+    this.editModalVisible = true;
+  }
+
   saveEmployee(): void {
     this.isLoading = true;
-    this.employeeService.updateEmployee(this.editingEmployee).subscribe({
+    this.employeeService.saveEmployee(this.editingEmployee).subscribe({
       next: () => {
         this.editModalVisible = false;
+        this.editingEmployee = { ...this.editingEmployeeVazio }; // Resetando o formulário
         this.loadEmployees();
       },
       error: (error) => {
@@ -171,6 +182,7 @@ editingEmployee: Employee = {
       },
       complete: () => {
         this.isLoading = false;
+        this.editingEmployee = { ...this.editingEmployeeVazio };
       }
     });
   }
@@ -190,5 +202,11 @@ editingEmployee: Employee = {
         }
       });
     }
+  }
+  formatDate(date: Date): string {
+    const dia = String(date.getDate()).padStart(2, '0');
+    const mes = String(date.getMonth() + 1).padStart(2, '0');
+    const ano = date.getFullYear();
+    return `${dia}/${mes}/${ano}`;
   }
 }

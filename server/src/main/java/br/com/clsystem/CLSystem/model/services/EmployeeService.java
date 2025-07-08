@@ -30,6 +30,11 @@ public class EmployeeService {
 	
 	public ResponseEntity<?> save(EmployeeRecord employeeRecord){
 		Employee employee = new Employee();
+
+		if(employeeRecord.idEmployee() != null && employeeRecord.idEmployee() > 0) {
+			return update(employeeRecord);
+		}
+
 		BeanUtils.copyProperties(employeeRecord, employee);
 		employee.setPassword(passwordEncoder.encode(employee.getPassword()));
 		try {
@@ -41,6 +46,9 @@ public class EmployeeService {
 	
 	public ResponseEntity<?> update(EmployeeRecord employeeRecord){
 		Optional<Employee> employeeUp = employeeRepository.findById(employeeRecord.idEmployee());
+		if(employeeUp.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
 		BeanUtils.copyProperties(employeeRecord, employeeUp.get());
 		try {
 			return ResponseEntity.ok().body(employeeRepository.saveAndFlush(employeeUp.get()));

@@ -357,12 +357,17 @@ export class SaleComponent implements OnInit {
       this.currentSale.formPayment
     ).subscribe({
       next: (result) => {
-        alert("Vendaa fechada com sucesso!");
+        this.updateTableV2();
+        this.saleItems = [];
+        this.modalCancelSale = false;
       },
       error: (error) => {
         alert("Erro ao fechar venda!");
       },
       complete: () => {
+        this.updateTableV2();
+        this.saleItems = [];
+        this.modalCancelSale = false;
       }
     });
   }
@@ -511,6 +516,7 @@ export class SaleComponent implements OnInit {
         // Adicionar o item à lista local para atualização imediata
         if (savedItem) {
           this.saleItems.push(savedItem);
+          this.currentSale.idSale = savedItem.idSale.idSale; // Atualizar o ID da venda atual
         } 
         // Atualizar a tabela de itens
         this.updateTableV2()        

@@ -9,7 +9,8 @@ export interface Employee {
   idEmployee: number;
   nameEmployee: string;
   document: string;
-  initialDate: Date;
+  initialDate: string;
+  password: string;
 }
 
 @Injectable({
@@ -39,6 +40,16 @@ export class EmployeeService {
         error: (error) => console.error('Erro ao deletar produto:', error)
       })
     );
+  }
+
+ saveEmployee(employee: Employee): Observable<Employee> {
+    return this.http.post<Employee>(`${this.apiUrlDev}/api/employee/save`, employee)
+      .pipe(
+        tap({
+          next: (response) => console.log('Funcionário cadastrado com sucesso:', response),
+          error: (error) => console.error('Erro ao cadastrar funcionário:', error)
+        })
+      );
   }
 
   updateEmployee(employee: Employee): Observable<Employee> {

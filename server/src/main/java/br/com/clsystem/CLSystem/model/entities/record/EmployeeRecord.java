@@ -4,6 +4,8 @@ import java.util.Date;
 
 import org.springframework.validation.annotation.Validated;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.validation.constraints.NotBlank;
 
 @Validated
@@ -14,6 +16,7 @@ public record EmployeeRecord(
 		String nameEmployee,
 		@NotBlank
 		String document,
+		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
 		Date initialDate,
 		@NotBlank(message = "Senha deve ser inserida!")
 		String password

@@ -16,6 +16,9 @@
           <button cButton color="primary" (click)="searchEmployees()">
             Buscar
           </button>
+          <button cButton color="link" (click)="openCreateEmployee()">
+            Novo
+          </button>
         </div>
       </c-col>
     </c-row>
@@ -117,7 +120,7 @@
   (visibleChange)="editModalVisible = $event"
 >
   <c-modal-header>
-    <h5 cModalTitle>Editar Funcionário</h5>
+    <h5 cModalTitle>{{ newEmployee ? 'Novo Funcionário' : 'Editar Funcionário' }}</h5>
   </c-modal-header>
   <c-modal-body>
     <form>
@@ -154,6 +157,18 @@
           required
         >
       </div>
+      <!-- Senha (visível só em novo cadastro) -->
+    <div class="mb-3" *ngIf="newEmployee">
+      <label for="password" class="form-label">Senha</label>
+      <input
+        type="password"
+        class="form-control"
+        id="password"
+        [(ngModel)]="editingEmployee.password"
+        name="password"
+        required
+      >
+    </div>
     </form>
   </c-modal-body>
   <c-modal-footer>

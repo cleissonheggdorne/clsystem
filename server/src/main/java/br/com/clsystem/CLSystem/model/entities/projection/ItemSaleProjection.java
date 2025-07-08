@@ -6,4 +6,9 @@ public interface ItemSaleProjection {
     Integer getQuantity();
     BigDecimal getUnitaryValue();
     ProductProjection getIdProduct();
+    SaleProjection getIdSale();
+
+    interface SaleProjection {
+        Long getIdSale(); // 👈 nome do campo da entidade Sale
+    }
 }
