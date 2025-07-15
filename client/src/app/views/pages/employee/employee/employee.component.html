@@ -1,0 +1,182 @@
+<c-card>
+  <c-card-header>
+    <strong>Funcionários</strong>
+  </c-card-header>
+  <c-card-body>
+    <c-row class="mb-4">
+      <c-col xs="12" sm="6">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Buscar funcionários..."
+            [(ngModel)]="searchTerm"
+            (keyup.enter)="searchEmployees()"
+          />
+          <button cButton color="primary" (click)="searchEmployees()">
+            Buscar
+          </button>
+          <button cButton color="link" (click)="openCreateEmployee()">
+            Novo
+          </button>
+        </div>
+      </c-col>
+    </c-row>
+
+    <c-row>
+      <c-col xs="12">
+        @if (isLoading) {
+          <div class="text-center py-4">
+            <c-spinner color="primary"></c-spinner>
+          </div>
+        } @else if (!tableItems || tableItems.length === 0) {
+          <div class="text-center py-4">
+            <p class="text-muted">Nenhum funcionário encontrado</p>
+          </div>
+        } @else {
+          <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover">
+              <thead>
+                <tr>
+                  @for (header of tableHeaders; track header.key) {
+                    <th>{{ header.text }}</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of tableItems; track item[0].text) {
+                  <tr>
+                    @for (cell of item; track cell) {
+                      <!-- <td> -->
+                        @if (cell.html) {
+                          <td>
+                          <button cButton color="primary" size="sm" (click)="editEmployee(Number(item[0].text))">
+                            <svg cIcon name="cilPencil"></svg>
+                          </button>
+                          </td>
+                          <td>
+                            <button cButton color="danger" size="sm" (click)="deleteEmployee(Number(item[0].text))">
+                              <svg cIcon name="cilTrash"></svg>
+                            </button>
+                          </td>
+                          <!-- <button class="btn btn-sm btn-primary me-2" (click)="editEmployee(Number(item[0].text))">
+                            <i class="cil-pencil"></i>
+                          </button>
+                          <button class="btn btn-sm btn-danger" (click)="deleteEmployee(Number(item[0].text))">
+                            <i class="cil-trash"></i>
+                          </button> -->
+                        } @else {
+                          <td>
+                            {{ cell.text }}
+                          </td>
+                        }
+                      <!-- </td> -->
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          @if (totalPages > 1) {
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <div class="text-muted">
+                Mostrando {{ (currentPage - 1) * itemsPerPage + 1 }} a 
+                {{ Math.min(currentPage * itemsPerPage, totalItems) }} de 
+                {{ totalItems }} funcionários
+              </div>
+              <nav>
+                <ul class="pagination mb-0">
+                  <li class="page-item" [class.disabled]="currentPage === 1">
+                    <button class="page-link" (click)="previousPage()">
+                      <i class="cil-chevron-left"></i>
+                    </button>
+                  </li>
+                  @for (page of [].constructor(totalPages); track page; let i = $index) {
+                    <li class="page-item" [class.active]="currentPage === i + 1">
+                      <button class="page-link" (click)="goToPage(i + 1)">
+                        {{ i + 1 }}
+                      </button>
+                    </li>
+                  }
+                  <li class="page-item" [class.disabled]="currentPage === totalPages">
+                    <button class="page-link" (click)="nextPage()">
+                      <i class="cil-chevron-right"></i>
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          }
+        }
+      </c-col>
+    </c-row>
+  </c-card-body>
+</c-card>
+
+<!-- Modal de Edição -->
+<c-modal
+  [visible]="editModalVisible"
+  (visibleChange)="editModalVisible = $event"
+>
+  <c-modal-header>
+    <h5 cModalTitle>{{ newEmployee ? 'Novo Funcionário' : 'Editar Funcionário' }}</h5>
+  </c-modal-header>
+  <c-modal-body>
+    <form>
+      <div class="mb-3">
+        <label for="nameEmployee" class="form-label">Nome do Funcionário</label>
+        <input
+          type="text"
+          class="form-control"
+          id="nameEmployee"
+          [(ngModel)]="editingEmployee.nameEmployee"
+          name="nameEmployee"
+          required
+        >
+      </div>
+      <div class="mb-3">
+        <label for="document" class="form-label">Documento</label>
+        <input
+          type="document"
+          class="form-control"
+          id="document"
+          [(ngModel)]="editingEmployee.document"
+          name="document"
+          required
+        >
+      </div>
+      <div class="mb-3">
+        <label for="initialDate" class="form-label">Data Inicial</label>
+        <input
+          type="text"
+          class="form-control"
+          id="initialDate"
+          [(ngModel)]="editingEmployee.initialDate"
+          name="initialDate"
+          required
+        >
+      </div>
+      <!-- Senha (visível só em novo cadastro) -->
+    <div class="mb-3" *ngIf="newEmployee">
+      <label for="password" class="form-label">Senha</label>
+      <input
+        type="password"
+        class="form-control"
+        id="password"
+        [(ngModel)]="editingEmployee.password"
+        name="password"
+        required
+      >
+    </div>
+    </form>
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton color="secondary" (click)="editModalVisible = false">
+      Cancelar
+    </button>
+    <button cButton color="primary" (click)="saveEmployee()">
+      Salvar
+    </button>
+  </c-modal-footer>
+</c-modal>

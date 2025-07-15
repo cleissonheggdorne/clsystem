@@ -1,0 +1,41 @@
+/* .main{
+  height: 100vh; 
+} */
+/* Sale */
+.autocomplete-content{
+    position: absolute;
+}
+.section-table-itens{
+    height: 50vh; 
+    overflow-y: auto;
+} 
+
+.section-table-products{
+  height: 75vh; 
+  overflow-y: auto;
+} 
+
+.section-table-employee{
+  height: 75vh; 
+  overflow-y: auto;
+}
+
+.section-table-history{
+  height: 75vh; 
+  overflow-y: auto;
+}
+/* Cabeçalho fixo */
+table thead {
+  position: sticky; /* Fixa o cabeçalho */
+  top: 0; /* Cola no topo do container */
+  background-color: white; /* Cor de fundo para sobrepor o conteúdo */
+  z-index: 1; /* Garante que o cabeçalho fique acima do corpo */
+}
+
+#not-sale-in-progress {
+  display: none;  
+} 
+
+#modal-select-user{
+    height: 50vh;
+}

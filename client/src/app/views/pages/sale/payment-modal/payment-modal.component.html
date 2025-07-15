@@ -1,0 +1,75 @@
+<c-modal [visible]="visible" (visibleChange)="visibleChange.emit($event)">
+  <c-modal-header>
+    <h5 cModalTitle>Fechar Compra</h5>
+  </c-modal-header>
+  <c-modal-body>
+    <div class="row">
+      <!-- Opções de Pagamento -->
+      <div class="col-6">
+        <!-- <ul cListGroup>
+          <li [active]="true" cListGroupItem>Cras justo odio</li>
+          <li cListGroupItem>Dapibus ac facilisis in</li>
+          <li cListGroupItem>Morbi leo risus</li>
+          <li cListGroupItem>Porta ac consectetur ac</li>
+          <li cListGroupItem>Vestibulum at eros</li>
+        </ul> -->
+        <ul cListGroup>
+          <li cListGroupItem 
+            [active]="selectedPayment === payment.id"
+            [color]="selectedPayment === payment.id ? 'primary' : ''"
+          
+            *ngFor="let payment of paymentMethods"
+            (click)="selectPayment(payment.id)"
+            >
+            <!-- <div class="d-flex align-items-center"> -->
+              <!-- <c-icon [name]="payment.icon" class="me-2"></c-icon> -->
+              {{payment.name}}
+            <!-- </div> -->
+          </li>
+        </ul>
+      </div>
+
+      <!-- Valores e Troco -->
+      <div class="col-6">
+        <div class="row mb-3" *ngIf="selectedPayment === 'money'">
+          <div class="col-6">
+            <label cLabel for="payment-value">Valor Recebido</label>
+            <input cFormControl
+              id="payment-value"
+              type="number"
+              [(ngModel)]="receivedAmount"
+              (ngModelChange)="calculateChange()"
+            />
+          </div>
+          <div class="col-6">
+            <label cLabel for="change-value">Troco</label>
+            <input cFormControl
+              id="change-value"
+              type="number"
+              [value]="changeAmount"
+              disabled
+            />
+          </div>
+        </div>
+
+        <!-- Total Card -->
+        <div class="card bg-info text-white mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Total</h5>
+            <p class="card-text h3">{{total | currency:'BRL'}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </c-modal-body>
+  <c-modal-footer>
+    <div class="d-flex justify-content-end">
+      <button cButton color="secondary" class="me-2" (click)="close()">
+        CANCELAMENTO (F12)
+      </button>
+      <button cButton color="success" (click)="conclude()">
+        PAGAMENTO (F2)
+      </button>
+    </div>
+  </c-modal-footer>
+</c-modal>

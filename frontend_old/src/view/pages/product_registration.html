@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+     <!--Import Google Icon Font-->
+     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+     <!--Import materialize.css-->
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CL SYSTEM</title>
+</head>
+<body>
+    <header-custom></header-custom>
+    <div class="row main">
+        <navbar-custom></navbar-custom>
+        <!-- Conteúdo -->
+        <div class="col s12 m8 l9">  
+            <div class="card-panel teal">
+                <span class="white-text">Cadastro de Produtos</span>
+                <a href="#modal1" id="add-product" class="waves-effect right btn modal-trigger">Adicionar</a>
+            </div>
+            <div class="divider"></div>
+            <div class="row">
+                <div class="col s12 m12 l12 section-table-products right">
+                    <div class="row">
+
+                        <table class="striped" id="table-products">
+                            <thead>
+                                <div class="input-field">
+                                    <input type="text" id="input-search" class="validate">
+                                    <label for="input-search">Buscar Produto</label>
+                                </div>
+                                <progress-custom></progress-custom>
+                                <tr>
+                                    <th>Código Produto</th>
+                                    <th>Produto</th>
+                                    <th>Valor Custo</th>
+                                    <th>Valor Venda</th>
+                                </tr>
+                            </thead>
+                
+                            <tbody>
+                                <!-- Products -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div> 
+    </div>  
+    
+  <!-- Modal Structure For Insert And Update Product -->
+  <div id="modal1" class="modal bottom-sheet">
+    <div class="modal-content">
+      <h4 id="modal1-header">Editar Produto</h4>
+      <form id="form-product" action="">
+            <div class="col l12">
+                <div class="row">
+                    <div class="input-field col l1">
+                        <input type="number" id="id-product" class="validate" value="" disabled>
+                        <label for="id-product" data-error="wrong" data-success="right">Código</label>
+                    </div>
+                    <div class="input-field col l5">
+                        <input type="text" id="product" class="validate">
+                        <label for="product" data-error="Inválido" data-success="Válido">Produto</label>
+                    </div>
+                    <div class="input-field col l3">
+                        <input type="number" min="0.01" step="0.01" id="value-cost" class="validate">
+                        <label for="value-cost" data-error="Inválido" data-success="Válido">Valor de Custo</label>
+                    </div>
+                    <div class="input-field col l3">
+                        <input type="number" min="0.01" step="0.01" id="value-sale" class="validate">
+                        <label for="value-sale" data-error="Inválido" data-success="Válido">Valor de Venda</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col l6">
+                        <input type="text" id="product-description" class="materialize-textarea">
+                        <label for="product-description">Descrição do Produto</label>
+                    </div>
+                    <div class="input-field col l4">
+                        <input type="text" id="bar-code" class="materialize-textarea">
+                        <label for="bar-code">Código de Barras</label>
+                    </div>
+                    <button class="btn-large waves-effect waves-light col l2" type="submit" name="action">Salvar
+                        <i class="material-icons right">save</i>
+                    </button>
+                </div>
+            </div>
+      </form>
+    </div>
+  </div>
+   <!-- Modal Structure For Delete Product -->
+   <div id="modal-delete" class="modal">
+    <div class="modal-content">
+      <h4>ATENÇÃO</h4>
+      <p>Deseja realmente excluir?</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" id="modal-delete-btn-yes" class="modal-close waves-effect waves-green btn-flat">Sim</a>
+    </div>
+  </div>
+  <modal-custom></modal-custom>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    <script type="module" src="../../assets/js/Utils/Interceptor.js"></script>
+    <script type="module" src="../../assets/js/commonComponents/navbarCustom.js"></script>
+    <script type="module" src="../../assets/js/product_registration.js"></script>
+    <script type="module" src="../../../routes.js"></script>
+
+    </body>
+</html>
