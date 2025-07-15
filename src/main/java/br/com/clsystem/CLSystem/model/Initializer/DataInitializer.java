@@ -27,9 +27,10 @@ public class DataInitializer implements CommandLineRunner {
         if (!employeeRepository.findById(1L).isPresent()){        
          
             Employee employee = new Employee();
-            employee.setNameEmployee("CLEISSON DA ROSA HEGGDORNE");
-            employee.setDocument("17358449770");
+            employee.setNameEmployee("ADMIN GERAL");
+            employee.setDocument("12345678912");
             employee.setInitialDate(new Date());
+	    employee.setPassword("$2a$12$c8/hp7/Vb3COJTBbby/4euosPsBqQnBvHgSJ4B50i4a/.qY/373ka");
             try {
                 employeeRepository.save(employee);
             } catch (DataIntegrityViolationException dive) {		
