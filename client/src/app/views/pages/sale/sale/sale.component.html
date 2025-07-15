@@ -3,6 +3,13 @@
     <h4>Venda</h4>
   </c-card-header>
   <c-card-body>
+   <div *ngIf="!(cashierStatus$ | async)?.isOpen" class="cashier-closed-overlay">
+    <div class="cashier-closed-message">
+      <svg cIcon name="cil-lock-locked" size="xxl" class="mb-3 text-danger"></svg>
+      <h3>Caixa Fechado</h3>
+      <p>Somente é possível iniciar uma venda <br> após a abertura de um novo Caixa</p>
+    </div>
+  </div>
     <!-- Campo de busca de produtos (12/12) -->
     <c-row class="mb-3">
       <c-col xs="12">

@@ -83,6 +83,28 @@ export class CashierService {
       );
   }
 
+  checkCashierResponse(cashier: any):void {
+    if (cashier) {
+      this.setCashier(cashier);
+      const openCashier =cashier;
+      // Atualizar o status do caixa para aberto
+      this.cashierStatusSubject.next({
+        isOpen: true,
+        openingDate: openCashier.dateHourOpenFormatted,
+        currentCashierId: openCashier.idCashier,
+        cashierData: openCashier
+      });
+    } else {
+      // Não há caixa aberto para este funcionário
+      this.cashierStatusSubject.next({
+        isOpen: false,
+        openingDate: null,
+        currentCashierId: null,
+        cashierData: null
+      });
+    }
+  }
+
   // Verificar o status do caixa
   checkCashierStatus(): void {
     // Obter o funcionário atual do localStorage
@@ -91,25 +113,7 @@ export class CashierService {
     if (currentEmployee && currentEmployee.idEmployee) {
       this.getOpenCashier(currentEmployee.idEmployee).subscribe({
         next: (cashier) => {
-          if (cashier) {
-            this.setCashier(cashier);
-            const openCashier =cashier;
-            // Atualizar o status do caixa para aberto
-            this.cashierStatusSubject.next({
-              isOpen: true,
-              openingDate: openCashier.dateHourOpenFormatted,
-              currentCashierId: openCashier.idCashier,
-              cashierData: openCashier
-            });
-          } else {
-            // Não há caixa aberto para este funcionário
-            this.cashierStatusSubject.next({
-              isOpen: false,
-              openingDate: null,
-              currentCashierId: null,
-              cashierData: null
-            });
-          }
+          this.checkCashierResponse(cashier);
         },
         error: (error) => {
           console.error('Erro ao verificar status do caixa:', error);
@@ -130,6 +134,44 @@ export class CashierService {
         cashierData: null
       });
     }
+  }
+
+  closeCashier(): Observable<any> {
+    const idCashier = this.getCashier().idCashier;
+    return this.http.put<any>(`${this.apiUrlDev}/api/cashier/close`, { idCashier })
+      .pipe(
+        tap({
+          next: (response) => {
+            // Atualiza o status do caixa para fechado
+            this.cashierStatusSubject.next({
+              isOpen: false,
+              openingDate: null,
+              currentCashierId: null,
+              cashierData: null
+            });
+            // Remove do localStorage se necessário
+            localStorage.removeItem('cashier');
+          },
+          error: (error) => {
+            console.error('Erro ao fechar o caixa:', error);
+          }
+        })
+      );
+  }
+
+  openCashier(initialValue: number): Observable<any> {
+    const idEmployee = this.getCurrentEmployee().idEmployee;
+    return this.http.post<any>(`${this.apiUrlDev}/api/cashier/open`, { idEmployee, initialValue })
+      .pipe(
+        tap({
+          next: (cashier) => {
+              this.checkCashierResponse(cashier);
+          },
+          error: (error) => {
+            console.error('Erro ao abrir o caixa:', error);
+          }
+        })
+      );
   }
 
   // Obter o status atual do caixa

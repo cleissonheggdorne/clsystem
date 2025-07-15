@@ -30,6 +30,7 @@ import { IconDirective } from '@coreui/icons-angular';
 import { CashierService, CashierStatus } from '../../../service/cashier.service';
 import { LoginService } from '../../../service/login.service';
 import { Observable } from 'rxjs';
+import { CustomModalComponent } from '../../../shared/components/custom-modal/custom-modal.component';
 
 @Component({
   selector: 'app-default-header',
@@ -63,7 +64,8 @@ import { Observable } from 'rxjs';
     NgClass,
     NgIf,
     DatePipe,
-    AsyncPipe
+    AsyncPipe,
+    CustomModalComponent
   ]
 })
 export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
@@ -87,6 +89,25 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   
   // Informações do usuário
   currentEmployee: any;
+
+  //Fechar Caixa
+  modalCloseCashier = false;
+  modalCloseCashierTitle = "Fechar Caixa"
+  modalCloseCashierDescription = "Você tem certeza que deseja fechar o caixa?"; 
+
+  // Abrir Caixa
+  modalOpenCashier = false;
+
+  modalFieldsOpenCashier = [
+    {
+      type: 'number',
+      label: 'Digite o valor atual do caixa',
+      key: 'valor',
+      required: true,
+      disabled: false,
+      placeholder: 'Informe o valor'
+    }
+  ];
 
   constructor(
     private cashierService: CashierService,
@@ -120,81 +141,125 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     }
   }
 
+  toggleCashier() {
+    this.cashierStatus$.subscribe(status => {
+      if (status.isOpen) {
+        this.modalCloseCashier = true;
+      } else {
+        this.modalOpenCashier = true;
+      }
+    }).unsubscribe(); 
+  }
+
+  closeCashier(){
+    this.cashierService.closeCashier().subscribe({
+      next: () => {
+        console.log('Caixa fechado com sucesso');
+      },
+      error: (error) => {
+        console.error('Erro ao fechar o caixa:', error);
+      },complete: () => {
+        this.modalCloseCashier = false; // Fechar o modal após fechar o caixa
+      }
+    });
+  }
+
+  openCashier(data: any){
+    this.cashierService.openCashier(data.valor).subscribe({
+      next: () => {
+        console.log('Caixa aberto com sucesso');
+      },
+      error: (error) => {
+        console.error('Erro ao abrir o caixa:', error);
+      },complete: () => {
+        this.modalOpenCashier = false; // Fechar o modal após fechar o caixa
+      }
+    });
+  }
+
+  prepareForOpenCashier() {
+    
+  }
+
+  prepareForCloseCashier() {
+    this.cashierService.closeCashier();
+  }
+
   sidebarId = input('sidebar1');
 
-  public newMessages = [
-    {
-      id: 0,
-      from: 'Jessica Williams',
-      avatar: '7.jpg',
-      status: 'success',
-      title: 'Urgent: System Maintenance Tonight',
-      time: 'Just now',
-      link: 'apps/email/inbox/message',
-      message: 'Attention team, we\'ll be conducting critical system maintenance tonight from 10 PM to 2 AM. Plan accordingly...'
-    },
-    {
-      id: 1,
-      from: 'Richard Johnson',
-      avatar: '6.jpg',
-      status: 'warning',
-      title: 'Project Update: Milestone Achieved',
-      time: '5 minutes ago',
-      link: 'apps/email/inbox/message',
-      message: 'Kudos on hitting sales targets last quarter! Let\'s keep the momentum. New goals, new victories ahead...'
-    },
-    {
-      id: 2,
-      from: 'Angela Rodriguez',
-      avatar: '5.jpg',
-      status: 'danger',
-      title: 'Social Media Campaign Launch',
-      time: '1:52 PM',
-      link: 'apps/email/inbox/message',
-      message: 'Exciting news! Our new social media campaign goes live tomorrow. Brace yourselves for engagement...'
-    },
-    {
-      id: 3,
-      from: 'Jane Lewis',
-      avatar: '4.jpg',
-      status: 'info',
-      title: 'Inventory Checkpoint',
-      time: '4:03 AM',
-      link: 'apps/email/inbox/message',
-      message: 'Team, it\'s time for our monthly inventory check. Accurate counts ensure smooth operations. Let\'s nail it...'
-    },
-    {
-      id: 3,
-      from: 'Ryan Miller',
-      avatar: '4.jpg',
-      status: 'info',
-      title: 'Customer Feedback Results',
-      time: '3 days ago',
-      link: 'apps/email/inbox/message',
-      message: 'Our latest customer feedback is in. Let\'s analyze and discuss improvements for an even better service...'
-    }
-  ];
+  // public newMessages = [
+  //   {
+  //     id: 0,
+  //     from: 'Jessica Williams',
+  //     avatar: '7.jpg',
+  //     status: 'success',
+  //     title: 'Urgent: System Maintenance Tonight',
+  //     time: 'Just now',
+  //     link: 'apps/email/inbox/message',
+  //     message: 'Attention team, we\'ll be conducting critical system maintenance tonight from 10 PM to 2 AM. Plan accordingly...'
+  //   },
+  //   {
+  //     id: 1,
+  //     from: 'Richard Johnson',
+  //     avatar: '6.jpg',
+  //     status: 'warning',
+  //     title: 'Project Update: Milestone Achieved',
+  //     time: '5 minutes ago',
+  //     link: 'apps/email/inbox/message',
+  //     message: 'Kudos on hitting sales targets last quarter! Let\'s keep the momentum. New goals, new victories ahead...'
+  //   },
+  //   {
+  //     id: 2,
+  //     from: 'Angela Rodriguez',
+  //     avatar: '5.jpg',
+  //     status: 'danger',
+  //     title: 'Social Media Campaign Launch',
+  //     time: '1:52 PM',
+  //     link: 'apps/email/inbox/message',
+  //     message: 'Exciting news! Our new social media campaign goes live tomorrow. Brace yourselves for engagement...'
+  //   },
+  //   {
+  //     id: 3,
+  //     from: 'Jane Lewis',
+  //     avatar: '4.jpg',
+  //     status: 'info',
+  //     title: 'Inventory Checkpoint',
+  //     time: '4:03 AM',
+  //     link: 'apps/email/inbox/message',
+  //     message: 'Team, it\'s time for our monthly inventory check. Accurate counts ensure smooth operations. Let\'s nail it...'
+  //   },
+  //   {
+  //     id: 3,
+  //     from: 'Ryan Miller',
+  //     avatar: '4.jpg',
+  //     status: 'info',
+  //     title: 'Customer Feedback Results',
+  //     time: '3 days ago',
+  //     link: 'apps/email/inbox/message',
+  //     message: 'Our latest customer feedback is in. Let\'s analyze and discuss improvements for an even better service...'
+  //   }
+  // ];
 
-  public newNotifications = [
-    { id: 0, title: 'New user registered', icon: 'cilUserFollow', color: 'success' },
-    { id: 1, title: 'User deleted', icon: 'cilUserUnfollow', color: 'danger' },
-    { id: 2, title: 'Sales report is ready', icon: 'cilChartPie', color: 'info' },
-    { id: 3, title: 'New client', icon: 'cilBasket', color: 'primary' },
-    { id: 4, title: 'Server overloaded', icon: 'cilSpeedometer', color: 'warning' }
-  ];
+  // public newNotifications = [
+  //   { id: 0, title: 'New user registered', icon: 'cilUserFollow', color: 'success' },
+  //   { id: 1, title: 'User deleted', icon: 'cilUserUnfollow', color: 'danger' },
+  //   { id: 2, title: 'Sales report is ready', icon: 'cilChartPie', color: 'info' },
+  //   { id: 3, title: 'New client', icon: 'cilBasket', color: 'primary' },
+  //   { id: 4, title: 'Server overloaded', icon: 'cilSpeedometer', color: 'warning' }
+  // ];
 
-  public newStatus = [
-    { id: 0, title: 'CPU Usage', value: 25, color: 'info', details: '348 Processes. 1/4 Cores.' },
-    { id: 1, title: 'Memory Usage', value: 70, color: 'warning', details: '11444GB/16384MB' },
-    { id: 2, title: 'SSD 1 Usage', value: 90, color: 'danger', details: '243GB/256GB' }
-  ];
+  // public newStatus = [
+  //   { id: 0, title: 'CPU Usage', value: 25, color: 'info', details: '348 Processes. 1/4 Cores.' },
+  //   { id: 1, title: 'Memory Usage', value: 70, color: 'warning', details: '11444GB/16384MB' },
+  //   { id: 2, title: 'SSD 1 Usage', value: 90, color: 'danger', details: '243GB/256GB' }
+  // ];
 
-  public newTasks = [
-    { id: 0, title: 'Upgrade NPM', value: 0, color: 'info' },
-    { id: 1, title: 'ReactJS Version', value: 25, color: 'danger' },
-    { id: 2, title: 'VueJS Version', value: 50, color: 'warning' },
-    { id: 3, title: 'Add new layouts', value: 75, color: 'info' },
-    { id: 4, title: 'Angular Version', value: 100, color: 'success' }
-  ];
+  // public newTasks = [
+  //   { id: 0, title: 'Upgrade NPM', value: 0, color: 'info' },
+  //   { id: 1, title: 'ReactJS Version', value: 25, color: 'danger' },
+  //   { id: 2, title: 'VueJS Version', value: 50, color: 'warning' },
+  //   { id: 3, title: 'Add new layouts', value: 75, color: 'info' },
+  //   { id: 4, title: 'Angular Version', value: 100, color: 'success' }
+  // ];
 
 }

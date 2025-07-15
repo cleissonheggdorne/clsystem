@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ import br.com.clsystem.CLSystem.model.entities.Cashier;
 import br.com.clsystem.CLSystem.model.entities.Employee;
 import br.com.clsystem.CLSystem.model.entities.Sale;
 import br.com.clsystem.CLSystem.model.entities.projection.CashierProjection;
+import br.com.clsystem.CLSystem.model.entities.projection.EmployeeProjection;
 import br.com.clsystem.CLSystem.model.entities.record.CashierRecord;
 import br.com.clsystem.CLSystem.model.repositories.CashierRepository;
 import br.com.clsystem.CLSystem.model.repositories.SaleRepository;
@@ -40,15 +42,20 @@ public class CashierService {
 		this.saleRepository = saleRepository;
 	}
 	
-	public ResponseEntity<?> openCashier(CashierRecord cashierRecord){
-		Optional<CashierProjection> cashierOpened = findByEmployeeAndStatus(cashierRecord.idEmployee());
+	public ResponseEntity<?> openCashier(CashierRecord cashierRecord, String document){
+		EmployeeProjection currentEmployee = employeeService.findByIdOrDocument(document);
+		if(currentEmployee == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário não encontrado");
+		}
+
+		Optional<CashierProjection> cashierOpened = findByEmployeeAndStatus(currentEmployee.getIdEmployee());
 		Cashier cashier;
 		if(!cashierOpened.isPresent()){
 			cashier= new Cashier();
 		}else{
 			return ResponseEntity.ok(cashierOpened);
 		}
-		Optional<Employee> employee = employeeService.findById(cashierRecord.idEmployee());		
+		Optional<Employee> employee = employeeService.findById(currentEmployee.getIdEmployee());		
 		BeanUtils.copyProperties(cashierRecord, cashier);
 		
 		cashier.setDateHourOpen(LocalDateTime.now());
@@ -70,12 +77,20 @@ public class CashierService {
 		return cashierRepository.findByEmployeeAndStatus(employee.get(), StatusCashier.ABERTO);
 	}
 
-	public ResponseEntity<?> closeCashier(long id){
-		Optional<Cashier> cashier = cashierRepository.findById(id);
-		cashier.get().setStatus(StatusCashier.FECHADO);
-		cashier.get().setDateHourClose(LocalDateTime.now());
+	public ResponseEntity<?> closeCashier(long id, String document){
+		Optional<Cashier> cashierOptional = cashierRepository.findById(id);
+		if (cashierOptional.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Caixa não encontrado");
+		}
+		Cashier cashier = cashierOptional.get();
+		String cashierOwnerDocument = cashier.getEmployee().getDocument();
+		if (!cashierOwnerDocument.equals(document)) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Você não tem permissão para fechar este caixa");
+		}
+		cashier.setStatus(StatusCashier.FECHADO);
+		cashier.setDateHourClose(LocalDateTime.now());
 		try {
-		      return ResponseEntity.ok(cashierRepository.saveAndFlush(cashier.get()));
+		      return ResponseEntity.ok(cashierRepository.saveAndFlush(cashier));
 		} catch (DataIntegrityViolationException dive) {		
 			throw new DataBaseException("", dive);
 		}

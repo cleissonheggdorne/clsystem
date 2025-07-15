@@ -34,12 +34,12 @@ public class ItemSaleController {
 	
 	@PostMapping("/save")
 	public ResponseEntity<?> saveController(@Valid @RequestBody ItemSaleRecord itemSaleRecord, BindingResult br){
-		try {
+		//try {
 			 ItemSaleProjection itemSale =  itemSaleService.saveItem(itemSaleRecord);
 			 return  ResponseEntity.ok().body(itemSale);
-		}catch(DataBaseException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
-		}
+		//}catch(DataBaseException e) {
+		//	return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
+		//}
 	}
 
 	@PutMapping("/save")

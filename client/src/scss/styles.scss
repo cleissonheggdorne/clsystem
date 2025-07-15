@@ -21,3 +21,11 @@
 // Examples
 // We use those styles to show code examples, you should remove them in your application.
 @import "examples";
+ 
+.modal-backdrop {
+  z-index: 1010 !important;
+}
+app-custom-modal, .modal {
+  z-index: 1050 !important;
+  position: fixed !important;
+}

@@ -16,9 +16,10 @@ import {
 import { IconModule, IconSetService } from '@coreui/icons-angular';
 import { cilPencil, cilTrash } from '@coreui/icons';
 import { SaleService, ItemSale, Sale, SaleWithItems } from '../../../../service/sale.service';
-import { CashierService } from '../../../../service/cashier.service';
+import { CashierService, CashierStatus } from '../../../../service/cashier.service';
 import { PaymentModalComponent } from '../payment-modal/payment-modal.component'; // Adicione esta linha no topo
 import { CustomModalComponent } from '../../../../shared/components/custom-modal/custom-modal.component';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-sale',
@@ -120,6 +121,8 @@ export class SaleComponent implements OnInit {
   cancelSaleModalTitle = 'Você está prestes a cancelar a venda por completo.'
   cancelSaleModalDescription = 'Deseja continuar?'
 
+  cashierStatus$: Observable<CashierStatus>;
+  
 
   constructor(
     private saleService: SaleService,
@@ -127,6 +130,8 @@ export class SaleComponent implements OnInit {
     private cashierService: CashierService
   ) {
     this.iconSetService.icons = { cilPencil, cilTrash };
+    this.cashierStatus$ = this.cashierService.cashierStatus$;
+
   }
 
   ngOnInit(): void {
@@ -254,7 +259,7 @@ export class SaleComponent implements OnInit {
     }
     
     // Log para debug
-    this.logDropdownState();
+    //this.logDropdownState();
   }
 
   // Buscar produtos por termo de pesquisa
@@ -332,7 +337,6 @@ export class SaleComponent implements OnInit {
     this.isLoading = true;
     this.saleService.updateItem(item).subscribe({
       next: (updatedItem) => {
-        console.log('Item atualizado:', updatedItem);
         this.loadSaleItemsV2(this.currentSale.idSale!, this.currentSale.idCashier!);
       },
       error: (error) => {
@@ -409,7 +413,6 @@ export class SaleComponent implements OnInit {
   // Método para editar um item
   editItem(idItemSale: number): void {
     const itemSale = this.saleItems.find(p => p.idItemSale === idItemSale);
-    console.log("item sale:"+itemSale);
     if (itemSale) {
        this.editingItem = {
          idItemSale: itemSale.idItemSale,
@@ -448,7 +451,6 @@ export class SaleComponent implements OnInit {
   // Método para deletar um item
   deleteItemDataModal(idItemSale: number): void {
     const itemSale = this.saleItems.find(p => p.idItemSale === idItemSale);
-    console.log("item sale:"+itemSale);
     if (itemSale) {
       this.editingItem = {
         idItemSale: itemSale.idItemSale,
@@ -526,7 +528,7 @@ export class SaleComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erro ao salvar item:', error);
-        alert('Erro ao adicionar item à venda. Tente novamente.');
+        alert(error.error);
       },
       complete: () => {
         //this.isLoading = false;
@@ -555,15 +557,15 @@ export class SaleComponent implements OnInit {
   }
 
   // Método para debug
-  logDropdownState(): void {
-    console.log({
-      showProductsDropdown: this.showProductsDropdown,
-      filteredProductsLength: this.filteredProducts.length,
-      searchTerm: this.searchTerm,
-      isLoading: this.isLoading,
-      isSearching: this.isSearching
-    });
-  }
+  // logDropdownState(): void {
+  //   console.log({
+  //     showProductsDropdown: this.showProductsDropdown,
+  //     filteredProductsLength: this.filteredProducts.length,
+  //     searchTerm: this.searchTerm,
+  //     isLoading: this.isLoading,
+  //     isSearching: this.isSearching
+  //   });
+  // }
 
   trackByHeaderKey(index: number, header: any): string {
     return header.key;

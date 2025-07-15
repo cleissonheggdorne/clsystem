@@ -1,5 +1,6 @@
 package br.com.clsystem.CLSystem.controller;
 
+import java.security.Principal;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -29,18 +30,14 @@ public class CashierController {
 	}
 	
 	@PostMapping("/open")
-	public ResponseEntity<?> saveController(@Valid @RequestBody CashierRecord cashierRecord, BindingResult br){
-		try {
-			return cashierService.openCashier(cashierRecord);
-		}catch(DataBaseException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
-		}
+	public ResponseEntity<?> saveController(@Valid @RequestBody CashierRecord cashierRecord, BindingResult br, Principal principal){
+		return cashierService.openCashier(cashierRecord, principal.getName());
 	}
 	
 	@PutMapping("/close")
-	public ResponseEntity<?> closeCashier(@RequestBody Map<String, Long> idCashier){
+	public ResponseEntity<?> closeCashier(@RequestBody Map<String, Long> idCashier, Principal principal){
 		try {
-			return cashierService.closeCashier(idCashier.get("idCashier"));
+			return cashierService.closeCashier(idCashier.get("idCashier"), principal.getName());
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}

@@ -30,7 +30,9 @@ public class SaleService {
 	}
 	
 	public Sale openSale(Long idCashier){
-
+		if(idCashier == null){
+			throw new DataBaseException("Um caixa é necessário antes de abrir uma venda");
+		}
 		Sale sale = new Sale(); 
 		sale.setDateHourEntry(LocalDateTime.now());
 		System.out.println(sale.getDateHourEntry());
