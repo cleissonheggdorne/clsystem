@@ -19,6 +19,7 @@ public class DataInitializer implements CommandLineRunner {
 
     @Autowired
     private EmployeeRepository employeeRepository; 
+    
     @Override
     @Transactional
     public void run(String... args) throws Exception {
@@ -29,7 +30,7 @@ public class DataInitializer implements CommandLineRunner {
             employee.setNameEmployee("ADMIN GERAL");
             employee.setDocument("12345678912");
             employee.setInitialDate(new Date());
-	    employee.setPassword("$2a$12$c8/hp7/Vb3COJTBbby/4euosPsBqQnBvHgSJ4B50i4a/.qY/373ka");
+	        employee.setPassword("$2a$12$fo6WK2X/80u4jeLyGRxKfuica/1kGuWxPwR5TEmUeSA6Zg0vzgmTu");
             try {
                 employeeRepository.save(employee);
             } catch (DataIntegrityViolationException dive) {		

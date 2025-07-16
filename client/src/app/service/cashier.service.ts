@@ -86,7 +86,7 @@ export class CashierService {
   checkCashierResponse(cashier: any):void {
     if (cashier) {
       this.setCashier(cashier);
-      const openCashier =cashier;
+      const openCashier = cashier;
       // Atualizar o status do caixa para aberto
       this.cashierStatusSubject.next({
         isOpen: true,

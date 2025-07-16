@@ -49,8 +49,8 @@
                           <!-- <button class="btn btn-sm btn-primary me-2" (click)="editCashier(Number(item[0].text))">
                             <i class="cil-pencil"></i>
                           </button> -->
-                          <button class="btn btn-sm btn-info me-2" (click)="resumeByCashier(Number(item[0].text))">
-                            <i class="cil-info"></i>
+                          <button cButton color="primary" size="sm" (click)="resumeByCashier(Number(item[0].text))">
+                            <svg cIcon name="cilPencil"></svg>
                           </button>
                           <!-- <button class="btn btn-sm btn-danger">
                             <i class="cil-trash"></i>
@@ -179,7 +179,7 @@
   </c-modal-footer>
 </c-modal>
 
-<!-- Modal de Resumo -->
+<!-- Modal de Resumo
 <c-modal
   [visible]="summaryModalVisible"
   (visibleChange)="summaryModalVisible = $event"
@@ -221,4 +221,10 @@
       Fechar
     </button>
   </c-modal-footer>
-</c-modal>
+</c-modal> -->
+
+<app-cashier-summary-modal
+  [visible]="summaryModalVisible"
+  [summaryData]="summaryData"
+  (visibleChange)="summaryModalVisible = $event">
+</app-cashier-summary-modal>

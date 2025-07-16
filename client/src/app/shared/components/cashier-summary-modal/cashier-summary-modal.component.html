@@ -1,0 +1,52 @@
+<!-- Modal de Resumo -->
+<c-modal
+  [visible]="visible"
+  (visibleChange)="visible = $event"
+  size="lg"
+>
+  <c-modal-header>
+    <h5 cModalTitle>Resumo do Caixa</h5>
+  </c-modal-header>
+  <c-modal-body>
+    @if (isLoading) {
+      <div class="text-center py-4">
+        <c-spinner color="primary"></c-spinner>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              @for (header of summaryTableHeaders; track header) {
+                <th>{{ header }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of summaryTableItems; track row) {
+              <tr [class.table-info]="row[0].text === 'TOTAL'">
+                @for (cell of row; track cell) {
+                  <td [class.text-end]="cell.text !== row[0].text">{{ cell.text }}</td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </c-modal-body>
+
+  <c-modal-footer>
+    <button
+        [hidden]="!extraButtonVisible"
+        cButton
+        color="primary"
+        (click)="extraButtonClick.emit()"
+    >
+        {{ extraButtonText }}
+    </button>
+    <button cButton color="secondary" (click)="closeModal()">
+      Fechar
+    </button>
+  </c-modal-footer>
+</c-modal>

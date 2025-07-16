@@ -13,6 +13,8 @@ import br.com.clsystem.CLSystem.exceptions.DataBaseException;
 import br.com.clsystem.CLSystem.model.entities.ItemSale;
 import br.com.clsystem.CLSystem.model.entities.Product;
 import br.com.clsystem.CLSystem.model.entities.Sale;
+import br.com.clsystem.CLSystem.model.entities.projection.CashierProjection;
+import br.com.clsystem.CLSystem.model.entities.projection.EmployeeProjection;
 import br.com.clsystem.CLSystem.model.entities.projection.ItemSaleProjection;
 import br.com.clsystem.CLSystem.model.entities.record.ItemSaleRecord;
 import br.com.clsystem.CLSystem.model.repositories.ItemSaleRepository;
@@ -25,24 +27,35 @@ public class ItemSaleService {
 	final ProductService productService;
 	final SaleService saleService;
 	final CashierService cashierService;
-	
+	final EmployeeService employeeService;
+
 	public ItemSaleService(ItemSaleRepository itemSaleRepository,
 			ProductService productService, SaleService saleService,
-			CashierService cashierService) {
+			CashierService cashierService, EmployeeService employeeService) {
 		this.itemSaleRepository = itemSaleRepository;
 		this.productService = productService;
 		this.saleService = saleService;
 		this.cashierService = cashierService;
+		this.employeeService = employeeService;
 	}
 	
 	@Transactional
-	public ItemSaleProjection saveItem(ItemSaleRecord itemSaleRecord){
+	public ItemSaleProjection saveItem(ItemSaleRecord itemSaleRecord, String document){
+		EmployeeProjection currentEmployee = employeeService.findByIdOrDocument(document);
+		if(currentEmployee == null){
+			throw new DataBaseException("Funcionário não encontrado");
+		}
+
+		CashierProjection currentCashier = cashierService.findByEmployeeAndStatus(currentEmployee.getIdEmployee())
+			.orElseThrow(() -> new DataBaseException("Caixa não encontrado ou não está aberto"));
+
+
 		BigDecimal amount = new BigDecimal(0.0);
 		Integer quantity;
-		Optional<Sale> sale = saleService.findBySaleOpen(itemSaleRecord.idCashier());
+		Optional<Sale> sale = saleService.findBySaleOpen(currentCashier.getIdCashier());
 		//Sale Open 
 		if(!sale.isPresent()){
-			sale = Optional.of(saleService.openSale(itemSaleRecord.idCashier()));
+			sale = Optional.of(saleService.openSale(currentCashier.getIdCashier()));
 		}
 
 		BigDecimal valueUnitary = productService.findValueProduct(itemSaleRecord.idProduct());

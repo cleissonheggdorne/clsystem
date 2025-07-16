@@ -61,8 +61,9 @@ public class CashierService {
 		cashier.setDateHourOpen(LocalDateTime.now());
 		cashier.setStatus(StatusCashier.ABERTO);
 		cashier.setEmployee(employee.get());
+		
 		try {
-		      return ResponseEntity.ok(cashierRepository.saveAndFlush(cashier));
+		    return ResponseEntity.ok(findByIdCashierAndStatus(cashierRepository.saveAndFlush(cashier).getIdCashier()));
 		} catch (DataIntegrityViolationException dive) {		
 			throw new DataBaseException("", dive);
 		}
@@ -75,6 +76,10 @@ public class CashierService {
 	public Optional<CashierProjection> findByEmployeeAndStatus(Long idEmployee) {
 		Optional<Employee> employee = employeeService.findById(idEmployee);
 		return cashierRepository.findByEmployeeAndStatus(employee.get(), StatusCashier.ABERTO);
+	}
+
+	public Optional<CashierProjection> findByIdCashierAndStatus(Long idEmployee) {
+		return cashierRepository.findByIdCashierAndStatus(idEmployee, StatusCashier.ABERTO);
 	}
 
 	public ResponseEntity<?> closeCashier(long id, String document){

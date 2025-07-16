@@ -12,6 +12,7 @@ import br.com.clsystem.CLSystem.types.StatusCashier;
 
 public interface CashierRepository extends JpaRepository<Cashier, Long> {
     Optional<CashierProjection> findByEmployeeAndStatus(Employee employee, StatusCashier status);
+    Optional<CashierProjection> findByIdCashierAndStatus(Long id, StatusCashier status);
     List<Optional<CashierProjection>> findByIdCashierIsNotNull();
     List<Optional<CashierProjection>> findByEmployeeNameEmployeeContainingIgnoreCase(String nameEmployee);
 

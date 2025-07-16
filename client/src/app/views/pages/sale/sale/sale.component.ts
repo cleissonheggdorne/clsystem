@@ -519,6 +519,10 @@ export class SaleComponent implements OnInit {
         if (savedItem) {
           this.saleItems.push(savedItem);
           this.currentSale.idSale = savedItem.idSale.idSale; // Atualizar o ID da venda atual
+          if(!this.currentSale.idCashier){
+            const cashier = this.cashierService.getCashier();
+            this.currentSale.idCashier = cashier.idCashier;
+          }
         } 
         // Atualizar a tabela de itens
         this.updateTableV2()        
@@ -531,6 +535,7 @@ export class SaleComponent implements OnInit {
         alert(error.error);
       },
       complete: () => {
+
         //this.isLoading = false;
         this.updateTableV2()        
 

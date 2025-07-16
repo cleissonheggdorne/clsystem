@@ -23,14 +23,17 @@ import {
   ProgressComponent,
   SidebarToggleDirective,
   TextColorDirective,
-  ThemeDirective
+  ThemeDirective,
+  ToastComponent,
+  ToasterComponent
 } from '@coreui/angular';
 
 import { IconDirective } from '@coreui/icons-angular';
-import { CashierService, CashierStatus } from '../../../service/cashier.service';
+import { CashierService, CashierStatus, CashierSummary } from '../../../service/cashier.service';
 import { LoginService } from '../../../service/login.service';
 import { Observable } from 'rxjs';
 import { CustomModalComponent } from '../../../shared/components/custom-modal/custom-modal.component';
+import { CashierSummaryModalComponent } from '../../../shared/components/cashier-summary-modal/cashier-summary-modal.component';
 
 @Component({
   selector: 'app-default-header',
@@ -65,7 +68,9 @@ import { CustomModalComponent } from '../../../shared/components/custom-modal/cu
     NgIf,
     DatePipe,
     AsyncPipe,
-    CustomModalComponent
+    CustomModalComponent,
+    CashierSummaryModalComponent,
+    ToasterComponent
   ]
 })
 export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
@@ -109,6 +114,11 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     }
   ];
 
+  // Modal de resumo
+  isLoading = false;
+  summaryModalVisible = false;
+  summaryData: CashierSummary[] = [];
+
   constructor(
     private cashierService: CashierService,
     private loginService: LoginService
@@ -143,14 +153,29 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
 
   toggleCashier() {
     this.cashierStatus$.subscribe(status => {
-      if (status.isOpen) {
-        this.modalCloseCashier = true;
+      if (status.isOpen && status.cashierData) {
+        this.resumeByCashier(status.cashierData.idCashier);
+       // this.modalCloseCashier = true;
       } else {
         this.modalOpenCashier = true;
       }
     }).unsubscribe(); 
   }
 
+  resumeByCashier(id: number): void {
+    this.isLoading = true;
+    this.cashierService.fetchSummaryByCashier(id).subscribe({
+      next: (summary) => {
+        this.summaryData = summary;
+        this.summaryModalVisible = true;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Erro ao carregar resumo:', error);
+        this.isLoading = false;
+      }
+    });
+  }
   closeCashier(){
     this.cashierService.closeCashier().subscribe({
       next: () => {
@@ -159,7 +184,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
       error: (error) => {
         console.error('Erro ao fechar o caixa:', error);
       },complete: () => {
-        this.modalCloseCashier = false; // Fechar o modal após fechar o caixa
+         this.summaryModalVisible = false;
       }
     });
   }

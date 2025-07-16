@@ -155,3 +155,12 @@
   [secondaryButtonText]="'Cancelar'"
   (primaryAction)="openCashier($event)">
 </app-custom-modal>
+
+<app-cashier-summary-modal
+  [visible]="summaryModalVisible"
+  [summaryData]="summaryData"
+  (visibleChange)="summaryModalVisible = $event"
+  [extraButtonVisible]="true"
+  [extraButtonText]="'Fechar Caixa'"
+  (extraButtonClick)="closeCashier()">
+</app-cashier-summary-modal>

@@ -1,5 +1,6 @@
 package br.com.clsystem.CLSystem.controller;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
@@ -33,9 +34,9 @@ public class ItemSaleController {
 	}
 	
 	@PostMapping("/save")
-	public ResponseEntity<?> saveController(@Valid @RequestBody ItemSaleRecord itemSaleRecord, BindingResult br){
+	public ResponseEntity<?> saveController(@Valid @RequestBody ItemSaleRecord itemSaleRecord, BindingResult br, Principal principal){
 		//try {
-			 ItemSaleProjection itemSale =  itemSaleService.saveItem(itemSaleRecord);
+			 ItemSaleProjection itemSale =  itemSaleService.saveItem(itemSaleRecord, principal.getName());
 			 return  ResponseEntity.ok().body(itemSale);
 		//}catch(DataBaseException e) {
 		//	return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());

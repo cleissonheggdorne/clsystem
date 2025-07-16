@@ -8,11 +8,13 @@ import {
   GridModule,
   ModalModule,
   SpinnerModule,
-  TableModule,
+  TableModule
+  
 } from '@coreui/angular';
 import { IconSetService, IconModule } from '@coreui/icons-angular';
 import { cilPencil, cilTrash, cilChevronLeft, cilChevronRight, cilInfo } from '@coreui/icons';
 import { CashierService, Cashier, CashierSummary } from '../../../../service/cashier.service';
+import { CashierSummaryModalComponent } from '../../../../shared/components/cashier-summary-modal/cashier-summary-modal.component';
 
 interface TableCell {
   text: string;
@@ -37,7 +39,8 @@ interface TableHeader {
     ModalModule,
     SpinnerModule,
     TableModule,
-    IconModule
+    IconModule,
+    CashierSummaryModalComponent
   ],
   templateUrl: './cashier.component.html',
   styleUrl: './cashier.component.scss',
@@ -71,8 +74,8 @@ export class CashierComponent implements OnInit {
   // Modal de resumo
   summaryModalVisible = false;
   summaryData: CashierSummary[] = [];
-  summaryTableHeaders: string[] = ['Tipo', 'Quantidade', 'Valor'];
-  summaryTableItems: any[][] = [];
+  //summaryTableHeaders: string[] = ['Tipo', 'Quantidade', 'Valor'];
+  //summaryTableItems: any[][] = [];
 
   // Tabela
   tableHeaders: any[] = [
@@ -82,7 +85,7 @@ export class CashierComponent implements OnInit {
     { key: 'dateHourOpen', text: 'Data/Hora Abertura' },
     { key: 'dateHourClose', text: 'Data/Hora Fechamento' },
     { key: 'amount', text: 'Valor Total' },
-    { key: 'actions', text: 'Ações' }
+    { key: 'actions', text: 'Consultar' }
   ];
 
   // Adicionando Math e Number como propriedades do componente
@@ -183,13 +186,28 @@ export class CashierComponent implements OnInit {
     }
   }
 
+  // resumeByCashier(id: number): void {
+  //   this.isLoading = true;
+  //   this.cashierService.fetchSummaryByCashier(id).subscribe({
+  //     next: (summary) => {
+  //       console.log('Dados do resumo recebidos:', summary);
+  //       this.summaryData = summary;
+  //       this.updateSummaryTable();
+  //       this.summaryModalVisible = true;
+  //       this.isLoading = false;
+  //     },
+  //     error: (error) => {
+  //       console.error('Erro ao carregar resumo:', error);
+  //       this.isLoading = false;
+  //     }
+  //   });
+  // }
+
   resumeByCashier(id: number): void {
     this.isLoading = true;
     this.cashierService.fetchSummaryByCashier(id).subscribe({
       next: (summary) => {
-        console.log('Dados do resumo recebidos:', summary);
         this.summaryData = summary;
-        this.updateSummaryTable();
         this.summaryModalVisible = true;
         this.isLoading = false;
       },
@@ -200,79 +218,79 @@ export class CashierComponent implements OnInit {
     });
   }
 
-  updateSummaryTable(): void {
-    const formatarMoeda = (valor: number): string => {
-      return valor.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-      });
-    };
-    console.log('Atualizando tabela de resumo com dados:', this.summaryData);
-    const tiposMap = new Map();
+  // updateSummaryTable(): void {
+  //   const formatarMoeda = (valor: number): string => {
+  //     return valor.toLocaleString('pt-BR', {
+  //       style: 'currency',
+  //       currency: 'BRL'
+  //     });
+  //   };
+  //   console.log('Atualizando tabela de resumo com dados:', this.summaryData);
+  //   const tiposMap = new Map();
     
-    if (!Array.isArray(this.summaryData)) {
-      this.summaryData = [this.summaryData];
-    }
+  //   if (!Array.isArray(this.summaryData)) {
+  //     this.summaryData = [this.summaryData];
+  //   }
     
-    this.summaryData.forEach(item => {
-      if (item.Quantidade) {
-       // const quantidade = item.Quantidade;
-        // Processar diretamente as propriedades do objeto Quantidade
-        for (const [tipo, quantidade] of Object.entries(item.Quantidade)) {
-          for (const [chave, valor] of Object.entries(quantidade)) {
-            console.log(chave, valor);
-            if (!tiposMap.has(chave)) {
-              tiposMap.set(chave, { tipo: chave, quantidade: 0, valor: 0 });
-            }
-            tiposMap.get(chave).quantidade = Number(valor) || 0;
-          }
-        }
-      }
-      if (item.Valor) {
-        // Processar diretamente as propriedades do objeto Valor
-        for (const [tipo, valor] of Object.entries(item.Valor)) {
-          for (const [chave, val] of Object.entries((valor))) {
-            console.log(chave, val);
-            if (!tiposMap.has(chave)) {
-              tiposMap.set(chave, { tipo:chave, quantidade: 0, valor: 0 });
-            }
-            tiposMap.get(chave).valor = Number(val) || 0;
-          }
-        }
-      }
-    });
+  //   this.summaryData.forEach(item => {
+  //     if (item.Quantidade) {
+  //      // const quantidade = item.Quantidade;
+  //       // Processar diretamente as propriedades do objeto Quantidade
+  //       for (const [tipo, quantidade] of Object.entries(item.Quantidade)) {
+  //         for (const [chave, valor] of Object.entries(quantidade)) {
+  //           console.log(chave, valor);
+  //           if (!tiposMap.has(chave)) {
+  //             tiposMap.set(chave, { tipo: chave, quantidade: 0, valor: 0 });
+  //           }
+  //           tiposMap.get(chave).quantidade = Number(valor) || 0;
+  //         }
+  //       }
+  //     }
+  //     if (item.Valor) {
+  //       // Processar diretamente as propriedades do objeto Valor
+  //       for (const [tipo, valor] of Object.entries(item.Valor)) {
+  //         for (const [chave, val] of Object.entries((valor))) {
+  //           console.log(chave, val);
+  //           if (!tiposMap.has(chave)) {
+  //             tiposMap.set(chave, { tipo:chave, quantidade: 0, valor: 0 });
+  //           }
+  //           tiposMap.get(chave).valor = Number(val) || 0;
+  //         }
+  //       }
+  //     }
+  //   });
 
-    // Converter o Map em array de linhas da tabela e ordenar por tipo
-    this.summaryTableItems = Array.from(tiposMap.values())
-      .sort((a, b) => a.tipo.localeCompare(b.tipo))
-      .map(({ tipo, quantidade, valor }) => [
-        { text: tipo },
-        { text: quantidade.toString() },
-        { text: Number(valor).toFixed(2) }
-      ]);
+  //   // Converter o Map em array de linhas da tabela e ordenar por tipo
+  //   this.summaryTableItems = Array.from(tiposMap.values())
+  //     .sort((a, b) => a.tipo.localeCompare(b.tipo))
+  //     .map(({ tipo, quantidade, valor }) => [
+  //       { text: tipo },
+  //       { text: quantidade.toString() },
+  //       { text: Number(valor).toFixed(2) }
+  //     ]);
 
-    // Adicionar linha de total
-    const totais = {
-      quantidade: Array.from(tiposMap.values()).reduce((sum, item) => sum + Number(item.quantidade || 0), 0),
-      valor: Array.from(tiposMap.values()).reduce((sum, item) => sum + Number(item.valor || 0), 0)
-    };
+  //   // Adicionar linha de total
+  //   const totais = {
+  //     quantidade: Array.from(tiposMap.values()).reduce((sum, item) => sum + Number(item.quantidade || 0), 0),
+  //     valor: Array.from(tiposMap.values()).reduce((sum, item) => sum + Number(item.valor || 0), 0)
+  //   };
 
-    // Adicionar uma linha em branco como separador
-    this.summaryTableItems.push([
-      { text: '---' },
-      { text: '---' },
-      { text: '---' }
-    ]);
+  //   // Adicionar uma linha em branco como separador
+  //   this.summaryTableItems.push([
+  //     { text: '---' },
+  //     { text: '---' },
+  //     { text: '---' }
+  //   ]);
 
-    // Adicionar linha de total
-    this.summaryTableItems.push([
-      { text: 'TOTAL' },
-      { text: totais.quantidade.toString() },
-      { text: Number(totais.valor).toFixed(2) }
-    ]);
+  //   // Adicionar linha de total
+  //   this.summaryTableItems.push([
+  //     { text: 'TOTAL' },
+  //     { text: totais.quantidade.toString() },
+  //     { text: Number(totais.valor).toFixed(2) }
+  //   ]);
 
-    console.log('Itens da tabela de resumo processados:', this.summaryTableItems);
-  }
+  //   console.log('Itens da tabela de resumo processados:', this.summaryTableItems);
+  // }
 
   // saveCashier(): void {
   //   this.isLoading = true;
