@@ -7,6 +7,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
@@ -20,6 +21,9 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired
     private EmployeeRepository employeeRepository; 
     
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     @Transactional
     public void run(String... args) throws Exception {
@@ -30,7 +34,7 @@ public class DataInitializer implements CommandLineRunner {
             employee.setNameEmployee("ADMIN GERAL");
             employee.setDocument("12345678912");
             employee.setInitialDate(new Date());
-	        employee.setPassword("$2a$12$fo6WK2X/80u4jeLyGRxKfuica/1kGuWxPwR5TEmUeSA6Zg0vzgmTu");
+	        employee.setPassword(passwordEncoder.encode("123456"));
             try {
                 employeeRepository.save(employee);
             } catch (DataIntegrityViolationException dive) {		

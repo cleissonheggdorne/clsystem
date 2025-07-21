@@ -3,6 +3,7 @@ package br.com.clsystem.CLSystem.model.entities;
 import java.io.Serializable;
 import java.util.Date;
 
+import br.com.clsystem.CLSystem.model.entities.record.EmployeeRecord;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -48,4 +49,12 @@ public class Employee implements Serializable {
 
 	@Column(name="password")
 	private String password; 
+
+	public EmployeeRecord factoryEmployeeRecord(Employee employee) {
+		return new EmployeeRecord(employee.getIdEmployee(),
+								employee.getNameEmployee(),
+								employee.getDocument(),
+								employee.getInitialDate(),
+								employee.getPassword());
+	}
 }

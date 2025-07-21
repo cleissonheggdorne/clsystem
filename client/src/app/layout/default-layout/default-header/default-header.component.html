@@ -99,7 +99,7 @@
         <hr cDropdownDivider />
       </li>
       <li>
-        <a cDropdownItem routerLink="/profile">
+        <a cDropdownItem (click)="alterPassword(null)">
           <svg cIcon class="me-2" name="cilUser"></svg>
           Meu usuário
         </a>
@@ -154,6 +154,16 @@
   [primaryButtonText]="'Confirmar'"
   [secondaryButtonText]="'Cancelar'"
   (primaryAction)="openCashier($event)">
+</app-custom-modal>
+
+<app-custom-modal
+  [(visible)]="modalAlterPassword"
+  [title]="'Alteração de Senha'"
+  [description]="'Para alterar sua senha, informe a senha atual e a nova.'"
+  [fields]="modalFieldsAlterPassword"
+  [primaryButtonText]="'Confirmar'"
+  [secondaryButtonText]="'Cancelar'"
+  (primaryAction)="alterPassword($event)">
 </app-custom-modal>
 
 <app-cashier-summary-modal

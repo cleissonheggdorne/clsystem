@@ -114,6 +114,36 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     }
   ];
 
+  // Abrir Caixa
+  modalAlterPassword = false;
+
+  modalFieldsAlterPassword = [
+    {
+      type: 'text',
+      label: 'Digite a senha atual',
+      key: 'passwordOld',
+      required: true,
+      disabled: false,
+      placeholder: ''
+    },
+    {
+      type: 'text',
+      label: 'Digite a nova senha',
+      key: 'passwordNew',
+      required: true,
+      disabled: false,
+      placeholder: ''
+    },
+    {
+      type: 'text',
+      label: 'Digite a nova senha',
+      key: 'passwordNew2',
+      required: true,
+      disabled: false,
+      placeholder: ''
+    },
+  ];
+
   // Modal de resumo
   isLoading = false;
   summaryModalVisible = false;
@@ -200,6 +230,33 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
         this.modalOpenCashier = false; // Fechar o modal após fechar o caixa
       }
     });
+  }
+
+  alterPassword(values: any){
+    if(this.modalAlterPassword == false){
+      this.modalAlterPassword = true;
+      return;
+    }
+
+    if(values.passwordNew !== values.passwordNew2){
+      alert('As senhas não conferem');
+    }
+
+    this.loginService.alterPassword(values.passwordOld, values.passwordNew).subscribe({
+      next: () => {
+        console.log('Senha alterada com sucesso');
+      },
+      error: (error) => {
+        if( error.status === 400) {
+          alert('Senha atual incorreta');
+          return;
+        }
+        console.error('Erro ao alterar a senha:', error);
+      },complete: () => {
+        this.modalAlterPassword = false; // Fechar o modal
+      }
+    });
+
   }
 
   prepareForOpenCashier() {

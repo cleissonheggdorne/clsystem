@@ -1,5 +1,7 @@
 package br.com.clsystem.CLSystem.controller;
 
+import java.security.Principal;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -43,6 +45,17 @@ public class EmployeeController {
 	public ResponseEntity<?> updateController(@Valid @RequestBody EmployeeRecord employeeRecord, BindingResult br){
 		try {
 			return employeeService.update(employeeRecord);
+		}catch(DataBaseException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
+		}
+	}
+
+	@PutMapping("/employee/alter-password")
+	public ResponseEntity<?> updatePasswordController(@Valid @RequestBody HashMap<String, String> password, Principal principal){
+		try {
+			return employeeService.updatePassword(password.get("passwordOld"),
+													password.get("passwordNew"),  
+													principal.getName());
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}

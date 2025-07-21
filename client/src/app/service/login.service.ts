@@ -47,6 +47,12 @@ export class LoginService {
     });
   }
 
+  alterPassword(passwordOld: string, passwordNew: string): Observable<any> {
+    return this.http.put(`${this.apiUrlDev}/api/employee/alter-password`, {
+      passwordOld, passwordNew,
+    });
+  }
+
   // Métodos para gerenciar o token
   setToken(token: string): void {
     localStorage.setItem(this.TOKEN_KEY, token);

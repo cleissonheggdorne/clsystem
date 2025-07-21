@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -56,17 +57,31 @@ public class EmployeeService {
 			throw new DataBaseException("", dive);
 		}
 	}
+
+	public ResponseEntity<?> updatePassword(String passwordOld, String passwordNew, String document){
+		Optional<Employee> employeeUp = employeeRepository.findByDocument(document);
+		if(employeeUp.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+
+		if(!passwordEncoder.matches(passwordOld, employeeUp.get().getPassword())) {
+			return ResponseEntity.badRequest().body("Senha atual digitada não confere");
+		}
+		employeeUp.get().setPassword(passwordEncoder.encode(passwordNew));
+		try {
+			Employee employee = employeeRepository.saveAndFlush(employeeUp.get());
+			return ResponseEntity.ok().body(employee.factoryEmployeeRecord(employee));
+		}catch(DataIntegrityViolationException dive) {
+			throw new DataBaseException("", dive);
+		}
+	}
 	
 	public List<Optional<EmployeeProjection>> findAll(){
 		try {
 			List<EmployeeRecord> listEmployeeRecord = new ArrayList<>(); 
 			List<Employee> listEmployee = employeeRepository.findAll();
 					listEmployee.stream().forEach(employee -> {
-						        EmployeeRecord employeeRecord = new EmployeeRecord(employee.getIdEmployee(),
-						        		                                        employee.getNameEmployee(),
-						        		                                        employee.getDocument(),
-						        		                                        employee.getInitialDate(),
-																				employee.getPassword());
+						        EmployeeRecord employeeRecord = employee.factoryEmployeeRecord(employee);
 								listEmployeeRecord.add(employeeRecord);
 								
 							});
