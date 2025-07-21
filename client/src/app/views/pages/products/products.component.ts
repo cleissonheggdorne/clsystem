@@ -47,8 +47,9 @@ export class ProductsComponent implements OnInit {
   totalPages: number = 0;
   
   // Propriedades para o modal de edição
+  newProduct = false;
   editModalVisible = false;
-  editingProduct: Product = {
+  editingProductVazio: Product = {
     idProduct: 0,
     nameProduct: '',
     valueCost: 0,
@@ -56,6 +57,9 @@ export class ProductsComponent implements OnInit {
     productDescription: '',
     barCode: ''
   };
+
+  editingProduct = { ...this.editingProductVazio };
+
   
   // Adicionando Math e Number como propriedades do componente
   protected Math = Math;
@@ -98,6 +102,12 @@ export class ProductsComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  openCreateProduct() {
+    this.editingProduct = { ...this.editingProductVazio };
+    this.newProduct = true;
+    this.editModalVisible = true;
   }
 
   searchProducts() {
@@ -176,15 +186,20 @@ export class ProductsComponent implements OnInit {
   saveProduct() {
     if (this.editingProduct) {
       this.isLoading = true;
-      this.productService.updateProduct(this.editingProduct).subscribe({
+      this.productService.saveProduct(this.editingProduct).subscribe({
         next: () => {
-          this.loadProducts();
           this.editModalVisible = false;
+          this.editingProduct = { ...this.editingProductVazio }; // Resetando o formulário
+          this.loadProducts();
         },
         error: (error) => {
           console.error('Erro ao atualizar produto:', error);
           this.isLoading = false;
-        }
+        },
+        complete: () => {
+          this.isLoading = false;
+          this.editingProduct = { ...this.editingProduct };
+      }
       });
     }
   }

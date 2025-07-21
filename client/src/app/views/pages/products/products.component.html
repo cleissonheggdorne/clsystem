@@ -16,6 +16,9 @@
           <button cButton color="primary" (click)="searchProducts()">
             Buscar
           </button>
+          <button cButton color="link" (click)="openCreateProduct()">
+            Novo
+          </button>
         </div>
       </c-col>
     </c-row>
@@ -110,7 +113,7 @@
   (visibleChange)="editModalVisible = $event"
 >
   <c-modal-header>
-    <h5 cModalTitle>Editar Produto</h5>
+    <h5 cModalTitle>{{ newProduct ? 'Novo Produto' : 'Editar Produto' }}</h5>
   </c-modal-header>
   <c-modal-body>
     <form>

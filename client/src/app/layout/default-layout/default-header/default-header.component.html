@@ -21,7 +21,7 @@
             </span>
           </div>
           <div *ngIf="status.isOpen">
-            <strong>Aberto em:</strong>
+            <strong>Aberto em: </strong>
             <span>{{ status.openingDate }}</span>
           </div>
         </ng-container>
@@ -77,7 +77,7 @@
       <c-avatar
         shape="rounded-1"
         [size]="'md'"
-        src="./assets/images/avatars/8.jpg"
+        src="./assets/images/avatars/8.png"
         status="success"
         textColor="primary"
         alt="User avatar"
@@ -92,7 +92,7 @@
       <li>
         <div class="px-3 py-2">
           <div><strong>Nome:</strong> {{ currentEmployee?.nameEmployee }}</div>
-          <div><strong>Função:</strong> {{ currentEmployee?.role }}</div>
+          <!-- <div><strong>Função:</strong> {{ currentEmployee?.role }}</div> -->
         </div>
       </li>
       <li>

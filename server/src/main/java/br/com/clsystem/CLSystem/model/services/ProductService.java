@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
+import br.com.clsystem.CLSystem.model.entities.Employee;
 import br.com.clsystem.CLSystem.model.entities.Product;
 import br.com.clsystem.CLSystem.model.entities.record.ProductRecord;
 import br.com.clsystem.CLSystem.model.repositories.ProductRepository;
@@ -26,6 +27,10 @@ public class ProductService {
 	
 	public ResponseEntity<?> save(ProductRecord productRecord){
 		Product product = new Product();
+
+		if(productRecord.idProduct() > 0) {
+			return update(productRecord);
+		}
 		BeanUtils.copyProperties(productRecord, product);
 		try {
 		      return ResponseEntity.ok(productRepository.saveAndFlush(product));
@@ -103,8 +108,8 @@ public class ProductService {
 						        ProductRecord productRecord = new ProductRecord(product.getIdProduct(),
 						        		                                        product.getNameProduct(),
 						        		                                        product.getProductDescription(),
-						        		                                        product.getValueCost(),
 						        		                                        product.getValueSale(),
+						        		                                        product.getValueCost(),
 						        		                                        product.getBarCode());
 								listProductRecord.add(productRecord);
 								

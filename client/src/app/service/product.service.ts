@@ -42,6 +42,16 @@ export class ProductService {
     );
   }
 
+  saveProduct(product: Product): Observable<Product> {
+    return this.http.post<Product>(`${this.apiUrlDev}/api/product/save`, product)
+      .pipe(
+        tap({
+          next: (response) => console.log('Produto atualizado com sucesso:', response),
+          error: (error) => console.error('Erro ao atualizar produto:', error)
+        })
+      );
+  }
+
   updateProduct(product: Product): Observable<Product> {
     console.log('Enviando produto para atualização:', product);
     return this.http.put<Product>(`${this.apiUrlDev}/api/product/save`, product)
