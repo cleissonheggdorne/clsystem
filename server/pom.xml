@@ -14,7 +14,7 @@
 	<name>CLSystem</name>
 	<description>Project for Spring Boot</description>
 	
-	  <url>http://www.example.com</url>
+	  <url>http://digihous.com</url>
 
 	
 	<properties>
@@ -84,6 +84,13 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.2.0</version>
+				<configuration>
+					<finalName>clsystem</finalName>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
