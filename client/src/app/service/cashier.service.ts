@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { tap, catchError, map } from 'rxjs/operators';
-import { environmentprod } from '../environments/environment.prod';
 import { environment } from '../environments/environment';
 
 
@@ -42,7 +41,6 @@ export interface CashierStatus {
   providedIn: 'root'
 })
 export class CashierService {
-  private apiUrl = environmentprod.apiUrl;
   private apiUrlDev = environment.apiUrl;
 
   // BehaviorSubject para compartilhar o status do caixa

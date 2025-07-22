@@ -1,4 +1,4 @@
-export const environmentprod = {
+export const environment = {
     production: true,
-    apiUrl: 'http://144.217.81.7:8081', // URL da API para produção
+    apiUrl: 'http://digihous.com.br:8081', // URL da API para produção
   };

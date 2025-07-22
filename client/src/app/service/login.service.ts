@@ -2,14 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../environments/environment'; // Importe o ambiente
-import { environmentprod } from '../environments/environment.prod'; // Importe o ambiente
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
 
-  private apiUrl = environmentprod.apiUrl; 
   private apiUrlDev = environment.apiUrl; 
   private readonly TOKEN_KEY = 'auth_token';
 

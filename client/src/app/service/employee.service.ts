@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environmentprod } from '../environments/environment.prod';
 import { environment } from '../environments/environment';
 import { tap } from 'rxjs/operators';
 
@@ -18,7 +17,6 @@ export interface Employee {
 })
 export class EmployeeService {
 
-  private apiUrl = environmentprod.apiUrl; 
   private apiUrlDev = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
