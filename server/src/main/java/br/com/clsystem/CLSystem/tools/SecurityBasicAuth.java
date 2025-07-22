@@ -20,6 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.http.HttpMethod;
 
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -79,8 +80,7 @@ public class SecurityBasicAuth {
                     .requestMatchers("POST","/api/public/**").permitAll()
                     .requestMatchers("PUT","/api/public/**").permitAll()
                     .requestMatchers("DELETE","/api/public/**").permitAll()
-
-
+		  .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .anyRequest().authenticated()
             )
             .httpBasic(Customizer.withDefaults())
