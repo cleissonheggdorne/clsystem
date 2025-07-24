@@ -34,7 +34,6 @@ export class EmployeeService {
       body: { "id":id }
     }).pipe(
       tap({
-        next: () => console.log('Funcionário deletado com sucesso, ID:', id),
         error: (error) => console.error('Erro ao deletar produto:', error)
       })
     );
@@ -44,18 +43,15 @@ export class EmployeeService {
     return this.http.post<Employee>(`${this.apiUrlDev}/api/employee/save`, employee)
       .pipe(
         tap({
-          next: (response) => console.log('Funcionário cadastrado com sucesso:', response),
           error: (error) => console.error('Erro ao cadastrar funcionário:', error)
         })
       );
   }
 
   updateEmployee(employee: Employee): Observable<Employee> {
-    console.log('Enviando funcionário para atualização:', employee);
     return this.http.put<Employee>(`${this.apiUrlDev}/api/employee/save`, employee)
       .pipe(
         tap({
-          next: (response) => console.log('Produto atualizado com sucesso:', response),
           error: (error) => console.error('Erro ao atualizar produto:', error)
         })
       );

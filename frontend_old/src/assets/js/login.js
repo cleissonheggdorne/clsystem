@@ -14,7 +14,6 @@ const model = {
 
         if (response.ok) {
             const token = await response.json(); // Lê o token como texto
-            //console.log("Token JWT recebido:", token);
             return token;
         } else {
            throw new Error("Usuário Inexistente!");
@@ -29,7 +28,6 @@ const view = {
         $('.modal').modal({
           dismissible: false
         });
-        console.log("entrou");
         document.getElementById('login-form').addEventListener('submit', function(event) {
             event.preventDefault(); // Previne o comportamento padrão do formulário
 
@@ -42,7 +40,6 @@ const view = {
                 dados[key] = value;
             });
 
-            console.log('Dados do formulário:', dados);
         });
     },
 }

@@ -74,5 +74,4 @@ app.post('/entrar', async (req, res) => {
 
 // Iniciando o servidor
 app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
 });

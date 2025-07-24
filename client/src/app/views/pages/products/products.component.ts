@@ -13,6 +13,7 @@ import {
 import { IconSetService, IconModule } from '@coreui/icons-angular';
 import { cilPencil, cilTrash, cilChevronLeft, cilChevronRight } from '@coreui/icons';
 import { ProductService, Product } from '../../../service/product.service';
+import { CustomModalComponent } from '../../../shared/components/custom-modal/custom-modal.component';
 
 @Component({
   selector: 'app-products',
@@ -27,7 +28,8 @@ import { ProductService, Product } from '../../../service/product.service';
     FormModule,
     IconModule,
     SpinnerModule,
-    ModalModule
+    ModalModule,
+    CustomModalComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './products.component.html',
@@ -75,6 +77,11 @@ export class ProductsComponent implements OnInit {
     { text: 'Editar', key: 'actions' },
     { text: 'Excluir', key: 'actions' }
   ];
+
+  modalNotice: boolean = false;
+  modalNoticeTitle: string = '';
+  modalNoticeDescription: string = '';
+  modalNoticeButtonPrimary: string = 'OK';
 
   constructor(
     private productService: ProductService,
@@ -193,7 +200,8 @@ export class ProductsComponent implements OnInit {
           this.loadProducts();
         },
         error: (error) => {
-          console.error('Erro ao atualizar produto:', error);
+          const mensagem = error.error?.body || error.error || 'Erro ao salvar produto. Verifique os dados e tente novamente.';
+          this.defineModalNotice("Ocorreu um erro", mensagem);
           this.isLoading = false;
         },
         complete: () => {
@@ -217,5 +225,16 @@ export class ProductsComponent implements OnInit {
         }
       });
     }
+  }
+
+  defineModalNotice(title: string, description: string, buttonPrimary: string = 'OK') {
+    this.modalNoticeTitle = title;
+    this.modalNoticeDescription = description;
+    this.modalNoticeButtonPrimary = buttonPrimary;
+    this.modalNotice = true;
+  }
+
+  closeModal(event: any){
+    this.modalNotice = false;
   }
 }

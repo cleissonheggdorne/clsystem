@@ -180,3 +180,13 @@
     </button>
   </c-modal-footer>
 </c-modal>
+
+<!-- Modal Avisos -->
+<app-custom-modal
+  [visible]="modalNotice"
+  [title]="modalNoticeTitle"
+  [description]="modalNoticeDescription"
+  [primaryButtonText]="modalNoticeButtonPrimary"
+  [showSecondaryButton]="false"
+  (primaryAction)="modalNotice = false">
+</app-custom-modal>

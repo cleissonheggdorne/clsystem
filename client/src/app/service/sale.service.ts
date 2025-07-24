@@ -106,7 +106,6 @@ export class SaleService {
         }
         return response.body || [];
       }),
-      // tap(items => console.log('Itens carregados:', items)),
       catchError(error => {
         console.error('Erro ao carregar itens:', error);
         if (error.status === 204) {
@@ -154,7 +153,6 @@ export class SaleService {
 
   // Excluir um item de venda
   deleteItem(itemSale: any): Observable<any> {
-    console.log("itemSale:"+itemSale);
     return this.http.put(`${this.apiUrlDev}/api/itemsale/delete`,itemSale);
   }
 }

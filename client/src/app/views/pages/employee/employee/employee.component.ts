@@ -13,6 +13,7 @@ import {
 import { IconSetService, IconModule } from '@coreui/icons-angular';
 import { cilPencil, cilTrash, cilChevronLeft, cilChevronRight } from '@coreui/icons';
 import { EmployeeService, Employee } from '../../../../service/employee.service';
+import { CustomModalComponent } from '../../../../shared/components/custom-modal/custom-modal.component';
 
 @Component({
   selector: 'app-employee',
@@ -27,7 +28,8 @@ import { EmployeeService, Employee } from '../../../../service/employee.service'
     ModalModule,
     SpinnerModule,
     TableModule,
-    IconModule
+    IconModule,
+    CustomModalComponent // Importando o componente de modal personalizado
   ],
   templateUrl: './employee.component.html',
   styleUrl: './employee.component.scss',
@@ -69,6 +71,13 @@ editingEmployee = { ...this.editingEmployeeVazio };
     { text: 'Excluir', key: 'actions' }
   ];
 
+  // Modal de Avisos
+  modalNotice: boolean = false;
+  modalNoticeTitle: string = '';
+  modalNoticeDescription: string = '';
+  modalNoticeButtonPrimary: string = 'OK';
+
+
   constructor(
     private employeeService: EmployeeService,
     public iconSet: IconSetService
@@ -84,7 +93,6 @@ editingEmployee = { ...this.editingEmployeeVazio };
     this.isLoading = true;
     this.employeeService.getEmployees().subscribe({
       next: (employees) => {
-        console.log('Funcionários carregados:', employees);
         this.employees = employees;
         this.totalItems = employees.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
@@ -178,7 +186,9 @@ editingEmployee = { ...this.editingEmployeeVazio };
         this.loadEmployees();
       },
       error: (error) => {
-        console.error('Erro ao atualizar funcionário:', error);
+        const mensagem = error.error?.body || error.error || 'Erro ao salvar funcionário. Verifique os dados e tente novamente.';
+        this.defineModalNotice("Ocorreu um erro", mensagem);
+        this.isLoading = false;
       },
       complete: () => {
         this.isLoading = false;
@@ -203,10 +213,18 @@ editingEmployee = { ...this.editingEmployeeVazio };
       });
     }
   }
+
   formatDate(date: Date): string {
     const dia = String(date.getDate()).padStart(2, '0');
     const mes = String(date.getMonth() + 1).padStart(2, '0');
     const ano = date.getFullYear();
     return `${dia}/${mes}/${ano}`;
+  }
+
+  defineModalNotice(title: string, description: string, buttonPrimary: string = 'OK') {
+    this.modalNoticeTitle = title;
+    this.modalNoticeDescription = description;
+    this.modalNoticeButtonPrimary = buttonPrimary;
+    this.modalNotice = true;
   }
 }

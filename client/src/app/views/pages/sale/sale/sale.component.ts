@@ -517,6 +517,7 @@ export class SaleComponent implements OnInit {
       next: (savedItem) => {        
         // Adicionar o item à lista local para atualização imediata
         if (savedItem) {
+          this.saleItems = this.saleItems.filter(i => i.idItemSale !== savedItem.idItemSale); // Remover item duplicado
           this.saleItems.push(savedItem);
           this.currentSale.idSale = savedItem.idSale.idSale; // Atualizar o ID da venda atual
           if(!this.currentSale.idCashier){
@@ -560,17 +561,6 @@ export class SaleComponent implements OnInit {
     }    
     this.showProductsDropdown = false;
   }
-
-  // Método para debug
-  // logDropdownState(): void {
-  //   console.log({
-  //     showProductsDropdown: this.showProductsDropdown,
-  //     filteredProductsLength: this.filteredProducts.length,
-  //     searchTerm: this.searchTerm,
-  //     isLoading: this.isLoading,
-  //     isSearching: this.isSearching
-  //   });
-  // }
 
   trackByHeaderKey(index: number, header: any): string {
     return header.key;

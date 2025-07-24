@@ -29,7 +29,6 @@ export class CashierSummaryModalComponent {
 
   ngOnChanges() {
     this.updateSummaryTable();
-      console.log('extraButtonVisible mudou:', this.extraButtonVisible);
 
   }
 
@@ -57,7 +56,6 @@ export class CashierSummaryModalComponent {
         // Processar diretamente as propriedades do objeto Quantidade
         for (const [tipo, quantidade] of Object.entries(item.Quantidade)) {
           for (const [chave, valor] of Object.entries(quantidade)) {
-            console.log(chave, valor);
             if (!tiposMap.has(chave)) {
               tiposMap.set(chave, { tipo: chave, quantidade: 0, valor: 0 });
             }
@@ -69,7 +67,6 @@ export class CashierSummaryModalComponent {
         // Processar diretamente as propriedades do objeto Valor
         for (const [tipo, valor] of Object.entries(item.Valor)) {
           for (const [chave, val] of Object.entries((valor))) {
-            console.log(chave, val);
             if (!tiposMap.has(chave)) {
               tiposMap.set(chave, { tipo:chave, quantidade: 0, valor: 0 });
             }
