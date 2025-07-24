@@ -4,33 +4,56 @@
       <c-col lg="7" md="9" xl="6">
         <c-card class="mx-4">
           <c-card-body class="p-4">
-            <form cForm>
-              <h1>Register</h1>
-              <p class="text-body-secondary">Create your account</p>
+              <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">              
+                <h1>Registro</h1>
+              <p class="text-body-secondary">Crie um usuário DEMONSTRAÇÃO</p>
               <c-input-group class="mb-3">
                 <span cInputGroupText>
                   <svg cIcon name="cilUser"></svg>
                 </span>
-                <input autoComplete="name" cFormControl placeholder="Username" />
+                <input autoComplete="name" formControlName="name" cFormControl placeholder="Nome" />
               </c-input-group>
               <c-input-group class="mb-3">
                 <span cInputGroupText>&#64;</span>
-                <input autoComplete="email" cFormControl placeholder="Email" />
+                <input autoComplete="document" formControlName="document" cFormControl placeholder="Documento" />
               </c-input-group>
               <c-input-group class="mb-3">
                 <span cInputGroupText>
                   <svg cIcon name="cilLockLocked"></svg>
                 </span>
-                <input autoComplete="new-password" cFormControl placeholder="Password" type="password" />
+                <input autoComplete="new-password" formControlName="password" cFormControl placeholder="Password" type="password" />
               </c-input-group>
               <c-input-group class="mb-4">
                 <span cInputGroupText>
                   <svg cIcon name="cilLockLocked"></svg>
                 </span>
-                <input autoComplete="new-password" cFormControl placeholder="Repeat password" type="password" />
+                <input autoComplete="new-password" formControlName="repeatPassword" cFormControl  placeholder="Repeat password" type="password" />
               </c-input-group>
+              
               <div class="d-grid">
-                <button cButton color="success">Create Account</button>
+                 <p> Atenção: Esta é uma conta de demonstração. 
+                  <br>Outros usuários também têm acesso. 
+                  <br>Não compartilhe nem cadastre dados pessoais ou sensíveis. </p>
+                    <div class="form-check mb-3">
+                      <input
+                        type="checkbox"
+                        class="form-check-input"
+                        cFormControl
+                        formControlName="confirmDemo"
+                      />
+                      <label class="form-check-label" for="confirmDemo">
+                        Li e concordo
+                      </label>
+                  </div>
+
+                  <button
+                    cButton
+                    color="success"
+                    type="submit"
+                    [disabled]="!registerForm.valid || !registerForm.get('confirmDemo')?.value"
+                  >
+                    Criar Usuário Demonstração
+                  </button>
               </div>
             </form>
           </c-card-body>

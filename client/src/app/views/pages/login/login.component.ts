@@ -4,7 +4,7 @@ import { IconDirective } from '@coreui/icons-angular';
 import { ContainerComponent, RowComponent, ColComponent, CardGroupComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective, ToasterService } from '@coreui/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { LoginService } from 'src/app/service/login.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
     selector: 'app-login',
@@ -26,7 +26,8 @@ import { Router } from '@angular/router';
         FormControlDirective, 
         ButtonDirective, 
         NgStyle,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        RouterModule
     ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     

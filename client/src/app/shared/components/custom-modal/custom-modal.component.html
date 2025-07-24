@@ -15,6 +15,13 @@
              [(ngModel)]="data[field.key]" 
              [disabled]="field.disabled"
              [placeholder]="field.placeholder || ''" />
+      <!--  Input de senha -->
+      <input *ngIf="field.type === 'password'" 
+             cFormControl 
+             type="password" 
+             [(ngModel)]="data[field.key]" 
+             [disabled]="field.disabled"
+             [placeholder]="field.placeholder || ''" />
       
       <!-- Input numérico -->
       <input *ngIf="field.type === 'number'" 

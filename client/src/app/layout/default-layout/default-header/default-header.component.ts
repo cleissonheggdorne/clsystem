@@ -119,7 +119,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
 
   modalFieldsAlterPassword = [
     {
-      type: 'text',
+      type: 'password',
       label: 'Digite a senha atual',
       key: 'passwordOld',
       required: true,
@@ -127,7 +127,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
       placeholder: ''
     },
     {
-      type: 'text',
+      type: 'password',
       label: 'Digite a nova senha',
       key: 'passwordNew',
       required: true,
@@ -135,7 +135,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
       placeholder: ''
     },
     {
-      type: 'text',
+      type: 'password',
       label: 'Digite a nova senha',
       key: 'passwordNew2',
       required: true,
@@ -209,7 +209,6 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   closeCashier(){
     this.cashierService.closeCashier().subscribe({
       next: () => {
-        console.log('Caixa fechado com sucesso');
       },
       error: (error) => {
         console.error('Erro ao fechar o caixa:', error);
@@ -222,7 +221,6 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   openCashier(data: any){
     this.cashierService.openCashier(data.valor).subscribe({
       next: () => {
-        console.log('Caixa aberto com sucesso');
       },
       error: (error) => {
         console.error('Erro ao abrir o caixa:', error);
@@ -244,7 +242,6 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
 
     this.loginService.alterPassword(values.passwordOld, values.passwordNew).subscribe({
       next: () => {
-        console.log('Senha alterada com sucesso');
       },
       error: (error) => {
         if( error.status === 400) {

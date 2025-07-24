@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../environments/environment'; // Importe o ambiente
+import { Employee } from './employee.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,13 +23,10 @@ export class LoginService {
       .pipe(
         tap((response: any) => {
           if (response) {
-            console.log('Resposta do login:', response);
             // Verifica se a resposta é um objeto e tem pelo menos uma entrada
             if (typeof response === 'object' && Object.keys(response).length > 0) {
               // Pega a primeira chave como token
               const [token, employeeData] = Object.entries(response)[0];
-              //console.log('Token:', token);
-              //console.log('Dados do funcionário:', employeeData);
               this.setToken(token);
               this.setEmployee(employeeData);
             }
@@ -37,13 +35,15 @@ export class LoginService {
       );
   }
 
-  register(email: string, username: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrlDev}/signup`, {
-      email,
-      username,
-      password,
-    });
-  }
+  register(employee: Employee): Observable<Employee> {
+      return this.http.post<Employee>(`${this.apiUrlDev}/api/employee/save`, employee)
+        .pipe(
+          tap({
+            next: (response) => console.log('Funcionário cadastrado com sucesso:', response),
+            error: (error) => console.error('Erro ao cadastrar funcionário:', error)
+          })
+        );
+    }
 
   alterPassword(passwordOld: string, passwordNew: string): Observable<any> {
     return this.http.put(`${this.apiUrlDev}/api/employee/alter-password`, {
