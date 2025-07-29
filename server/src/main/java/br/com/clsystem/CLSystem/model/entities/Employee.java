@@ -9,6 +9,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -22,10 +24,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name="TB_EMPLOYEE")
-public class Employee implements Serializable {
+public class Employee extends AuditableSoftDelete implements Serializable {
 	
 	/**
 	 * 
@@ -49,6 +51,10 @@ public class Employee implements Serializable {
 
 	@Column(name="password")
 	private String password; 
+
+	@ManyToOne
+	@JoinColumn(name="id_customer")
+	private Customer customer;
 
 	public EmployeeRecord factoryEmployeeRecord(Employee employee) {
 		return new EmployeeRecord(employee.getIdEmployee(),
