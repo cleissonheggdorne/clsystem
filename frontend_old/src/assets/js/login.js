@@ -51,21 +51,17 @@ const controller = {
         const user = form.get("user"); //necessario attributo name
         const password = form.get("password");
 
-        console.log('Dados do formulário:', user + password);
         try{
             const data = await model.fetchEntry(user, password);
             let token = null;
             let user1 = null;
             Object.entries(data).forEach(([chave, employee]) => {
-                console.log(`Chave: ${chave}, Nome: ${employee.nome}, Cargo: ${employee.cargo}`);
                 user1 = employee;
                 token = chave;
             });
             //const user1  = token[1];
             UtilsStorage.setUser(user1);
             UtilsStorage.setTokenJwt(token);
-            console.log("usr: "+ user1);
-            console.log("token: "+ token);
         }catch(error){
             Materialize.toast(error, 1000);
         }

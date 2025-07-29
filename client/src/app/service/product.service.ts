@@ -34,7 +34,6 @@ export class ProductService {
       body: { "id":id }
     }).pipe(
       tap({
-        next: () => console.log('Produto deletado com sucesso, ID:', id),
         error: (error) => console.error('Erro ao deletar produto:', error)
       })
     );

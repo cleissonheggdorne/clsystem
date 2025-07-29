@@ -15,7 +15,6 @@ class HeaderCustom extends HTMLElement{
                             </nav>
                         </div>`;
         this.handleButtonLogout();
-       // console.log('teste');
         //(UtilsStorage.userLogged)?NavbarUtils.fillInformationLoggin(UtilsStorage.getUser()):"";
         //(UtilsStorage.openedCashier)?NavbarUtils.fillInformationCashier(UtilsStorage.getCashier()):"";
     }
