@@ -1,8 +1,10 @@
 package br.com.clsystem.CLSystem.model.services;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -12,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
+import br.com.clsystem.CLSystem.model.entities.Customer;
 import br.com.clsystem.CLSystem.model.entities.Employee;
 import br.com.clsystem.CLSystem.model.entities.projection.EmployeeProjection;
 import br.com.clsystem.CLSystem.model.entities.record.EmployeeRecord;
@@ -29,15 +32,16 @@ public class EmployeeService {
 		this.passwordEncoder = passwordEncoder;
 	}
 	
-	public ResponseEntity<?> save(EmployeeRecord employeeRecord){
+	public ResponseEntity<?> save(EmployeeRecord employeeRecord, Customer customer){
 		Employee employee = new Employee();
 
 		if(employeeRecord.idEmployee() != null && employeeRecord.idEmployee() > 0) {
-			return update(employeeRecord);
+			return update(employeeRecord, customer);
 		}
 
 		BeanUtils.copyProperties(employeeRecord, employee);
 		employee.setPassword(passwordEncoder.encode(employee.getPassword()));
+		employee.setCustomer(customer);
 		try {
 		      return ResponseEntity.ok(employeeRepository.saveAndFlush(employee));
 		} catch (DataIntegrityViolationException dive) {		
@@ -45,9 +49,9 @@ public class EmployeeService {
 		}
 	}
 	
-	public ResponseEntity<?> update(EmployeeRecord employeeRecord){
+	public ResponseEntity<?> update(EmployeeRecord employeeRecord, Customer customer){
 		Optional<Employee> employeeUp = employeeRepository.findById(employeeRecord.idEmployee());
-		if(employeeUp.isEmpty()) {
+		if(employeeUp.isEmpty() || !employeeUp.get().getCustomer().getId().equals(customer.getId())) {
 			return ResponseEntity.notFound().build();
 		}
 		BeanUtils.copyProperties(employeeRecord, employeeUp.get());
@@ -58,9 +62,9 @@ public class EmployeeService {
 		}
 	}
 
-	public ResponseEntity<?> updatePassword(String passwordOld, String passwordNew, String document){
+	public ResponseEntity<?> updatePassword(String passwordOld, String passwordNew, String document, UUID customerId){
 		Optional<Employee> employeeUp = employeeRepository.findByDocument(document);
-		if(employeeUp.isEmpty()) {
+		if(employeeUp.isEmpty() || !employeeUp.get().getCustomer().getId().equals(customerId)) {
 			return ResponseEntity.notFound().build();
 		}
 
@@ -76,16 +80,10 @@ public class EmployeeService {
 		}
 	}
 	
-	public List<Optional<EmployeeProjection>> findAll(){
+	public List<Optional<EmployeeProjection>> findAll(UUID customerId){
 		try {
-			List<EmployeeRecord> listEmployeeRecord = new ArrayList<>(); 
-			List<Employee> listEmployee = employeeRepository.findAll();
-					listEmployee.stream().forEach(employee -> {
-						        EmployeeRecord employeeRecord = employee.factoryEmployeeRecord(employee);
-								listEmployeeRecord.add(employeeRecord);
-								
-							});
-			return employeeRepository.findByIdEmployeeIsNotNull();
+			List<Optional<EmployeeProjection>> listEmployee = employeeRepository.findByCustomerId(customerId);	
+			return listEmployee;
 		}catch(Exception e) {
 			throw new DataBaseException("", e);
 		}
@@ -99,9 +97,9 @@ public class EmployeeService {
 		}
 	}
 	
-	public List<EmployeeRecord> findByNameEmployeeOrDocument(String search){
+	public List<EmployeeRecord> findByNameEmployeeOrDocument(String search, UUID customerId){
 		try {
-			List<Employee> listEmployee = employeeRepository.findByNameEmployeeContainingIgnoreCaseOrDocumentContainingIgnoreCase(search, search);
+			List<Employee> listEmployee = employeeRepository.findByCustomerIdAndNameOrDocument(customerId, search);
 			return fillList(listEmployee);
 		}catch(Exception e) {
 			throw new DataBaseException("", e);
@@ -137,10 +135,14 @@ public class EmployeeService {
 	}
 	
 	
-	public ResponseEntity<?> delete(Long id){
+	public ResponseEntity<?> delete(Long id, UUID customerId){
 		try {
-			  employeeRepository.deleteById(id);
-		      return ResponseEntity.ok().build();
+			Optional<Employee> employee = employeeRepository.findById(id);
+			if(employee.isEmpty() || !employee.get().getCustomer().getId().equals(customerId)) {
+				return ResponseEntity.notFound().build();
+			}
+			employee.get().setDeletedAt(LocalDateTime.now());
+			return ResponseEntity.ok().build();
 		} catch (DataIntegrityViolationException dive) {		
 			throw new DataBaseException("", dive);
 		}

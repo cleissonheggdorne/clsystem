@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
+import br.com.clsystem.CLSystem.model.entities.Customer;
+import br.com.clsystem.CLSystem.model.entities.annotation.CurrentCustomer;
 import br.com.clsystem.CLSystem.model.entities.record.EmployeeRecord;
 import br.com.clsystem.CLSystem.model.services.EmployeeService;
 import jakarta.validation.Valid;
@@ -33,9 +35,10 @@ public class EmployeeController {
 	}
 	
 	@PostMapping("/employee/save")
-	public ResponseEntity<?> saveController(@Valid @RequestBody EmployeeRecord employeeRecord, BindingResult br){
+	public ResponseEntity<?> saveController(@Valid @RequestBody EmployeeRecord employeeRecord, BindingResult br, 
+												@CurrentCustomer Customer customer){
 		try {
-			return employeeService.save(employeeRecord);
+			return employeeService.save(employeeRecord, customer);
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
@@ -51,29 +54,31 @@ public class EmployeeController {
 	}
 
 	@PutMapping("/employee/alter-password")
-	public ResponseEntity<?> updatePasswordController(@Valid @RequestBody HashMap<String, String> password, Principal principal){
+	public ResponseEntity<?> updatePasswordController(@Valid @RequestBody HashMap<String, String> password,
+										Principal principal, @CurrentCustomer Customer customer){
 		try {
 			return employeeService.updatePassword(password.get("passwordOld"),
 													password.get("passwordNew"),  
-													principal.getName());
+													principal.getName(),
+													customer.getId());
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
 	}
 	
 	@GetMapping("/employee/findall")
-	public ResponseEntity<?> findController(){
+	public ResponseEntity<?> findController(@CurrentCustomer Customer customer){
 		try {
-			return ResponseEntity.ok().body(employeeService.findAll());
+			return ResponseEntity.ok().body(employeeService.findAll(customer.getId()));
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
 	}
 	
 	@DeleteMapping("/employee/delete")
-	public ResponseEntity<?> deleteController(@RequestBody Map<String, Long> requestBody){
+	public ResponseEntity<?> deleteController(@RequestBody Map<String, Long> requestBody, @CurrentCustomer Customer customer){
 		try {
-			 employeeService.delete(requestBody.get("id"));
+			 employeeService.delete(requestBody.get("id"), customer.getId());
 			 return ResponseEntity.ok().build();
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
@@ -81,25 +86,20 @@ public class EmployeeController {
 	}
 	
 	@GetMapping("/employee/find")
-	public ResponseEntity<?> findController(@RequestParam(name = "key") String key){
+	public ResponseEntity<?> findController(@RequestParam(name = "key") String key, @CurrentCustomer Customer customer){
 		try {
-			System.out.println(key);
-			return ResponseEntity.ok().body(employeeService.findByNameEmployeeOrDocument(key));
+			return ResponseEntity.ok().body(employeeService.findByNameEmployeeOrDocument(key, customer.getId()));
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
 	}
 
-	@GetMapping("/public/employee/entry")
-	public ResponseEntity<?> entryController(@RequestParam(name = "idOrDocument") String idOrDocument){
-		try {
-			//System.out.println(idOrDocument);
-			return ResponseEntity.ok().body(employeeService.findByIdOrDocument(idOrDocument));
-		}catch(DataBaseException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
-		}
-	}
-
-	
-	
+	// @GetMapping("/public/employee/entry")
+	// public ResponseEntity<?> entryController(@RequestParam(name = "idOrDocument") String idOrDocument){
+	// 	try {
+	// 		return ResponseEntity.ok().body(employeeService.findByIdOrDocument(idOrDocument));
+	// 	}catch(DataBaseException e) {
+	// 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
+	// 	}
+	// }
 }
