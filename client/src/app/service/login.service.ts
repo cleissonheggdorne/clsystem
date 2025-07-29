@@ -36,7 +36,7 @@ export class LoginService {
   }
 
   register(employee: Employee): Observable<Employee> {
-      return this.http.post<Employee>(`${this.apiUrlDev}/api/employee/save`, employee)
+      return this.http.post<Employee>(`${this.apiUrlDev}/api/public/employee/register`, employee)
         .pipe(
           tap({
             next: (response) => console.log('Funcionário cadastrado com sucesso:', response),
