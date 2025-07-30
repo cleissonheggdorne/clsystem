@@ -1,22 +1,14 @@
 package br.com.clsystem.CLSystem.model.entities;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.UUID;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.cglib.core.Local;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

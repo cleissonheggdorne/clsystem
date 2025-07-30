@@ -10,6 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
+import br.com.clsystem.CLSystem.model.entities.Customer;
 import br.com.clsystem.CLSystem.model.entities.ItemSale;
 import br.com.clsystem.CLSystem.model.entities.Product;
 import br.com.clsystem.CLSystem.model.entities.Sale;
@@ -40,13 +41,13 @@ public class ItemSaleService {
 	}
 	
 	@Transactional
-	public ItemSaleProjection saveItem(ItemSaleRecord itemSaleRecord, String document){
+	public ItemSaleProjection saveItem(ItemSaleRecord itemSaleRecord, String document, Customer customer) {
 		EmployeeProjection currentEmployee = employeeService.findByIdOrDocument(document);
 		if(currentEmployee == null){
 			throw new DataBaseException("Funcionário não encontrado");
 		}
 
-		CashierProjection currentCashier = cashierService.findByEmployeeAndStatus(currentEmployee.getIdEmployee())
+		CashierProjection currentCashier = cashierService.findByEmployeeAndStatus(currentEmployee.getIdEmployee(), customer)
 			.orElseThrow(() -> new DataBaseException("Caixa não encontrado ou não está aberto"));
 
 

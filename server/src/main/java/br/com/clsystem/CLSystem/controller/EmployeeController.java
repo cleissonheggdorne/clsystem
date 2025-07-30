@@ -45,9 +45,10 @@ public class EmployeeController {
 	}
 	
 	@PutMapping("/employee/save")
-	public ResponseEntity<?> updateController(@Valid @RequestBody EmployeeRecord employeeRecord, BindingResult br){
+	public ResponseEntity<?> updateController(@Valid @RequestBody EmployeeRecord employeeRecord, BindingResult br,
+												@CurrentCustomer Customer customer){
 		try {
-			return employeeService.update(employeeRecord);
+			return employeeService.update(employeeRecord, customer);
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
@@ -69,7 +70,7 @@ public class EmployeeController {
 	@GetMapping("/employee/findall")
 	public ResponseEntity<?> findController(@CurrentCustomer Customer customer){
 		try {
-			return ResponseEntity.ok().body(employeeService.findAll(customer.getId()));
+			return ResponseEntity.ok().body(employeeService.findByCustomerId(customer.getId()));
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
@@ -93,13 +94,4 @@ public class EmployeeController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
 	}
-
-	// @GetMapping("/public/employee/entry")
-	// public ResponseEntity<?> entryController(@RequestParam(name = "idOrDocument") String idOrDocument){
-	// 	try {
-	// 		return ResponseEntity.ok().body(employeeService.findByIdOrDocument(idOrDocument));
-	// 	}catch(DataBaseException e) {
-	// 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
-	// 	}
-	// }
 }

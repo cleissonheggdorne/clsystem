@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
+import br.com.clsystem.CLSystem.model.entities.Customer;
+import br.com.clsystem.CLSystem.model.entities.annotation.CurrentCustomer;
 import br.com.clsystem.CLSystem.model.entities.record.ProductRecord;
 import br.com.clsystem.CLSystem.model.services.ProductService;
 import jakarta.validation.Valid;
@@ -30,27 +32,29 @@ public class ProductController {
 	}
 	
 	@PostMapping("/save")
-	public ResponseEntity<?> saveController(@Valid @RequestBody ProductRecord productRecord, BindingResult br){
+	public ResponseEntity<?> saveController(@Valid @RequestBody ProductRecord productRecord, BindingResult br,
+										@CurrentCustomer Customer customer){
 		try {
-			return productService.save(productRecord);
+			return productService.save(productRecord, customer);
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
 	}
 	
 	@PutMapping("/save")
-	public ResponseEntity<?> updateController(@Valid @RequestBody ProductRecord productRecord, BindingResult br){
+	public ResponseEntity<?> updateController(@Valid @RequestBody ProductRecord productRecord, BindingResult br, 
+										@CurrentCustomer Customer customer){
 		try {
-			return productService.update(productRecord);
+			return productService.update(productRecord, customer);
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
 	}
 	
 	@DeleteMapping("/delete")
-	public ResponseEntity<?> deleteController(@RequestBody Map<String, Long> requestBody){
+	public ResponseEntity<?> deleteController(@RequestBody Map<String, Long> requestBody, @CurrentCustomer Customer customer){
 		try {
-			 productService.delete(requestBody.get("id"));
+			 productService.delete(requestBody.get("id"), customer);
 			 return ResponseEntity.ok().build();
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
@@ -58,19 +62,19 @@ public class ProductController {
 	}
 	
 	@GetMapping("/findall")
-	public ResponseEntity<?> findAllController(){
+	public ResponseEntity<?> findAllController(@CurrentCustomer Customer customer){
 		try {
-			return ResponseEntity.ok().body(productService.findAll());
+			return ResponseEntity.ok().body(productService.findByCustomerId(customer));
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
 	}
 	
 	@GetMapping("/find")
-	public ResponseEntity<?> findController(@RequestParam(name = "key") String key){
+	public ResponseEntity<?> findController(@RequestParam(name = "key") String key, @CurrentCustomer Customer customer){
 		try {
 			System.out.println(key);
-			return ResponseEntity.ok().body(productService.findByNameProductOrBarCode(key));
+			return ResponseEntity.ok().body(productService.findByNameProductOrBarCode(key, customer));
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}

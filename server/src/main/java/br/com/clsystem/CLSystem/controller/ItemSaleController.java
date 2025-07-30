@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
+import br.com.clsystem.CLSystem.model.entities.Customer;
+import br.com.clsystem.CLSystem.model.entities.annotation.CurrentCustomer;
 import br.com.clsystem.CLSystem.model.entities.projection.ItemSaleProjection;
 import br.com.clsystem.CLSystem.model.entities.record.ItemSaleRecord;
 import br.com.clsystem.CLSystem.model.services.ItemSaleService;
@@ -34,9 +36,9 @@ public class ItemSaleController {
 	}
 	
 	@PostMapping("/save")
-	public ResponseEntity<?> saveController(@Valid @RequestBody ItemSaleRecord itemSaleRecord, BindingResult br, Principal principal){
+	public ResponseEntity<?> saveController(@Valid @RequestBody ItemSaleRecord itemSaleRecord, BindingResult br, Principal principal, @CurrentCustomer Customer customer){
 		//try {
-			 ItemSaleProjection itemSale =  itemSaleService.saveItem(itemSaleRecord, principal.getName());
+			 ItemSaleProjection itemSale =  itemSaleService.saveItem(itemSaleRecord, principal.getName(), customer);
 			 return  ResponseEntity.ok().body(itemSale);
 		//}catch(DataBaseException e) {
 		//	return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());

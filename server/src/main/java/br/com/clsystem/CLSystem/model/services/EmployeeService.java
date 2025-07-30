@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -80,7 +79,7 @@ public class EmployeeService {
 		}
 	}
 	
-	public List<Optional<EmployeeProjection>> findAll(UUID customerId){
+	public List<Optional<EmployeeProjection>> findByCustomerId(UUID customerId){
 		try {
 			List<Optional<EmployeeProjection>> listEmployee = employeeRepository.findByCustomerId(customerId);	
 			return listEmployee;
@@ -118,7 +117,6 @@ public class EmployeeService {
 	public List<EmployeeRecord> fillList(List<Employee> listEmployee){
 		try {
 			List<EmployeeRecord> listEmployeeRecord = new ArrayList<>(); 
-			//List<Product> listProduct = productRepository.findAll();
 					listEmployee.stream().forEach(employee -> {
 						        EmployeeRecord employeeRecord = new EmployeeRecord(employee.getIdEmployee(),
 						        													employee.getNameEmployee(),

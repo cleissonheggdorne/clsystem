@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
 import br.com.clsystem.CLSystem.model.entities.Cashier;
+import br.com.clsystem.CLSystem.model.entities.Customer;
 import br.com.clsystem.CLSystem.model.entities.Employee;
 import br.com.clsystem.CLSystem.model.entities.Sale;
 import br.com.clsystem.CLSystem.model.entities.projection.CashierProjection;
@@ -42,13 +43,13 @@ public class CashierService {
 		this.saleRepository = saleRepository;
 	}
 	
-	public ResponseEntity<?> openCashier(CashierRecord cashierRecord, String document){
+	public ResponseEntity<?> openCashier(CashierRecord cashierRecord, String document, Customer customer) {
 		EmployeeProjection currentEmployee = employeeService.findByIdOrDocument(document);
 		if(currentEmployee == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário não encontrado");
 		}
 
-		Optional<CashierProjection> cashierOpened = findByEmployeeAndStatus(currentEmployee.getIdEmployee());
+		Optional<CashierProjection> cashierOpened = findByEmployeeAndStatus(currentEmployee.getIdEmployee(), customer);
 		Cashier cashier;
 		if(!cashierOpened.isPresent()){
 			cashier= new Cashier();
@@ -73,24 +74,22 @@ public class CashierService {
 		return cashierRepository.findById(id);
 	}
 
-	public Optional<CashierProjection> findByEmployeeAndStatus(Long idEmployee) {
-		Optional<Employee> employee = employeeService.findById(idEmployee);
-		return cashierRepository.findByEmployeeAndStatus(employee.get(), StatusCashier.ABERTO);
+	public Optional<CashierProjection> findByEmployeeAndStatus(Long idEmployee, Customer customer) {
+		Employee employee = employeeService.findById(idEmployee).orElseThrow(() -> new DataBaseException("Funcionário não encontrado"));
+		if(!employee.getCustomer().getId().equals(customer.getId())) {
+			throw new DataBaseException("Funcionário não encontrado");
+		}
+		return cashierRepository.findByEmployeeCustomerIdAndEmployeeAndStatus(customer.getId() ,employee, StatusCashier.ABERTO);
 	}
 
 	public Optional<CashierProjection> findByIdCashierAndStatus(Long idEmployee) {
 		return cashierRepository.findByIdCashierAndStatus(idEmployee, StatusCashier.ABERTO);
 	}
 
-	public ResponseEntity<?> closeCashier(long id, String document){
-		Optional<Cashier> cashierOptional = cashierRepository.findById(id);
-		if (cashierOptional.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Caixa não encontrado");
-		}
-		Cashier cashier = cashierOptional.get();
-		String cashierOwnerDocument = cashier.getEmployee().getDocument();
-		if (!cashierOwnerDocument.equals(document)) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Você não tem permissão para fechar este caixa");
+	public ResponseEntity<?> closeCashier(long id, String document, Customer customer) {
+		Cashier cashier = cashierRepository.findById(id).orElseThrow(()-> new DataBaseException("Caixa não encontrado"));
+		if(!cashier.getEmployee().getCustomer().getId().equals(customer.getId())) {
+			throw new DataBaseException("Caixa não encontrado");
 		}
 		cashier.setStatus(StatusCashier.FECHADO);
 		cashier.setDateHourClose(LocalDateTime.now());
@@ -101,20 +100,23 @@ public class CashierService {
 		}
 	}
 
-	public List<Optional<CashierProjection>> findHistorySummary(){
-		List<Optional<CashierProjection>> listCashier = cashierRepository.findByIdCashierIsNotNull();
+	public List<Optional<CashierProjection>> findHistorySummary(Customer customer){
+		List<Optional<CashierProjection>> listCashier = cashierRepository.findByEmployeeCustomerId(customer.getId());
 		return listCashier;
 	}
 
-	public List<Optional<CashierProjection>> findByEmployeeName(String nameEmployee){
-		List<Optional<CashierProjection>> listCashier = cashierRepository.findByEmployeeNameEmployeeContainingIgnoreCase(nameEmployee);
+	public List<Optional<CashierProjection>> findByEmployeeName(String nameEmployee, Customer customer){
+		List<Optional<CashierProjection>> listCashier = cashierRepository.findByEmployeeCustomerIdAndEmployeeNameEmployeeContainingIgnoreCase(customer.getId(), nameEmployee);
 		return listCashier;
 	}	
 
-	public List<Map<String, List<Map<String, BigDecimal>>>> resumeByCashier(Long idCashier){
+	public List<Map<String, List<Map<String, BigDecimal>>>> resumeByCashier(Long idCashier, Customer customer) {
 		Map<String, BigDecimal> amountSalesMap = new HashMap<>();
-
-		List<Sale> sales = saleRepository.findByIdCashierAndStatusSaleIsNot(findById(idCashier).get(), StatusSale.CANCELADA);
+		Cashier cashier = findById(idCashier).orElseThrow(() -> new DataBaseException("Caixa não encontrado"));
+		if(!cashier.getEmployee().getCustomer().getId().equals(customer.getId())) {
+			throw new DataBaseException("Caixa não encontrado");
+		}
+		List<Sale> sales = saleRepository.findByIdCashierAndStatusSaleIsNot(cashier, StatusSale.CANCELADA);
 		sales.forEach(sale -> {
 		       sale.calculateAmount();
 		 });

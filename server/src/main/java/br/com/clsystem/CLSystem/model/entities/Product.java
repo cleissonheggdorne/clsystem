@@ -1,5 +1,6 @@
 package br.com.clsystem.CLSystem.model.entities;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 import jakarta.persistence.Column;
@@ -7,6 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -17,11 +20,11 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="TB_PRODUCT")
-public class Product {
+public class Product extends AuditableSoftDelete implements Serializable  {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,8 +45,9 @@ public class Product {
 	
 	@Column(name="bar_code", length = 20, unique = true)
 	private String barCode;
-	
-	@Column(name="deleted")
-	private Boolean deleted;
+
+	@ManyToOne
+	@JoinColumn(name="id_customer")
+	private Customer customer;
 	
 }

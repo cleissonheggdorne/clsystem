@@ -29,10 +29,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name="TB_CASHIER")
-public class Cashier implements Serializable {
+public class Cashier extends AuditableSoftDelete implements Serializable {
 	
 	/**
 	 * 

@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
-import br.com.clsystem.CLSystem.model.entities.Employee;
+import br.com.clsystem.CLSystem.model.entities.Customer;
 import br.com.clsystem.CLSystem.model.entities.Product;
 import br.com.clsystem.CLSystem.model.entities.record.ProductRecord;
 import br.com.clsystem.CLSystem.model.repositories.ProductRepository;
@@ -25,13 +25,15 @@ public class ProductService {
 		this.productRepository = productRepository;
 	}
 	
-	public ResponseEntity<?> save(ProductRecord productRecord){
+	public ResponseEntity<?> save(ProductRecord productRecord, Customer customer){
 		Product product = new Product();
 
 		if(productRecord.idProduct() > 0) {
-			return update(productRecord);
+			return update(productRecord, customer);
 		}
+
 		BeanUtils.copyProperties(productRecord, product);
+		product.setCustomer(customer);
 		try {
 		      return ResponseEntity.ok(productRepository.saveAndFlush(product));
 		} catch (DataIntegrityViolationException dive) {		
@@ -39,28 +41,37 @@ public class ProductService {
 		}
 	}
 	
-	public ResponseEntity<?> delete(Long id){
+	public ResponseEntity<?> delete(Long id, Customer customer){
 		try {
-			  productRepository.deleteById(id);
-		      return ResponseEntity.ok().build();
+			Product product = productRepository.findById(id).orElseThrow(() -> new DataBaseException("Produto Não Encontrado"));
+			if(!product.getCustomer().getId().equals(customer.getId())) {
+				throw new DataBaseException("Produto Não Pertence ao Cliente");
+			}
+			productRepository.deleteById(id);
+			return ResponseEntity.ok().build();
 		} catch (DataIntegrityViolationException dive) {		
 			throw new DataBaseException("", dive);
 		}
 	}
 	
-	public ResponseEntity<?> update(ProductRecord productRecord){
-		Optional<Product> productUp = productRepository.findById(productRecord.idProduct());
-		BeanUtils.copyProperties(productRecord, productUp.get());
+	public ResponseEntity<?> update(ProductRecord productRecord, Customer customer){
+		Product productUp = productRepository.findById(productRecord.idProduct())
+			.orElseThrow(() -> new DataBaseException("Produto Não Encontrado"));
+		
+		if(!productUp.getCustomer().getId().equals(customer.getId())) {
+			throw new DataBaseException("Produto Não Pertence ao Cliente");
+		}
+		BeanUtils.copyProperties(productRecord, productUp);
 		try {
-			return ResponseEntity.ok().body(productRepository.saveAndFlush(productUp.get()));
+			return ResponseEntity.ok().body(productRepository.saveAndFlush(productUp));
 		}catch(DataIntegrityViolationException dive) {
 			throw new DataBaseException("", dive);
 		}
 	}
 	
-	public List<ProductRecord> findByNameProductOrBarCode(String search){
+	public List<ProductRecord> findByNameProductOrBarCode(String search, Customer customer){
 		try {
-			List<Product> listProduct = productRepository.findByNameProductContainingIgnoreCaseOrBarCodeContainingIgnoreCase(search, search);
+			List<Product> listProduct = productRepository.findByNameProductOrBarCodeByCustomerId(search, customer.getId());
 			return fillList(listProduct);
 		}catch(Exception e) {
 			throw new DataBaseException("", e);
@@ -75,9 +86,9 @@ public class ProductService {
 		}
 	}
 	
-	public List<ProductRecord> findAll(){
+	public List<ProductRecord> findByCustomerId(Customer customer){
 		try {
-			List<Product> listProduct = productRepository.findAll();
+			List<Product> listProduct = productRepository.findByCustomerId(customer.getId());
 			return fillList(listProduct); 
 
 //					listProduct.stream().forEach(product -> {

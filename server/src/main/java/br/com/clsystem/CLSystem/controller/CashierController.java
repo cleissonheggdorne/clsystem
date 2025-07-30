@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
+import br.com.clsystem.CLSystem.model.entities.Customer;
+import br.com.clsystem.CLSystem.model.entities.annotation.CurrentCustomer;
 import br.com.clsystem.CLSystem.model.entities.record.CashierRecord;
 import br.com.clsystem.CLSystem.model.services.CashierService;
 import jakarta.validation.Valid;
@@ -30,58 +32,50 @@ public class CashierController {
 	}
 	
 	@PostMapping("/open")
-	public ResponseEntity<?> saveController(@Valid @RequestBody CashierRecord cashierRecord, BindingResult br, Principal principal){
-		return cashierService.openCashier(cashierRecord, principal.getName());
+	public ResponseEntity<?> saveController(@Valid @RequestBody CashierRecord cashierRecord, BindingResult br, Principal principal,  @CurrentCustomer Customer customer){
+		return cashierService.openCashier(cashierRecord, principal.getName(), customer);
 	}
 	
 	@PutMapping("/close")
-	public ResponseEntity<?> closeCashier(@RequestBody Map<String, Long> idCashier, Principal principal){
+	public ResponseEntity<?> closeCashier(@RequestBody Map<String, Long> idCashier, Principal principal, Customer customer){
 		try {
-			return cashierService.closeCashier(idCashier.get("idCashier"), principal.getName());
+			return cashierService.closeCashier(idCashier.get("idCashier"), principal.getName(), customer);
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
 	}
 
 	@GetMapping("/find-open")
-	public ResponseEntity<?> findOpenCashier(@RequestParam(name = "id") Long idEmployee){
+	public ResponseEntity<?> findOpenCashier(@RequestParam(name = "id") Long idEmployee, @CurrentCustomer Customer customer){
 		try {
-			return ResponseEntity.ok().body(cashierService.findByEmployeeAndStatus(idEmployee));
+			return ResponseEntity.ok().body(cashierService.findByEmployeeAndStatus(idEmployee, customer));
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
 	}
 
 	@GetMapping("/summary-by-cashier")
-	public ResponseEntity<?> resumeByCashier(@RequestParam(name = "idCashier") Long idCashierRequest){
+	public ResponseEntity<?> resumeByCashier(@RequestParam(name = "idCashier") Long idCashierRequest,
+												@CurrentCustomer Customer customer){
 		try { 
-			//System.out.println(formPayment.get("formPayment"));
-			return ResponseEntity.ok().body(cashierService.resumeByCashier((Long) idCashierRequest));
+			return ResponseEntity.ok().body(cashierService.resumeByCashier((Long) idCashierRequest, customer));
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
 	}
-	// @GetMapping("/find-by-id")
-	// public ResponseEntity<?> findByIdCashier(@RequestParam(name = "id") Long idCashier){
-	// 	try {
-	// 		return ResponseEntity.ok().body(cashierService.findById(idCashier));
-	// 	}catch(DataBaseException e) {
-	// 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
-	// 	}
-	// }
 
 	@GetMapping("/findall")
-	public ResponseEntity<?> findByIdCashier(){
+	public ResponseEntity<?> findAll(@CurrentCustomer Customer customer){
 		try {
-			return ResponseEntity.ok().body(cashierService.findHistorySummary());
+			return ResponseEntity.ok().body(cashierService.findHistorySummary(customer));
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
 	}
 	@GetMapping("/find")
-	public ResponseEntity<?> findByEmployeeName(@RequestParam(name = "key") String key){
+	public ResponseEntity<?> findByEmployeeName(@RequestParam(name = "key") String key, @CurrentCustomer Customer customer){
 		try {
-			return ResponseEntity.ok().body(cashierService.findByEmployeeName(key));
+			return ResponseEntity.ok().body(cashierService.findByEmployeeName(key, customer));
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}
