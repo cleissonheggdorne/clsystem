@@ -38,7 +38,7 @@ public class EmployeeController {
 	public ResponseEntity<?> saveController(@Valid @RequestBody EmployeeRecord employeeRecord, BindingResult br, 
 												@CurrentCustomer Customer customer){
 		try {
-			return employeeService.save(employeeRecord, customer);
+			return ResponseEntity.ok(employeeService.save(employeeRecord, customer));
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}

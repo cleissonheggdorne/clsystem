@@ -26,6 +26,7 @@ public class DataBaseException extends RuntimeException{
             if (exception.getCause() instanceof ConstraintViolationException) {
                 ConstraintViolationException constraintViolationException = (ConstraintViolationException) exception.getCause();
                 String constraintName = constraintViolationException.getConstraintName();
+                String message = constraintViolationException.getMessage();
                 //Product
                 if (constraintName.contains("bar_code")) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Código de Barras Já Está Em Uso!");
@@ -33,16 +34,18 @@ public class DataBaseException extends RuntimeException{
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome do Produto Já Está Em Uso!");
                 } else if(constraintName.contains("document")) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Documento Já Está Em Uso!");
-                } else {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro Desconhecido: (log)" + exception.getCause());
+                } else if(message.contains("document") && message.contains("tb_customer")) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Empresa já cadastrada em nossa plataforma!");
+                }else{
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro Desconhecido: contate o suporte técnico");
                 }
             } else if (exception.getCause().toString().contains("value too long")) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Há Campos Com Caracteres Acima do Permitido!");
             } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro desconhecido: (log) " + exception.getCause());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro desconhecido: contate o suporte técnico");
             }
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro desconhecido: (log)" + getCause());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro desconhecido: contate o suporte técnico");
         }
     }
 }

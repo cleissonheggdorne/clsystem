@@ -14,6 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -26,7 +27,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Entity
-@Table(name="TB_EMPLOYEE")
+@Table(name="TB_EMPLOYEE", uniqueConstraints = {
+	@UniqueConstraint(columnNames = {"id_customer", "document"}),
+	@UniqueConstraint(columnNames = {"id_customer", "document", "email"})
+	}
+)
 public class Employee extends AuditableSoftDelete implements Serializable {
 	
 	/**
@@ -39,10 +44,10 @@ public class Employee extends AuditableSoftDelete implements Serializable {
 	@Column(name="id_employee")
 	private Long idEmployee;
 	
-	@Column(name="name_employee", unique=true, length = 44, nullable = false)
+	@Column(name="name_employee", length = 120, nullable = false)
 	private String nameEmployee;
 	
-	@Column(name="document", length = 14, nullable = false, unique = true)
+	@Column(name="document", length = 14, nullable = false)
 	private String document;
 	
 	@Column(name="initial_date")
@@ -56,11 +61,16 @@ public class Employee extends AuditableSoftDelete implements Serializable {
 	@JoinColumn(name="id_customer")
 	private Customer customer;
 
+	@Column(name="email")
+	private String email;
+
 	public EmployeeRecord factoryEmployeeRecord(Employee employee) {
 		return new EmployeeRecord(employee.getIdEmployee(),
 								employee.getNameEmployee(),
 								employee.getDocument(),
 								employee.getInitialDate(),
-								employee.getPassword());
+								employee.getPassword(),
+								employee.getEmail(),
+								null);
 	}
 }

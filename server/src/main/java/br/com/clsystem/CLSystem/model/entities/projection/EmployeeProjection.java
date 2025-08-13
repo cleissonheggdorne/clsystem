@@ -8,6 +8,7 @@ public interface EmployeeProjection {
     Long getIdEmployee();
     String getNameEmployee();
     String getdocument();
+    String getEmail();
     @JsonFormat(pattern = "dd/MM/yyyy")
     Date getInitialDate();
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import br.com.clsystem.CLSystem.model.entities.Customer;
 import br.com.clsystem.CLSystem.model.entities.Employee;
 
 public class UserAuthenticated implements UserDetails{
@@ -29,6 +30,10 @@ public class UserAuthenticated implements UserDetails{
     @Override
     public String getUsername() {
         return employee.getDocument();
+    }
+
+    public Customer getCustomer(){
+        return employee.getCustomer();
     }
 
     @Override

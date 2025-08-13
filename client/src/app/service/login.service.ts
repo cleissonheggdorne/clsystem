@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../environments/environment'; // Importe o ambiente
-import { Employee } from './employee.service';
+import { Customer, Employee } from './employee.service';
 
 @Injectable({
   providedIn: 'root'
@@ -35,14 +35,8 @@ export class LoginService {
       );
   }
 
-  register(employee: Employee): Observable<Employee> {
-      return this.http.post<Employee>(`${this.apiUrlDev}/api/public/employee/register`, employee)
-        .pipe(
-          tap({
-            next: (response) => console.log('Funcionário cadastrado com sucesso:', response),
-            error: (error) => console.error('Erro ao cadastrar funcionário:', error)
-          })
-        );
+  register(customer: Customer): Observable<Customer> {
+      return this.http.post<Customer>(`${this.apiUrlDev}/api/public/employee/register`, customer);
     }
 
   alterPassword(passwordOld: string, passwordNew: string): Observable<any> {

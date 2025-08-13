@@ -7,30 +7,54 @@
               <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">              
                 <h1>Registro</h1>
               <p class="text-body-secondary">Crie um usuário DEMONSTRAÇÃO</p>
-              <c-input-group class="mb-3">
+              <c-input-group class="mb-3" >
                 <span cInputGroupText>
                   <svg cIcon name="cilUser"></svg>
                 </span>
-                <input autoComplete="name" formControlName="name" cFormControl placeholder="Nome" />
+                <input autoComplete="nameCustomer" formControlName="nameCustomer" cFormControl placeholder="Empresa"/>
               </c-input-group>
               <c-input-group class="mb-3">
+                <span cInputGroupText>
+                  <svg cIcon name="cil-notes"></svg>
+                </span>
+                <input autoComplete="documentCustomer" formControlName="documentCustomer" cFormControl placeholder="CPF/CNPJ" />
+              </c-input-group>
+              <!-- <c-input-group class="mb-3" *ngIf="stepEmployee">
+                <span cInputGroupText>
+                  <svg cIcon name="cilUser"></svg>
+                </span>
+                <input autoComplete="name" formControlName="name" cFormControl placeholder="Nome"/>
+              </c-input-group>
+              <c-input-group class="mb-3" *ngIf="stepEmployee">
+                <span cInputGroupText>
+                  <svg cIcon name="cil-notes"></svg>
+                </span>
+                <input autoComplete="document" formControlName="document" cFormControl placeholder="Documento " />
+              </c-input-group> -->
+              <c-input-group class="mb-3" *ngIf="stepEmployee">
                 <span cInputGroupText>&#64;</span>
-                <input autoComplete="document" formControlName="document" cFormControl placeholder="Documento" />
+                <input autoComplete="email" formControlName="email" cFormControl placeholder="Email" />
               </c-input-group>
-              <c-input-group class="mb-3">
+              <c-input-group class="mb-3" *ngIf="stepEmployee">
                 <span cInputGroupText>
                   <svg cIcon name="cilLockLocked"></svg>
                 </span>
                 <input autoComplete="new-password" formControlName="password" cFormControl placeholder="Password" type="password" />
               </c-input-group>
-              <c-input-group class="mb-4">
+              <c-input-group class="mb-4" *ngIf="stepEmployee">
                 <span cInputGroupText>
                   <svg cIcon name="cilLockLocked"></svg>
                 </span>
                 <input autoComplete="new-password" formControlName="repeatPassword" cFormControl  placeholder="Repeat password" type="password" />
               </c-input-group>
-              
-              <div class="d-grid">
+              <button
+                cButton *ngIf="stepCustomer"
+                color="success"
+                [disabled]="registerForm.get('nameCustomer')?.value == '' || registerForm.get('documentCustomer')?.value == ''" 
+                (click)="stepEmployee = true; stepCustomer = false"             >
+                Prosseguir
+              </button>
+              <div class="d-grid" *ngIf="stepEmployee">
                  <p> Atenção: Esta é uma conta de demonstração. 
                   <br>Outros usuários também têm acesso. 
                   <br>Não compartilhe nem cadastre dados pessoais ou sensíveis. </p>

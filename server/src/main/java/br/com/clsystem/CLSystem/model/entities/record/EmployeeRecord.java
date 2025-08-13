@@ -19,6 +19,9 @@ public record EmployeeRecord(
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
 		Date initialDate,
 		@NotBlank(message = "Senha deve ser inserida!")
-		String password
+		String password,
+		@NotBlank(message = "Email deve ser inserido!")
+		String email,
+		CustomerRecord customer
 		) {
 }

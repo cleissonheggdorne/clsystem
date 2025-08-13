@@ -13,7 +13,7 @@ import br.com.clsystem.CLSystem.model.entities.projection.EmployeeProjection;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 	List<Employee> findByNameEmployeeContainingIgnoreCaseOrDocumentContainingIgnoreCase(String name, String document);
-	Optional<EmployeeProjection> findByIdEmployeeOrDocument(Long id, String document);
+	Optional<EmployeeProjection> findByDocumentAndCustomerId(String document, UUID customerId);
 	List<Optional<EmployeeProjection>> findByIdEmployeeIsNotNull();
 	Optional<Employee> findByDocument(String document);
 	List<Optional<EmployeeProjection>> findByCustomerId(UUID id);

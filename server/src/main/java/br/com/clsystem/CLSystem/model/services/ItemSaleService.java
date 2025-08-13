@@ -42,7 +42,7 @@ public class ItemSaleService {
 	
 	@Transactional
 	public ItemSaleProjection saveItem(ItemSaleRecord itemSaleRecord, String document, Customer customer) {
-		EmployeeProjection currentEmployee = employeeService.findByIdOrDocument(document);
+		EmployeeProjection currentEmployee = employeeService.findByDocumentAndCustomerId(document,customer.getId());
 		if(currentEmployee == null){
 			throw new DataBaseException("Funcionário não encontrado");
 		}

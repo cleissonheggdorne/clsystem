@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 import { IconDirective } from '@coreui/icons-angular';
 import { ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective } from '@coreui/angular';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Employee, EmployeeService } from '../../../service/employee.service';
+import { Customer, Employee, EmployeeService } from '../../../service/employee.service';
 import { Router } from '@angular/router';
 import { LoginService } from '../../../service/login.service';
+import { NgIf } from '@angular/common';
 
 @Component({
     selector: 'app-register',
@@ -23,11 +24,14 @@ import { LoginService } from '../../../service/login.service';
        IconDirective, 
        FormControlDirective, 
        ButtonDirective,
-      ReactiveFormsModule]
+      ReactiveFormsModule,NgIf]
 })
 export class RegisterComponent {
 
   registerForm: FormGroup;
+
+  stepEmployee = false;
+  stepCustomer = true;
 
   constructor(private fb: FormBuilder,     
     private loginService: LoginService,
@@ -35,21 +39,24 @@ export class RegisterComponent {
     
   ) {
     this.registerForm = this.fb.group({
-      name: ['', Validators.required],
-      document: ['', Validators.required],
+      nameCustomer: ['', Validators.required],
+      documentCustomer: ['', Validators.required],
+      // name: ['', Validators.required],
+      // document: ['', Validators.required],
+      email:['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
       repeatPassword: ['', Validators.required],
       confirmDemo: [false, Validators.required]
     });
   }
 
-  get name() {
-    return this.registerForm.get('name');
-  }
+  // get name() {
+  //   return this.registerForm.get('name');
+  // }
 
-  get document() {
-    return this.registerForm.get('document');
-  }
+  // get document() {
+  //   return this.registerForm.get('document');
+  // }
 
   get password() {
     return this.registerForm.get('password');
@@ -59,21 +66,46 @@ export class RegisterComponent {
     return this.registerForm.get('repeatPassword');
   }
 
+  get email() {
+    return this.registerForm.get('email');
+  }
+
+  get nameCustomer(){
+    return this.registerForm.get('nameCustomer');
+  }
+
+  get documentCustomer(){
+    return this.registerForm.get('documentCustomer');
+  }
+
   onSubmit() {
     if (this.registerForm.valid
       && this.password?.value === this.repeatPassword?.value
     ) {
-      const employee: Employee = {
-        nameEmployee: this.name?.value,
-        document: this.document?.value,
-        password: this.password?.value,
-        idEmployee: 0,
-        initialDate: ''
-      };
       
-      this.loginService.register(employee).subscribe({
+
+      const customer: Customer = {
+        idCustomer: '',
+        name: this.nameCustomer?.value,
+        document: this.documentCustomer?.value,
+        email: this.email?.value,
+        password: this.password?.value
+      }
+
+      // const employee: Employee = {
+      //   nameEmployee: this.name?.value,
+      //   document: this.document?.value,
+      //   password: this.password?.value,
+      //   idEmployee: 0,
+      //   initialDate: '',
+      //   email: this.email?.value,
+      //   customer: customer
+      // };
+      
+      this.loginService.register(customer).subscribe({
         next: (response) => {
-             this.router.navigate(['/login']);
+            this.loginService.setEmployee(response);
+            this.router.navigate(['/login']);
         },
         error: (error) => {
           const mensagem = error.error?.body || error.error || 'Erro ao salvar usuário. Verifique os dados e tente novamente.';

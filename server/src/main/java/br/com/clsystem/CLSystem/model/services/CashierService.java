@@ -44,7 +44,7 @@ public class CashierService {
 	}
 	
 	public ResponseEntity<?> openCashier(CashierRecord cashierRecord, String document, Customer customer) {
-		EmployeeProjection currentEmployee = employeeService.findByIdOrDocument(document);
+		EmployeeProjection currentEmployee = employeeService.findByDocumentAndCustomerId(document, customer.getId());
 		if(currentEmployee == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário não encontrado");
 		}

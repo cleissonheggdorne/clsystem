@@ -4,12 +4,22 @@ import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 import { tap } from 'rxjs/operators';
 
+export interface Customer {
+  idCustomer: string;
+  name: string;
+  document: string;
+  email: string;
+  password: string;
+}
+
 export interface Employee {
   idEmployee: number;
   nameEmployee: string;
   document: string;
   initialDate: string;
   password: string;
+  email: string,
+  customer: Customer
 }
 
 @Injectable({

@@ -55,7 +55,15 @@ editingEmployeeVazio: Employee = {
   nameEmployee: '',
   document: '',
   initialDate: this.formatDate(new Date()),
-  password:''
+  password:'',
+  email: '',
+  customer: {
+    idCustomer: '',
+    name: '',
+    document: '',
+    email: '',
+    password: ''
+  }
 };
 editingEmployee = { ...this.editingEmployeeVazio };
   // Adicionando Math e Number como propriedades do componente
@@ -67,6 +75,7 @@ editingEmployee = { ...this.editingEmployeeVazio };
     { text: 'Nome do Funcionário', key: 'name' },
     { text: 'Documento', key: 'document' },
     { text: 'Data Inicial', key: 'initialDate' },
+    { text: 'Email', key: 'email' },
     { text: 'Editar', key: 'actions' },
     { text: 'Excluir', key: 'actions' }
   ];
@@ -141,6 +150,7 @@ editingEmployee = { ...this.editingEmployeeVazio };
       { text: employee.nameEmployee },
       { text: employee.document },
       { text: employee.initialDate },
+      { text: employee.email },
       { text: '', html: true }
     ]);
   }

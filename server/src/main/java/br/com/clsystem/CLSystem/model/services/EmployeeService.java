@@ -37,12 +37,16 @@ public class EmployeeService {
 		if(employeeRecord.idEmployee() != null && employeeRecord.idEmployee() > 0) {
 			return update(employeeRecord, customer);
 		}
+		Optional<Employee> employeeOptional = employeeRepository.findByDocument(employeeRecord.document());
+		if(employeeOptional.isPresent() && employeeOptional.get().getDeletedAt() == null){
+			return ResponseEntity.badRequest().body("Funcionário em duplicidade. Não é possível ter o mesmo funcionário ativo em duas empresas diferentes");
+		}
 
 		BeanUtils.copyProperties(employeeRecord, employee);
 		employee.setPassword(passwordEncoder.encode(employee.getPassword()));
 		employee.setCustomer(customer);
 		try {
-		      return ResponseEntity.ok(employeeRepository.saveAndFlush(employee));
+			return ResponseEntity.ok(employeeRepository.saveAndFlush(employee));
 		} catch (DataIntegrityViolationException dive) {		
 			throw new DataBaseException("", dive);
 		}
@@ -105,9 +109,9 @@ public class EmployeeService {
 		}
 	}
 
-	public EmployeeProjection findByIdOrDocument(String idOrDocument){
+	public EmployeeProjection findByDocumentAndCustomerId(String document, UUID customerId){
 		try {
-			Optional<EmployeeProjection> employee = employeeRepository.findByIdEmployeeOrDocument(Long.valueOf(idOrDocument), idOrDocument);
+			Optional<EmployeeProjection> employee = employeeRepository.findByDocumentAndCustomerId(document, customerId);
 			return employee.get();
 		}catch(Exception e) {
 			throw new DataBaseException("", e);
@@ -122,7 +126,9 @@ public class EmployeeService {
 						        													employee.getNameEmployee(),
 						        													employee.getDocument(),
 						        		                                        employee.getInitialDate(),
-																				employee.getPassword());
+																				employee.getPassword(),
+																				employee.getEmail(),
+																				null);
 						        listEmployeeRecord.add(employeeRecord);
 								
 							});
