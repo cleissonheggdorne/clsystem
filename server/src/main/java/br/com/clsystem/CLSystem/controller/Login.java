@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +19,8 @@ import br.com.clsystem.CLSystem.model.entities.record.CustomerRecord;
 import br.com.clsystem.CLSystem.model.services.CustomerService;
 import br.com.clsystem.CLSystem.model.services.EmployeeService;
 import br.com.clsystem.CLSystem.tools.AuthenticationService;
+import br.com.clsystem.CLSystem.tools.MailService;
 import br.com.clsystem.CLSystem.tools.UserAuthenticated;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 @RestController
@@ -29,13 +30,14 @@ public class Login {
     private final AuthenticationService authenticationService;
     private final EmployeeService employeeService;
     private final CustomerService customerService;
-
+    private final MailService mailService;
 
     public Login(AuthenticationService authenticationService,
-    EmployeeService employeeService, CustomerService customerService){
+        EmployeeService employeeService, CustomerService customerService, MailService mailService){
         this.authenticationService = authenticationService;
         this.employeeService = employeeService;
         this.customerService = customerService;
+        this.mailService = mailService;
     }
 
     @PostMapping("/public/employee/authenticate")
@@ -51,10 +53,16 @@ public class Login {
 
     @PostMapping("/public/employee/register")
     public ResponseEntity<?> register(@Valid @RequestBody CustomerRecord customerRecord, BindingResult br){
-		  try {
+		  
+      try {
 			  return customerService.saveCustomerAndEmployee(customerRecord);
       }catch(DataBaseException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
       }
-	}
+	  }
+
+    @GetMapping("/public/employee/sendmail")
+    public void sendmail(){
+	      mailService.sendEmail("cleissonrosa@hotmail.com", "Assunto teste", "Corpo do email teste<br>quebrou linha");
+    }
 }

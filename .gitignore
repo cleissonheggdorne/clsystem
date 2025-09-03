@@ -6,6 +6,7 @@ target/
 app.key
 app.pub
 application.properties
+application.properties.test
 
 ### STS ###
 .apt_generated

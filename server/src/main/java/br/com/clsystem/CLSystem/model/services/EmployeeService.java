@@ -152,4 +152,20 @@ public class EmployeeService {
 		}
 	}
 
+	public Optional<Employee> findByEmail(String email) {
+		try {
+			return employeeRepository.findByEmail(email);
+		}catch(Exception e) {
+			throw new DataBaseException("Email não encontrado", e);
+		}
+	}
+
+	public void updateEmployee(Employee employee) {
+		try {
+			employeeRepository.saveAndFlush(employee);
+		}catch(Exception e) {
+			throw new DataBaseException("Erro ao atualizar funcionário", e);
+		}
+	}
+
 }

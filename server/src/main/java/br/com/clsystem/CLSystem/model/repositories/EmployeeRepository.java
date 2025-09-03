@@ -26,4 +26,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 	""")
 	List<Employee> findByCustomerIdAndNameOrDocument(@Param("customerId") UUID customerId,
                                                  @Param("value") String value);
+
+	Optional<Employee> findByEmail(String email);
 }

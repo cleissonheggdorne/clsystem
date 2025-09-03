@@ -61,8 +61,11 @@ public class Employee extends AuditableSoftDelete implements Serializable {
 	@JoinColumn(name="id_customer")
 	private Customer customer;
 
-	@Column(name="email")
+	@Column(name="email" , length = 120, nullable = false)
 	private String email;
+
+	@Column(name="email_confirmed", nullable = false)
+	private Boolean emailConfirmed;
 
 	public EmployeeRecord factoryEmployeeRecord(Employee employee) {
 		return new EmployeeRecord(employee.getIdEmployee(),
