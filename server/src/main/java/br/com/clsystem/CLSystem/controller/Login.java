@@ -56,16 +56,10 @@ public class Login {
 
     @PostMapping("/public/employee/register")
     public ResponseEntity<?> register(@Valid @RequestBody CustomerRecord customerRecord, BindingResult br){
-		  
       try {
 			  return customerService.saveCustomerAndEmployee(customerRecord);
       }catch(DataBaseException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
       }
 	  }
-
-    @GetMapping("/public/employee/sendmail")
-    public void sendmail(){
-	      mailService.sendEmail("cleissonrosa@hotmail.com", "Assunto teste", "Corpo do email teste<br>quebrou linha");
-    }
 }

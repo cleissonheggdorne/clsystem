@@ -1,6 +1,7 @@
 package br.com.clsystem.CLSystem.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -11,6 +12,7 @@ import br.com.clsystem.CLSystem.model.services.EmployeeService;
 import br.com.clsystem.CLSystem.model.services.VerificationTokenService;
 
 @RequestMapping("/api")
+@Controller
 public class VerificationTokenController {
     final VerificationTokenService verificationTokenService;
     final EmployeeService employeeService;
@@ -20,7 +22,7 @@ public class VerificationTokenController {
         this.employeeService = employeeService;
     }
 
-    @GetMapping("/public/confirmar-email")
+    @GetMapping("/public/verification")
     public ResponseEntity<?> confirmarEmail(@RequestParam("token") String token) {
         // 1. Busca o token
         VerificationToken verificationToken = verificationTokenService.findByToken(token)

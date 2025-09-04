@@ -80,8 +80,8 @@ public class SecurityBasicAuth {
                 authorizeRequests
                     .requestMatchers("GET","/api/public/**").permitAll()
                     .requestMatchers("POST","/api/public/**").permitAll()
-                    .requestMatchers("PUT","/api/public/**").permitAll()
-                    .requestMatchers("DELETE","/api/public/**").permitAll()
+                    // .requestMatchers("PUT","/api/public/**").permitAll()
+                    // .requestMatchers("DELETE","/api/public/**").permitAll()
 		            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .anyRequest().authenticated()
             )

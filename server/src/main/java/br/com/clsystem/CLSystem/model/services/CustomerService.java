@@ -63,7 +63,7 @@ public class CustomerService {
     }
 
     public String getUrlConfirmacao() {
-        return  (activeProfile.matches("dev|local") ? baseUrlDev : baseUrl)+ "/confirmar-email?token=" ;
+        return  (activeProfile.matches("dev|local") ? baseUrlDev : baseUrl)+ "api/public/verification?token=" ;
     }
 
 }
