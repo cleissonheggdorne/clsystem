@@ -35,6 +35,7 @@ import { Router, RouterModule } from '@angular/router';
 export class LoginComponent {
   loginForm: FormGroup;
   alertAuthvisible = false;
+  alertAuthMessage = 'Dados Inválidos. Tente Novamente.';
   alertAuthDismissible = false;
   constructor(
     private fb: FormBuilder, 
@@ -63,7 +64,10 @@ export class LoginComponent {
           this.router.navigate(['/sale']);
         },
         error: (error) => {
-          //console.error('Erro ao fazer login:', error);
+          console.error('Erro ao fazer login:', error);
+          if(error.status == 403 && error.error.error == "EMAIL_NOT_VERIFIED"){
+            this.alertAuthMessage = error.error.message;
+          }
           this.alertAuthvisible = true;
         }      
       });

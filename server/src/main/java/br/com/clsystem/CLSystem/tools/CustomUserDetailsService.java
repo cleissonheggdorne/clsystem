@@ -20,10 +20,5 @@ public class CustomUserDetailsService implements UserDetailsService {
        return employeeRepository.findByDocument(username)
             .map(UserAuthenticated::new)
             .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
-
-        // return User.withUsername(employee.getDocument())
-        //     .password(employee.getPassword()) // Deve estar criptografada no banco
-        //     //.authorities(null) 
-        //     .build();
     }
 }

@@ -7,7 +7,7 @@
             <c-card-body>
               @if (alertAuthvisible) {
                 <c-alert [(visible)]="alertAuthvisible" [dismissible]="alertAuthDismissible" color="light" fade>
-                  <strong>Dados Inválidos.</strong> Tente Novamente.
+                  <strong>{{alertAuthMessage}}</strong>
                 </c-alert>
               }
               <form cForm [formGroup]="loginForm" (ngSubmit)="onSubmit()">

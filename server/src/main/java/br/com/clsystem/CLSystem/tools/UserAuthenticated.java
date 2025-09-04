@@ -36,6 +36,10 @@ public class UserAuthenticated implements UserDetails{
         return employee.getCustomer();
     }
 
+    public boolean emailIsConfirmed(){
+        return employee.getEmailConfirmed();
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

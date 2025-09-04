@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
+import br.com.clsystem.CLSystem.exceptions.EmailNotVerifiedException;
 import br.com.clsystem.CLSystem.model.entities.projection.EmployeeProjection;
 import br.com.clsystem.CLSystem.model.entities.record.CustomerRecord;
 import br.com.clsystem.CLSystem.model.services.CustomerService;
@@ -43,12 +44,14 @@ public class Login {
     @PostMapping("/public/employee/authenticate")
     public ResponseEntity<?> authenticate(
         Authentication authentication) {
-      String token = authenticationService.authenticate(authentication);
-      Map<String, EmployeeProjection> response = new HashMap<>();
-      UserAuthenticated userAuthenticated = (UserAuthenticated) authentication.getPrincipal();
-    
-      response.put(token, employeeService.findByDocumentAndCustomerId(userAuthenticated.getUsername(), userAuthenticated.getCustomer().getId()));
-      return ResponseEntity.ok().body(response);
+          if(authentication.getPrincipal() instanceof UserAuthenticated userAuthenticated && !userAuthenticated.emailIsConfirmed()){
+              throw new EmailNotVerifiedException("Email não verificado. Por favor, verifique o link que enviamos na sua caixa de entrada ou spam.");
+          }
+          String token = authenticationService.authenticate(authentication);
+          Map<String, EmployeeProjection> response = new HashMap<>();
+          UserAuthenticated userAuthenticated = (UserAuthenticated) authentication.getPrincipal();
+          response.put(token, employeeService.findByDocumentAndCustomerId(userAuthenticated.getUsername(), userAuthenticated.getCustomer().getId()));
+          return ResponseEntity.ok().body(response);
     }
 
     @PostMapping("/public/employee/register")
