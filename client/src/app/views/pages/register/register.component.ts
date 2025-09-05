@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { IconDirective } from '@coreui/icons-angular';
-import { ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective } from '@coreui/angular';
+import { ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective, FormFeedbackComponent } from '@coreui/angular';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Customer, Employee, EmployeeService } from '../../../service/employee.service';
 import { Router } from '@angular/router';
-import { LoginService } from '../../../service/login.service';
-import { NgIf } from '@angular/common';
+import { LoginService } from '../../../service/login.service'; 
+import { NgIf, NgClass } from '@angular/common';
+import { NgxMaskDirective } from 'ngx-mask';
 
 @Component({
     selector: 'app-register',
@@ -24,7 +25,9 @@ import { NgIf } from '@angular/common';
        IconDirective, 
        FormControlDirective, 
        ButtonDirective,
-      ReactiveFormsModule,NgIf]
+      ReactiveFormsModule,NgIf, NgClass,
+    FormFeedbackComponent,
+  NgxMaskDirective]
 })
 export class RegisterComponent {
 
@@ -39,11 +42,11 @@ export class RegisterComponent {
     
   ) {
     this.registerForm = this.fb.group({
-      nameCustomer: ['', Validators.required],
-      documentCustomer: ['', Validators.required],
+      nameCustomer: ['', [Validators.required, Validators.maxLength(200)]],
+      documentCustomer: ['', [Validators.required, Validators.minLength(11), Validators.maxLength(18)]],
       // name: ['', Validators.required],
       // document: ['', Validators.required],
-      email:['', [Validators.required, Validators.email]],
+      email:['', [Validators.required, Validators.email, Validators.maxLength(200)]],
       password: ['', Validators.required],
       repeatPassword: ['', Validators.required],
       confirmDemo: [false, Validators.required]

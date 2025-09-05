@@ -4,48 +4,57 @@
       <c-col lg="7" md="9" xl="6">
         <c-card class="mx-4">
           <c-card-body class="p-4">
-              <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">              
+              <form cForm [formGroup]="registerForm" (ngSubmit)="onSubmit()">
                 <h1>Registro</h1>
               <p class="text-body-secondary">Crie um usuário DEMONSTRAÇÃO</p>
-              <c-input-group class="mb-3" >
-                <span cInputGroupText>
-                  <svg cIcon name="cilUser"></svg>
-                </span>
-                <input autoComplete="nameCustomer" formControlName="nameCustomer" cFormControl placeholder="Empresa"/>
-              </c-input-group>
               <c-input-group class="mb-3">
                 <span cInputGroupText>
-                  <svg cIcon name="cil-notes"></svg>
-                </span>
-                <input autoComplete="documentCustomer" formControlName="documentCustomer" cFormControl placeholder="CPF/CNPJ" />
-              </c-input-group>
-              <!-- <c-input-group class="mb-3" *ngIf="stepEmployee">
-                <span cInputGroupText>
                   <svg cIcon name="cilUser"></svg>
                 </span>
-                <input autoComplete="name" formControlName="name" cFormControl placeholder="Nome"/>
+                <input autoComplete="nameCustomer" formControlName="nameCustomer" cFormControl placeholder="Empresa"
+                       [ngClass]="{'is-invalid': registerForm.get('nameCustomer')?.invalid && registerForm.get('nameCustomer')?.touched}" />
+                <c-form-feedback [valid]="false"
+                                 *ngIf="registerForm.get('nameCustomer')?.hasError('required') && registerForm.get('nameCustomer')?.touched">
+                  Nome da empresa é obrigatório.
+                </c-form-feedback>
               </c-input-group>
-              <c-input-group class="mb-3" *ngIf="stepEmployee">
+              <c-input-group class="mb-3" cValidation>
                 <span cInputGroupText>
                   <svg cIcon name="cil-notes"></svg>
                 </span>
-                <input autoComplete="document" formControlName="document" cFormControl placeholder="Documento " />
-              </c-input-group> -->
-              <c-input-group class="mb-3" *ngIf="stepEmployee">
+                <input autoComplete="documentCustomer" formControlName="documentCustomer" cFormControl placeholder="CPF/CNPJ" mask="000.000.000-00||00.000.000/0000-00"
+                       [ngClass]="{'is-invalid': registerForm.get('documentCustomer')?.invalid && registerForm.get('documentCustomer')?.touched}" />
+                <c-form-feedback [valid]="false" *ngIf="registerForm.get('documentCustomer')?.invalid && registerForm.get('documentCustomer')?.touched">
+                  CPF/CNPJ é obrigatório e precisa ser válido.
+                </c-form-feedback>
+              </c-input-group>
+              <c-input-group class="mb-3" *ngIf="stepEmployee" cValidation>
                 <span cInputGroupText>&#64;</span>
-                <input autoComplete="email" formControlName="email" cFormControl placeholder="Email" />
+                <input autoComplete="email" formControlName="email" cFormControl placeholder="Email" 
+                [ngClass]="{'is-invalid': registerForm.get('email')?.invalid && registerForm.get('email')?.touched}"/>
+                <c-form-feedback [valid]="false" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+                  Email é obrigatório e precisa ser válido.
+                </c-form-feedback>
               </c-input-group>
-              <c-input-group class="mb-3" *ngIf="stepEmployee">
+              <c-input-group class="mb-3" *ngIf="stepEmployee" cValidation>
                 <span cInputGroupText>
                   <svg cIcon name="cilLockLocked"></svg>
                 </span>
-                <input autoComplete="new-password" formControlName="password" cFormControl placeholder="Password" type="password" />
+                <input autoComplete="new-password" formControlName="password" cFormControl placeholder="Password" type="password"
+                 [ngClass]="{'is-invalid': registerForm.get('password')?.invalid && registerForm.get('password')?.touched}"/>
+                <c-form-feedback [valid]="false" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+                  Senha é obrigatória e precisa ter pelo menos 6 caracteres.
+                </c-form-feedback>
               </c-input-group>
-              <c-input-group class="mb-4" *ngIf="stepEmployee">
+              <c-input-group class="mb-4" *ngIf="stepEmployee" cValidation>
                 <span cInputGroupText>
                   <svg cIcon name="cilLockLocked"></svg>
                 </span>
-                <input autoComplete="new-password" formControlName="repeatPassword" cFormControl  placeholder="Repeat password" type="password" />
+                <input autoComplete="new-password" formControlName="repeatPassword" cFormControl  placeholder="Repeat password" type="password" 
+                [ngClass]="{'is-invalid': registerForm.get('repeatPassword')?.invalid && registerForm.get('repeatPassword')?.touched}"/>
+                <c-form-feedback [valid]="false" *ngIf="registerForm.get('repeatPassword')?.invalid && registerForm.get('repeatPassword')?.touched">
+                  Senha é obrigatória e precisa ter pelo menos 6 caracteres.
+                </c-form-feedback>
               </c-input-group>
               <button
                 cButton *ngIf="stepCustomer"
@@ -55,28 +64,13 @@
                 Prosseguir
               </button>
               <div class="d-grid" *ngIf="stepEmployee">
-                 <p> Atenção: Esta é uma conta de demonstração. 
-                  <br>Outros usuários também têm acesso. 
-                  <br>Não compartilhe nem cadastre dados pessoais ou sensíveis. </p>
-                    <div class="form-check mb-3">
-                      <input
-                        type="checkbox"
-                        class="form-check-input"
-                        cFormControl
-                        formControlName="confirmDemo"
-                      />
-                      <label class="form-check-label" for="confirmDemo">
-                        Li e concordo
-                      </label>
-                  </div>
-
                   <button
                     cButton
                     color="success"
                     type="submit"
-                    [disabled]="!registerForm.valid || !registerForm.get('confirmDemo')?.value"
+                    [disabled]="!registerForm.valid"
                   >
-                    Criar Usuário Demonstração
+                    Cadastrar
                   </button>
               </div>
             </form>

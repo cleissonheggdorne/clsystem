@@ -11,8 +11,8 @@
                 </c-alert>
               }
               <form cForm [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-                <h1>Entrar</h1>
-                <p class="text-body-secondary">Entre na sua conta</p>
+                <h1>Bem vindo!</h1>
+                <p class="text-body-secondary">Acesse a sua conta</p>
                 <c-input-group class="mb-3">
                   <span cInputGroupText>
                     <svg cIcon name="cilUser"></svg>
@@ -21,7 +21,7 @@
                     formControlName="username"
                     autoComplete="username" 
                     cFormControl 
-                    placeholder="Username" 
+                    placeholder="CPF/CNPJ" mask="000.000.000-00||00.000.000/0000-00"
                   />
                 </c-input-group>
                 <c-input-group class="mb-4">
@@ -32,14 +32,14 @@
                     formControlName="password"
                     autoComplete="current-password"
                     cFormControl
-                    placeholder="Password"
+                    placeholder="Senha"
                     type="password"
                   />
                 </c-input-group>
                 <c-row>
                   <c-col xs="6">
                     <button cButton class="px-4" color="primary" type="submit">
-                      Login
+                      Entrar
                     </button>
                   </c-col>
                   <c-col class="text-right" xs="6">
@@ -59,7 +59,7 @@
                   Acesse sua conta para gerenciar vendas e manter o controle do seu negócio de forma simples e eficiente.
                 </p>
                 <a cButton class="mt-3" color="primary" routerLink="/register">
-                  Criar Usuário Demonstração!
+                  Cadastre-se
                 </a>
               </div>
             </c-card-body>

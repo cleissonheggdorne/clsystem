@@ -25,6 +25,7 @@ import {
   UtilitiesModule,
 } from '@coreui/angular';
 import { IconSetService } from '@coreui/icons-angular';
+import { provideNgxMask } from 'ngx-mask';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -33,6 +34,7 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([authInterceptor])
     ),
     provideAnimations(),
+    provideNgxMask(),
     importProvidersFrom(
       AvatarModule,
       BadgeModule,

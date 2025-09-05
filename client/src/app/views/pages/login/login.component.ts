@@ -1,10 +1,11 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { NgStyle } from '@angular/common';
-import { IconDirective } from '@coreui/icons-angular';
-import { ContainerComponent, RowComponent, ColComponent, CardGroupComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective, ToasterService } from '@coreui/angular';
+import { IconDirective } from '@coreui/icons-angular'; 
+import { ContainerComponent, RowComponent, ColComponent, CardGroupComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective, ToasterService, AlertComponent } from '@coreui/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { LoginService } from 'src/app/service/login.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { NgxMaskDirective } from 'ngx-mask';
 
 @Component({
     selector: 'app-login',
@@ -27,7 +28,9 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
         ButtonDirective, 
         NgStyle,
         ReactiveFormsModule,
-        RouterModule
+        RouterModule,
+        AlertComponent,
+        NgxMaskDirective
     ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     

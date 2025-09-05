@@ -33,7 +33,7 @@
   width: 100%;
   clear: both;
   font-weight: 400;
-  color: #ffffff;
+  color: var(--cui-body-color);
   text-align: inherit;
   white-space: nowrap;
   background-color: transparent;
@@ -41,18 +41,16 @@
   
   &:hover {
     opacity: 0.8;
-    color: #004080;
     text-decoration: none;
   }
   
   .product-name {
     font-weight: 500;
-    color: #ffffff;
   }
   
   .product-price {
     font-weight: bold;
-    color: #28a745;
+    color: var(--cui-success);
   }
 }
 
