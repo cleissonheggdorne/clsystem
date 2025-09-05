@@ -83,29 +83,18 @@ export class RegisterComponent {
       && this.password?.value === this.repeatPassword?.value
     ) {
       
-
       const customer: Customer = {
         idCustomer: '',
         name: this.nameCustomer?.value,
         document: this.documentCustomer?.value,
         email: this.email?.value,
         password: this.password?.value
-      }
+      };
 
-      // const employee: Employee = {
-      //   nameEmployee: this.name?.value,
-      //   document: this.document?.value,
-      //   password: this.password?.value,
-      //   idEmployee: 0,
-      //   initialDate: '',
-      //   email: this.email?.value,
-      //   customer: customer
-      // };
-      
       this.loginService.register(customer).subscribe({
         next: (response) => {
             this.loginService.setEmployee(response);
-            this.router.navigate(['/login']);
+            this.router.navigate(['/login'], { queryParams: { registered: true } });
         },
         error: (error) => {
           const mensagem = error.error?.body || error.error || 'Erro ao salvar usuário. Verifique os dados e tente novamente.';

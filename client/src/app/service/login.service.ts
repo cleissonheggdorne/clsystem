@@ -45,6 +45,10 @@ export class LoginService {
     });
   }
 
+  verifyToken(token: string): Observable<any> {      
+    return this.http.get(`${this.apiUrlDev}/api/public/verification?token=${token}`);
+  }
+
   // Métodos para gerenciar o token
   setToken(token: string): void {
     localStorage.setItem(this.TOKEN_KEY, token);

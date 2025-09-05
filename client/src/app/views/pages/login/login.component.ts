@@ -4,7 +4,7 @@ import { IconDirective } from '@coreui/icons-angular';
 import { ContainerComponent, RowComponent, ColComponent, CardGroupComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective, ToasterService } from '@coreui/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { LoginService } from 'src/app/service/login.service';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 @Component({
     selector: 'app-login',
@@ -40,13 +40,42 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder, 
     private loginService: LoginService, 
-    private router: Router,    
+    private router: Router,
+    private route: ActivatedRoute,    
     private toasterService: ToasterService
   ) {  
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],//, Validators.email
       password: ['', [Validators.required]],
     });
+  }
+
+  ngOnInit() {
+    this.verifyToken();
+    this.verifyRegistered();
+  }
+  verifyRegistered(){
+    const registered = this.route.snapshot.queryParamMap.get('registered');
+    if(registered === 'true'){
+      this.alertAuthMessage = 'Verifique seu email para ativar sua conta.';
+      this.alertAuthvisible = true;
+    }
+  } 
+
+  verifyToken() {
+    const token = this.route.snapshot.queryParamMap.get('token');
+    if(token){
+      this.alertAuthMessage = 'Verificando email...';
+      this.alertAuthvisible = true;
+      this.loginService.verifyToken(token).subscribe({
+        next: (response) => {
+          this.alertAuthMessage = 'Email verificado com sucesso! Faça o login agora mesmo.';
+        },
+        error: (error) => {
+          this.alertAuthMessage = 'Ocorreu uma falha na verificação: ' + error.error.message;
+        }
+      });
+    }
   }
 
   get username() {

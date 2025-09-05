@@ -1,5 +1,7 @@
 package br.com.clsystem.CLSystem.controller;
 
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +32,7 @@ public class VerificationTokenController {
 
         // 2. Verifica se já foi usado
         if (verificationToken.isUsed()) {
-            return ResponseEntity.badRequest().body("Código de confirmação já utilizado anteriormente");
+            return ResponseEntity.badRequest().body("Código de confirmação já utilizado anteriormente. Tente fazer o login normalmente.");
         }
         
         // 4. Tudo certo! Atualiza o usuário e o token
@@ -43,6 +45,6 @@ public class VerificationTokenController {
         verificationToken.setUsed(true);
         verificationTokenService.update(verificationToken);
 
-        return ResponseEntity.ok().body("Email confirmado com sucesso!");
+        return ResponseEntity.ok().body(Map.of("message", "Email confirmado com sucesso!"));
     }
 }
