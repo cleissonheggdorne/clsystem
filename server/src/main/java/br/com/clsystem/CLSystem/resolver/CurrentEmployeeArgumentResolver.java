@@ -9,31 +9,26 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import br.com.clsystem.CLSystem.model.entities.Customer;
 import br.com.clsystem.CLSystem.model.entities.Employee;
-import br.com.clsystem.CLSystem.model.entities.annotation.CurrentCustomer;
+import br.com.clsystem.CLSystem.model.entities.annotation.CurrentEmployee;
 import br.com.clsystem.CLSystem.model.repositories.EmployeeRepository;
 
 @Component
-public class CurrentCustomerResolver implements HandlerMethodArgumentResolver {
+public class CurrentEmployeeArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private EmployeeRepository employeeRepository;
+    private final EmployeeRepository employeeRepository;
 
-    public CurrentCustomerResolver(EmployeeRepository employeeRepository) {
+    public CurrentEmployeeArgumentResolver(EmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterAnnotation(CurrentCustomer.class) != null 
-            && parameter.getParameterType().equals(Customer.class);
+        return parameter.getParameterType().equals(Employee.class) && parameter.hasParameterAnnotation(CurrentEmployee.class);
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, 
-                                  ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest,
-                                  WebDataBinderFactory binderFactory) throws Exception {
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             throw new RuntimeException("Usuário não autenticado");
@@ -41,7 +36,6 @@ public class CurrentCustomerResolver implements HandlerMethodArgumentResolver {
 
         String document = authentication.getName();
         return employeeRepository.findByDocument(document)
-                .map(Employee::getCustomer)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado para o funcionário"));
+                .orElseThrow(() -> new RuntimeException("Funcionário não encontrado para o usuário autenticado"));
     }
 }

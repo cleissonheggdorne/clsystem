@@ -17,6 +17,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 	List<Optional<EmployeeProjection>> findByIdEmployeeIsNotNull();
 	Optional<Employee> findByDocument(String document);
 	List<Optional<EmployeeProjection>> findByCustomerId(UUID id);
+	List<Optional<EmployeeProjection>> findByIdEmployeeAndCustomerId(Long id, UUID customerId);
 	
 	@Query("""
     SELECT e FROM Employee e

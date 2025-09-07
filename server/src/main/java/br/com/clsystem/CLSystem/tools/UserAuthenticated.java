@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import br.com.clsystem.CLSystem.model.entities.Customer;
@@ -19,7 +20,10 @@ public class UserAuthenticated implements UserDetails{
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(()-> "read");
+        if (employee.getTypeUser() == null) {
+            return List.of(new SimpleGrantedAuthority("ROLE_USER")); // Um papel padrão
+        }
+        return List.of(new SimpleGrantedAuthority("ROLE_" + employee.getTypeUser().name()));
     }
 
     @Override
@@ -37,7 +41,11 @@ public class UserAuthenticated implements UserDetails{
     }
 
     public boolean emailIsConfirmed(){
-        return employee.getEmailConfirmed();
+        return employee.isEmailConfirmed();
+    }
+
+    public Employee getEmployee(){
+        return this.employee;
     }
 
     @Override

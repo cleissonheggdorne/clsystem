@@ -13,6 +13,7 @@ import br.com.clsystem.CLSystem.model.entities.record.CustomerRecord;
 import br.com.clsystem.CLSystem.model.entities.record.EmployeeRecord;
 import br.com.clsystem.CLSystem.model.repositories.CustomerRepository;
 import br.com.clsystem.CLSystem.tools.MailService;
+import br.com.clsystem.CLSystem.types.TypeUser;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -54,7 +55,8 @@ public class CustomerService {
                                                         new Date(), 
                                                         customeRecord.password(), 
                                                         customeRecord.email(), 
-                                                        customeRecord);
+                                                        customeRecord,
+                                                        TypeUser.ADMIN);
         employeeService.save(employeeRecord, customerNew);
         VerificationToken token = verificationTokenService.createVerificationToken(employeeRecord.email());
         String body = MENSAGEM +  getUrlConfirmacao() + token.getToken();

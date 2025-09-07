@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import br.com.clsystem.CLSystem.types.TypeUser;
 import jakarta.validation.constraints.NotBlank;
 
 @Validated
@@ -22,6 +23,7 @@ public record EmployeeRecord(
 		String password,
 		@NotBlank(message = "Email deve ser inserido!")
 		String email,
-		CustomerRecord customer
+		CustomerRecord customer,
+		TypeUser typeUser
 		) {
 }

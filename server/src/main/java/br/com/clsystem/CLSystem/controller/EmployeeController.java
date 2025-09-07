@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.clsystem.CLSystem.exceptions.DataBaseException;
 import br.com.clsystem.CLSystem.model.entities.Customer;
+import br.com.clsystem.CLSystem.model.entities.Employee;
 import br.com.clsystem.CLSystem.model.entities.annotation.CurrentCustomer;
 import br.com.clsystem.CLSystem.model.entities.record.EmployeeRecord;
+import br.com.clsystem.CLSystem.model.entities.annotation.CurrentEmployee;
 import br.com.clsystem.CLSystem.model.services.EmployeeService;
 import jakarta.validation.Valid;
 
@@ -68,9 +70,9 @@ public class EmployeeController {
 	}
 	
 	@GetMapping("/employee/findall")
-	public ResponseEntity<?> findController(@CurrentCustomer Customer customer){
+	public ResponseEntity<?> findController(@CurrentEmployee Employee employee){
 		try {
-			return ResponseEntity.ok().body(employeeService.findByCustomerId(customer.getId()));
+			return ResponseEntity.ok().body(employeeService.find(employee));
 		}catch(DataBaseException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.handleException());
 		}

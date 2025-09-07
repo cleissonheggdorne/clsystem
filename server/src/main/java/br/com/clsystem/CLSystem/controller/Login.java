@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +19,6 @@ import br.com.clsystem.CLSystem.model.entities.record.CustomerRecord;
 import br.com.clsystem.CLSystem.model.services.CustomerService;
 import br.com.clsystem.CLSystem.model.services.EmployeeService;
 import br.com.clsystem.CLSystem.tools.AuthenticationService;
-import br.com.clsystem.CLSystem.tools.MailService;
 import br.com.clsystem.CLSystem.tools.UserAuthenticated;
 import jakarta.validation.Valid;
 
@@ -31,21 +29,21 @@ public class Login {
     private final AuthenticationService authenticationService;
     private final EmployeeService employeeService;
     private final CustomerService customerService;
-    private final MailService mailService;
 
     public Login(AuthenticationService authenticationService,
-        EmployeeService employeeService, CustomerService customerService, MailService mailService){
+        EmployeeService employeeService, CustomerService customerService){
         this.authenticationService = authenticationService;
         this.employeeService = employeeService;
         this.customerService = customerService;
-        this.mailService = mailService;
     }
 
     @PostMapping("/public/employee/authenticate")
     public ResponseEntity<?> authenticate(
         Authentication authentication) {
-          if(authentication.getPrincipal() instanceof UserAuthenticated userAuthenticated && !userAuthenticated.emailIsConfirmed()){
-              throw new EmailNotVerifiedException("Email não verificado. Por favor, verifique o link que enviamos na sua caixa de entrada ou spam.");
+          if(authentication.getPrincipal() instanceof UserAuthenticated userAuthenticated
+            && authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))
+            && !userAuthenticated.emailIsConfirmed()){
+              throw new EmailNotVerifiedException("Email não verificado. Por favor, verifique o link na sua caixa de entrada ou na caixa de spam.");
           }
           String token = authenticationService.authenticate(authentication);
           Map<String, EmployeeProjection> response = new HashMap<>();

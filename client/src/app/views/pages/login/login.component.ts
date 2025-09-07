@@ -96,9 +96,11 @@ export class LoginComponent {
           this.router.navigate(['/sale']);
         },
         error: (error) => {
-          console.error('Erro ao fazer login:', error);
+          // console.error('Erro ao fazer login:', error);
           if(error.status == 403 && error.error.error == "EMAIL_NOT_VERIFIED"){
             this.alertAuthMessage = error.error.message;
+          }else{
+            this.alertAuthMessage = 'Ocorreu um erro ao fazer login. Tente novamente mais tarde.';
           }
           this.alertAuthvisible = true;
         }      

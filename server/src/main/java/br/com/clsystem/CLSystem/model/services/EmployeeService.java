@@ -18,6 +18,7 @@ import br.com.clsystem.CLSystem.model.entities.Employee;
 import br.com.clsystem.CLSystem.model.entities.projection.EmployeeProjection;
 import br.com.clsystem.CLSystem.model.entities.record.EmployeeRecord;
 import br.com.clsystem.CLSystem.model.repositories.EmployeeRepository;
+import br.com.clsystem.CLSystem.types.TypeUser;
 
 @Service
 public class EmployeeService {
@@ -39,12 +40,15 @@ public class EmployeeService {
 		}
 		Optional<Employee> employeeOptional = employeeRepository.findByDocument(employeeRecord.document());
 		if(employeeOptional.isPresent() && employeeOptional.get().getDeletedAt() == null){
-			return ResponseEntity.badRequest().body("Funcionário em duplicidade. Não é possível ter o mesmo funcionário ativo em duas empresas diferentes");
+			return ResponseEntity.badRequest().body("Funcionário em duplicidade. Não é possível ter o mesmo funcionário ativo em duas empresas diferentes.");
 		}
 
 		BeanUtils.copyProperties(employeeRecord, employee);
 		employee.setPassword(passwordEncoder.encode(employee.getPassword()));
 		employee.setCustomer(customer);
+		Boolean admin = employeeRecord.typeUser().equals(TypeUser.ADMIN);
+		employee.setEmailConfirmed(admin ? false : true);
+		employee.setTypeUser(admin ? employeeRecord.typeUser() : TypeUser.EMPLOYEE);
 		try {
 			return ResponseEntity.ok(employeeRepository.saveAndFlush(employee));
 		} catch (DataIntegrityViolationException dive) {		
@@ -83,13 +87,27 @@ public class EmployeeService {
 		}
 	}
 	
-	public List<Optional<EmployeeProjection>> findByCustomerId(UUID customerId){
-		try {
-			List<Optional<EmployeeProjection>> listEmployee = employeeRepository.findByCustomerId(customerId);	
-			return listEmployee;
+	public List<Optional<EmployeeProjection>> find(Employee employee){
+		List<Optional<EmployeeProjection>> listEmployee ;
+		try{
+			switch(employee.getTypeUser()){
+				case ADMIN:
+					listEmployee = employeeRepository.findByCustomerId(employee.getCustomer().getId());
+					break;
+				case MANAGER:
+					listEmployee = employeeRepository.findByCustomerId(employee.getCustomer().getId());
+					break;
+				case EMPLOYEE:
+					listEmployee = employeeRepository
+						.findByIdEmployeeAndCustomerId(employee.getIdEmployee(), employee.getCustomer().getId());
+					break;
+				default:
+					listEmployee = List.of();
+			}
 		}catch(Exception e) {
 			throw new DataBaseException("", e);
 		}
+		return listEmployee;
 	}
 	
 	public Optional<Employee> findById(Long id) {
@@ -128,7 +146,8 @@ public class EmployeeService {
 						        		                                        employee.getInitialDate(),
 																				employee.getPassword(),
 																				employee.getEmail(),
-																				null);
+																				null,
+																				employee.getTypeUser());
 						        listEmployeeRecord.add(employeeRecord);
 								
 							});

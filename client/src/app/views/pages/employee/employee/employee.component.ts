@@ -132,6 +132,7 @@ editingEmployee = { ...this.editingEmployeeVazio };
         this.updateTable();
       },
       error: (error) => {
+        this.isLoading = false;
         console.error('Erro na busca:', error);
       },
       complete: () => {

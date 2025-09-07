@@ -3,7 +3,6 @@ package br.com.clsystem.CLSystem.model.services;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import br.com.clsystem.CLSystem.model.entities.VerificationToken;
