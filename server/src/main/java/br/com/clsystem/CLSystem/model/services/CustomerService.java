@@ -4,13 +4,9 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Data;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import br.com.clsystem.CLSystem.exceptions.DataBaseException;
 import br.com.clsystem.CLSystem.model.entities.Customer;
 import br.com.clsystem.CLSystem.model.entities.VerificationToken;
 import br.com.clsystem.CLSystem.model.entities.record.CustomerRecord;

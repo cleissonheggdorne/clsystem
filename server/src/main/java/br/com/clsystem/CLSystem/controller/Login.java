@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +20,6 @@ import br.com.clsystem.CLSystem.model.entities.record.CustomerRecord;
 import br.com.clsystem.CLSystem.model.services.CustomerService;
 import br.com.clsystem.CLSystem.model.services.EmployeeService;
 import br.com.clsystem.CLSystem.tools.AuthenticationService;
-import br.com.clsystem.CLSystem.tools.MailService;
 import br.com.clsystem.CLSystem.tools.UserAuthenticated;
 import jakarta.validation.Valid;
 

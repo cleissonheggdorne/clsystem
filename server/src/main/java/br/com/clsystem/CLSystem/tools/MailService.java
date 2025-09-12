@@ -2,7 +2,6 @@ package br.com.clsystem.CLSystem.tools;
 
 import java.util.logging.Logger;
 
-import org.hibernate.validator.internal.util.logging.Log_.logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
