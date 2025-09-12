@@ -4,12 +4,12 @@
 # Funções
 - **Login/Logout**
 - **Cadastro de Produtos**
-- **Cadastro de Funcionários**:  Funcionário como usuário em implementação
+- **Cadastro de Funcionários**
 - **Cadastro de Vendas**
-- **Edição/Exclusão de item de uma venda em andamento**
-- **Fechamento/Cancelamento de uma venda em andamento**
+- **Edição/Exclusão de item**
+- **Fechamento/Cancelamento**
 - **Auxílio com troco e escolha de método de pagamento**
-- **Abertura/Fechamento de Caixa** : Em implementação
+- **Abertura/Fechamento de Caixa**
 - **Histórico de Vendas por Caixa**
 
 ## Tecnologias Utilizadas
