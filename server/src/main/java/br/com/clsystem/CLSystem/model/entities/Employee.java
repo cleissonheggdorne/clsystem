@@ -32,6 +32,7 @@ import lombok.Setter;
 @Entity
 @Table(name="TB_EMPLOYEE", uniqueConstraints = {
 	@UniqueConstraint(columnNames = {"id_customer", "document"}),
+	@UniqueConstraint(columnNames = {"id_customer", "email"}),
 	@UniqueConstraint(columnNames = {"id_customer", "document", "email"})
 	}
 )

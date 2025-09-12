@@ -4,9 +4,13 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Data;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import br.com.clsystem.CLSystem.exceptions.DataBaseException;
 import br.com.clsystem.CLSystem.model.entities.Customer;
 import br.com.clsystem.CLSystem.model.entities.VerificationToken;
 import br.com.clsystem.CLSystem.model.entities.record.CustomerRecord;
@@ -20,8 +24,11 @@ import jakarta.transaction.Transactional;
 public class CustomerService {
 
     final String ASSUNTO = "CLSystem - Confirmação de Cadastro";
-    final String MENSAGEM = "Olá, estamos felizes em tê-lo conosco!<br> Você solicitou acesso ao Software CLSystem.<br> Confirme seu cadastro clicando no link abaixo: ";
-    
+    final String MENSAGEM = "Olá, estamos felizes em tê-lo(a) conosco!<br>" +
+    "Você solicitou acesso ao Software <b>CLSystem</b>.<br>" +
+    "A partir de agora você poderá gerenciar seu negócio com mais eficiência e praticidade.<br>" +
+    "Confirme seu cadastro clicando aqui: <a href='%s'>Confirmar Cadastro</a>";
+
     @Value("${url.frontend}")
     private String baseUrl;
 
@@ -45,10 +52,10 @@ public class CustomerService {
     }
 
     @Transactional
-    public ResponseEntity<?> saveCustomerAndEmployee(CustomerRecord customeRecord){
+    public ResponseEntity<?> saveCustomerAndEmployee(CustomerRecord customeRecord) throws Exception{
         Customer customerNew = new Customer(UUID.randomUUID(), customeRecord.name(), customeRecord.document());
+        customerNew = customerRepository.saveAndFlush(customerNew);
        
-        customerNew = customerRepository.save(customerNew);
         EmployeeRecord employeeRecord = new EmployeeRecord(0L,
                                                         customerNew.getName(), 
                                                         customerNew.getDocument(), 
@@ -59,8 +66,9 @@ public class CustomerService {
                                                         TypeUser.ADMIN);
         employeeService.save(employeeRecord, customerNew);
         VerificationToken token = verificationTokenService.createVerificationToken(employeeRecord.email());
-        String body = MENSAGEM +  getUrlConfirmacao() + token.getToken();
-        mailService.sendEmail(token.getEmail(), ASSUNTO, body);
+
+        String body = String.format(MENSAGEM,getUrlConfirmacao() + token.getToken());
+        mailService.sendEmailHtml(token.getEmail(), ASSUNTO, body);
         return ResponseEntity.ok(customerNew);
     }
 

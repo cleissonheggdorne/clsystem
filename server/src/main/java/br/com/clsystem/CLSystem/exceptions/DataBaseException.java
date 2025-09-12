@@ -32,7 +32,7 @@ public class DataBaseException extends RuntimeException{
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Código de Barras Já Está Em Uso!");
                 } else if (constraintName.contains("name_product")) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome do Produto Já Está Em Uso!");
-                } else if(constraintName.contains("document")) {
+                } else if(message.contains("document") && message.contains("tb_employee")) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Documento Já Está Em Uso!");
                 } else if(message.contains("document") && message.contains("tb_customer")) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Empresa já cadastrada em nossa plataforma!");
