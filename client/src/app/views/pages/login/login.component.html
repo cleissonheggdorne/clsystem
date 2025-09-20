@@ -22,6 +22,7 @@
                     autoComplete="username" 
                     cFormControl 
                     placeholder="CPF/CNPJ" mask="000.000.000-00||00.000.000/0000-00"
+                    [disabled]="loading"
                   />
                 </c-input-group>
                 <c-input-group class="mb-4">
@@ -34,12 +35,18 @@
                     cFormControl
                     placeholder="Senha"
                     type="password"
+                    [disabled]="loading"
                   />
                 </c-input-group>
                 <c-row>
                   <c-col xs="6">
-                    <button cButton class="px-4" color="primary" type="submit">
-                      Entrar
+                    <button cButton class="px-4" color="primary" type="submit" [disabled]="loading">
+                        @if (loading) {
+                          <c-spinner aria-hidden="true" size="sm"></c-spinner>
+                          <span class="ms-1">Entrando...</span>
+                        } @else {
+                          Entrar
+                        }
                     </button>
                   </c-col>
                   <c-col class="text-right" xs="6">

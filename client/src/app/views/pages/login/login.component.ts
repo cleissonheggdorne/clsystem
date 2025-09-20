@@ -1,11 +1,12 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { NgStyle } from '@angular/common';
 import { IconDirective } from '@coreui/icons-angular'; 
-import { ContainerComponent, RowComponent, ColComponent, CardGroupComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective, ToasterService, AlertComponent } from '@coreui/angular';
+import { ContainerComponent, RowComponent, ColComponent, CardGroupComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective, ToasterService, AlertComponent, SpinnerComponent } from '@coreui/angular';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { LoginService } from 'src/app/service/login.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { NgxMaskDirective } from 'ngx-mask';
+import { finalize } from 'rxjs/internal/operators/finalize';
 
 @Component({
     selector: 'app-login',
@@ -30,7 +31,8 @@ import { NgxMaskDirective } from 'ngx-mask';
         ReactiveFormsModule,
         RouterModule,
         AlertComponent,
-        NgxMaskDirective
+        NgxMaskDirective,
+        SpinnerComponent
     ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     
@@ -40,6 +42,7 @@ export class LoginComponent {
   alertAuthvisible = false;
   alertAuthMessage = 'Dados Inválidos. Tente Novamente.';
   alertAuthDismissible = false;
+  _loading = false;
   constructor(
     private fb: FormBuilder, 
     private loginService: LoginService, 
@@ -64,18 +67,42 @@ export class LoginComponent {
       this.alertAuthvisible = true;
     }
   } 
+  get loading(): boolean {
+    return this._loading;
+  }
 
+  set loading(value: boolean) {
+    this._loading = value;
+    if (this._loading) {
+      this.loginForm.disable(); // Desabilita todos os campos do formulário
+    } else {
+      this.loginForm.enable();  // Habilita todos os campos do formulário
+    }
+  }
   verifyToken() {
     const token = this.route.snapshot.queryParamMap.get('token');
     if(token){
       this.alertAuthMessage = 'Verificando email...';
       this.alertAuthvisible = true;
-      this.loginService.verifyToken(token).subscribe({
-        next: (response) => {
+      this.loading = true;
+      this.loginService.verifyToken(token).
+      pipe(
+          finalize(() => { //Executa independente do resultado
+            this.loading = false; 
+          })
+      )
+      .subscribe({
+        next: () => {
           this.alertAuthMessage = 'Email verificado com sucesso! Faça o login agora mesmo.';
         },
         error: (error) => {
-          this.alertAuthMessage = 'Ocorreu uma falha na verificação: ' + error.error.message;
+          // console.error('Erro ao fazer login:', error);
+          if(error.status == 400 && error.error.error == "TOKEN_ALREADY_USED"){
+            this.alertAuthMessage = error.error.message;
+          }else{
+            this.alertAuthMessage = 'Ocorreu um erro ao fazer login. Tente novamente mais tarde.';
+          }
+          this.alertAuthvisible = true;
         }
       });
     }
@@ -91,8 +118,9 @@ export class LoginComponent {
 
   onSubmit() {
     if (this.loginForm.valid) {
+      this.loading = true;
       this.loginService.login(this.username?.value, this.password?.value).subscribe({
-        next: (response) => {
+        next: () => {
           this.router.navigate(['/sale']);
         },
         error: (error) => {
@@ -103,7 +131,10 @@ export class LoginComponent {
             this.alertAuthMessage = 'Ocorreu um erro ao fazer login. Tente novamente mais tarde.';
           }
           this.alertAuthvisible = true;
-        }      
+        },
+        complete: () => {
+          this.loading = false;
+        }
       });
     }
   }

@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { IconDirective } from '@coreui/icons-angular';
-import { ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective, FormFeedbackComponent } from '@coreui/angular';
+import { ContainerComponent, RowComponent, ColComponent, TextColorDirective, CardComponent, CardBodyComponent, FormDirective, InputGroupComponent, InputGroupTextDirective, FormControlDirective, ButtonDirective, FormFeedbackComponent, SpinnerComponent } from '@coreui/angular';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Customer, Employee, EmployeeService } from '../../../service/employee.service';
 import { Router } from '@angular/router';
 import { LoginService } from '../../../service/login.service'; 
 import { NgIf, NgClass } from '@angular/common';
 import { NgxMaskDirective } from 'ngx-mask';
+import { finalize } from 'rxjs/internal/operators/finalize';
 
 @Component({
     selector: 'app-register',
@@ -27,7 +28,8 @@ import { NgxMaskDirective } from 'ngx-mask';
        ButtonDirective,
       ReactiveFormsModule,NgIf, NgClass,
     FormFeedbackComponent,
-  NgxMaskDirective]
+  NgxMaskDirective,
+  SpinnerComponent]
 })
 export class RegisterComponent {
 
@@ -35,6 +37,8 @@ export class RegisterComponent {
 
   stepEmployee = false;
   stepCustomer = true;
+
+  _loading = false;
 
   constructor(private fb: FormBuilder,     
     private loginService: LoginService,
@@ -44,8 +48,6 @@ export class RegisterComponent {
     this.registerForm = this.fb.group({
       nameCustomer: ['', [Validators.required, Validators.maxLength(200)]],
       documentCustomer: ['', [Validators.required, Validators.minLength(11), Validators.maxLength(18)]],
-      // name: ['', Validators.required],
-      // document: ['', Validators.required],
       email:['', [Validators.required, Validators.email, Validators.maxLength(200)]],
       password: ['', Validators.required],
       repeatPassword: ['', Validators.required],
@@ -53,13 +55,18 @@ export class RegisterComponent {
     });
   }
 
-  // get name() {
-  //   return this.registerForm.get('name');
-  // }
+  get loading(): boolean {
+    return this._loading;
+  }
 
-  // get document() {
-  //   return this.registerForm.get('document');
-  // }
+  set loading(value: boolean) {
+    this._loading = value;
+    if (this._loading) {
+      this.registerForm.disable(); // Desabilita todos os campos do formulário
+    } else {
+      this.registerForm.enable();  // Habilita todos os campos do formulário
+    }
+  }
 
   get password() {
     return this.registerForm.get('password');
@@ -93,8 +100,13 @@ export class RegisterComponent {
         email: this.email?.value,
         password: this.password?.value
       };
-
-      this.loginService.register(customer).subscribe({
+      this.loading = true;
+      this.loginService.register(customer)
+      .pipe(
+        finalize(() => { //Executa independente do resultado
+          this.loading = false; 
+        })
+      ).subscribe({
         next: (response) => {
             this.loginService.setEmployee(response);
             this.router.navigate(['/login'], { queryParams: { registered: true } });

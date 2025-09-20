@@ -6,12 +6,12 @@
           <c-card-body class="p-4">
               <form cForm [formGroup]="registerForm" (ngSubmit)="onSubmit()">
                 <h1>Registro</h1>
-              <p class="text-body-secondary">Crie um usuário DEMONSTRAÇÃO</p>
+              <p class="text-body-secondary">Cadastre sua empresa</p>
               <c-input-group class="mb-3">
                 <span cInputGroupText>
                   <svg cIcon name="cilUser"></svg>
                 </span>
-                <input autoComplete="nameCustomer" formControlName="nameCustomer" cFormControl placeholder="Empresa"
+                <input autoComplete="nameCustomer" formControlName="nameCustomer" cFormControl placeholder="Empresa (Nome)"
                        [ngClass]="{'is-invalid': registerForm.get('nameCustomer')?.invalid && registerForm.get('nameCustomer')?.touched}" />
                 <c-form-feedback [valid]="false"
                                  *ngIf="registerForm.get('nameCustomer')?.hasError('required') && registerForm.get('nameCustomer')?.touched">
@@ -22,7 +22,7 @@
                 <span cInputGroupText>
                   <svg cIcon name="cil-notes"></svg>
                 </span>
-                <input autoComplete="documentCustomer" formControlName="documentCustomer" cFormControl placeholder="CPF/CNPJ" mask="000.000.000-00||00.000.000/0000-00"
+                <input autoComplete="documentCustomer" formControlName="documentCustomer" cFormControl placeholder="CPF/CNPJ (Este também será seu usuário)" mask="000.000.000-00||00.000.000/0000-00"
                        [ngClass]="{'is-invalid': registerForm.get('documentCustomer')?.invalid && registerForm.get('documentCustomer')?.touched}" />
                 <c-form-feedback [valid]="false" *ngIf="registerForm.get('documentCustomer')?.invalid && registerForm.get('documentCustomer')?.touched">
                   CPF/CNPJ é obrigatório e precisa ser válido.
@@ -30,7 +30,7 @@
               </c-input-group>
               <c-input-group class="mb-3" *ngIf="stepEmployee" cValidation>
                 <span cInputGroupText>&#64;</span>
-                <input autoComplete="email" formControlName="email" cFormControl placeholder="Email" 
+                <input autoComplete="email" formControlName="email" cFormControl placeholder="Email Válido" 
                 [ngClass]="{'is-invalid': registerForm.get('email')?.invalid && registerForm.get('email')?.touched}"/>
                 <c-form-feedback [valid]="false" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
                   Email é obrigatório e precisa ser válido.
@@ -68,9 +68,14 @@
                     cButton
                     color="success"
                     type="submit"
-                    [disabled]="!registerForm.valid"
+                    [disabled]="!registerForm.valid || loading"
                   >
-                    Cadastrar
+                    @if (loading) {
+                      <c-spinner aria-hidden="true" size="sm"></c-spinner>
+                      <span class="ms-1">Cadastrando...</span>
+                    } @else {
+                      Cadastrar
+                    }
                   </button>
               </div>
             </form>
