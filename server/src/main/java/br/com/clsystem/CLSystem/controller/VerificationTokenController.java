@@ -32,7 +32,8 @@ public class VerificationTokenController {
 
         // 2. Verifica se já foi usado
         if (verificationToken.isUsed()) {
-            return ResponseEntity.badRequest().body("Código de confirmação já utilizado anteriormente. Tente fazer o login normalmente.");
+            return ResponseEntity.badRequest().body(Map.of("error", "TOKEN_ALREADY_USED",
+                "message", "Código de confirmação já utilizado. Tente fazer o login normalmente ou redefina a senha caso a tenha perdido."));
         }
         
         // 4. Tudo certo! Atualiza o usuário e o token

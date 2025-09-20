@@ -1,6 +1,7 @@
 package br.com.clsystem.CLSystem.model.services;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +48,8 @@ public class ProductService {
 			if(!product.getCustomer().getId().equals(customer.getId())) {
 				throw new DataBaseException("Produto Não Pertence ao Cliente");
 			}
-			productRepository.deleteById(id);
+			product.setDeletedAt(LocalDateTime.now());
+			productRepository.save(product);
 			return ResponseEntity.ok().build();
 		} catch (DataIntegrityViolationException dive) {		
 			throw new DataBaseException("", dive);
@@ -88,7 +90,7 @@ public class ProductService {
 	
 	public List<ProductRecord> findByCustomerId(Customer customer){
 		try {
-			List<Product> listProduct = productRepository.findByCustomerId(customer.getId());
+			List<Product> listProduct = productRepository.findByCustomerIdAndDeletedAtIsNull(customer.getId());
 			return fillList(listProduct); 
 
 //					listProduct.stream().forEach(product -> {

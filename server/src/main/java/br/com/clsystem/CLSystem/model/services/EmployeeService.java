@@ -55,7 +55,7 @@ public class EmployeeService {
 		if(employeeRecord.idEmployee() != null && employeeRecord.idEmployee() > 0) {
 			return update(employeeRecord, customer);
 		}
-		Optional<Employee> employeeOptional = employeeRepository.findByDocument(employeeRecord.document());
+		Optional<Employee> employeeOptional = employeeRepository.findByDocumentAndDeletedAtIsNull(employeeRecord.document());
 		if(employeeOptional.isPresent() && employeeOptional.get().getDeletedAt() == null){
 			return ResponseEntity.badRequest().body("Funcionário em duplicidade. Não é possível ter o mesmo funcionário ativo em duas empresas diferentes.");
 		}
@@ -87,7 +87,7 @@ public class EmployeeService {
 	}
 
 	public ResponseEntity<?> updatePassword(String passwordOld, String passwordNew, String document, UUID customerId){
-		Optional<Employee> employeeUp = employeeRepository.findByDocument(document);
+		Optional<Employee> employeeUp = employeeRepository.findByDocumentAndDeletedAtIsNull(document);
 		if(employeeUp.isEmpty() || !employeeUp.get().getCustomer().getId().equals(customerId)) {
 			return ResponseEntity.notFound().build();
 		}
@@ -109,14 +109,14 @@ public class EmployeeService {
 		try{
 			switch(employee.getTypeUser()){
 				case ADMIN:
-					listEmployee = employeeRepository.findByCustomerId(employee.getCustomer().getId());
+					listEmployee = employeeRepository.findByCustomerIdAndDeletedAtIsNull(employee.getCustomer().getId());
 					break;
 				case MANAGER:
-					listEmployee = employeeRepository.findByCustomerId(employee.getCustomer().getId());
+					listEmployee = employeeRepository.findByCustomerIdAndDeletedAtIsNull(employee.getCustomer().getId());
 					break;
 				case EMPLOYEE:
 					listEmployee = employeeRepository
-						.findByIdEmployeeAndCustomerId(employee.getIdEmployee(), employee.getCustomer().getId());
+						.findByIdEmployeeAndCustomerIdAndDeletedAtIsNull(employee.getIdEmployee(), employee.getCustomer().getId());
 					break;
 				default:
 					listEmployee = List.of();
@@ -146,7 +146,7 @@ public class EmployeeService {
 
 	public EmployeeProjection findByDocumentAndCustomerId(String document, UUID customerId){
 		try {
-			Optional<EmployeeProjection> employee = employeeRepository.findByDocumentAndCustomerId(document, customerId);
+			Optional<EmployeeProjection> employee = employeeRepository.findByDocumentAndCustomerIdAndDeletedAtIsNull(document, customerId);
 			return employee.get();
 		}catch(Exception e) {
 			throw new DataBaseException("", e);
@@ -182,6 +182,7 @@ public class EmployeeService {
 				return ResponseEntity.notFound().build();
 			}
 			employee.get().setDeletedAt(LocalDateTime.now());
+			employeeRepository.save(employee.get());
 			return ResponseEntity.ok().build();
 		} catch (DataIntegrityViolationException dive) {		
 			throw new DataBaseException("", dive);

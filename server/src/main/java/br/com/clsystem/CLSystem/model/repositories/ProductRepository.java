@@ -10,11 +10,12 @@ import org.springframework.data.repository.query.Param;
 import br.com.clsystem.CLSystem.model.entities.Product;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
-	List<Product> findByCustomerId(UUID	customeId);
-
+	List<Product> findByCustomerIdAndDeletedAtIsNull(UUID	customeId);
+  
 	@Query("""
     SELECT e FROM Product e
     WHERE e.customer.id = :customerId
+      AND e.deletedAt IS NULL
       AND (LOWER(e.nameProduct) LIKE LOWER(CONCAT('%', :value, '%'))
            OR LOWER(e.barCode) LIKE LOWER(CONCAT('%', :value, '%')))
 	""")

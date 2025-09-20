@@ -11,4 +11,5 @@ public interface EmployeeProjection {
     String getEmail();
     @JsonFormat(pattern = "dd/MM/yyyy")
     Date getInitialDate();
+    String getTypeUser();
 }

@@ -40,7 +40,7 @@ public class CurrentCustomerResolver implements HandlerMethodArgumentResolver {
         }
 
         String document = authentication.getName();
-        return employeeRepository.findByDocument(document)
+        return employeeRepository.findByDocumentAndDeletedAtIsNull(document)
                 .map(Employee::getCustomer)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado para o funcionário"));
     }

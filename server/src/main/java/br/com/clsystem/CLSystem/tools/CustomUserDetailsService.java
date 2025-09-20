@@ -17,7 +17,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-       return employeeRepository.findByDocument(username)
+       return employeeRepository.findByDocumentAndDeletedAtIsNull(username)
             .map(UserAuthenticated::new)
             .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
     }

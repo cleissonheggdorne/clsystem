@@ -35,7 +35,7 @@ public class CurrentEmployeeArgumentResolver implements HandlerMethodArgumentRes
         }
 
         String document = authentication.getName();
-        return employeeRepository.findByDocument(document)
+        return employeeRepository.findByDocumentAndDeletedAtIsNull(document)
                 .orElseThrow(() -> new RuntimeException("Funcionário não encontrado para o usuário autenticado"));
     }
 }
