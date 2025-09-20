@@ -18,63 +18,39 @@ export const navItems: INavData[] = [
   {
     name: 'Vendas',
     url: '/sale',
-    iconComponent: { name: 'cil-drop' }
+    iconComponent: { name: 'cil-calculator' },
+    permission: ['ADMIN', 'MANAGER','EMPLOYEE']
+
   },
   {
     name: 'Produtos',
     url: '/products',
-    iconComponent: { name: 'cil-drop' }
+    iconComponent: { name: 'cil-notes' },
+    permission: ['ADMIN', 'MANAGER']
   },
   {
     name: 'Funcionários',
     url: '/employee',
-    iconComponent: { name: 'cil-drop' }
+    iconComponent: { name: 'cil-people' },
+    permission: ['ADMIN', 'MANAGER']
   },
   {
     name: 'Caixas',
     url: '/cashier',
-    iconComponent: { name: 'cil-drop' }
+    iconComponent: { name: 'cil-description' },
+    permission: ['ADMIN', 'MANAGER']
   },
-  // {
-  //   title: true,
-  //   name: 'Extras'
-  // },
-  // {
-  //   name: 'Pages',
-  //   url: '/login',
-  //   iconComponent: { name: 'cil-star' },
-  //   children: [
-  //     {
-  //       name: 'Login',
-  //       url: '/login',
-  //       icon: 'nav-icon-bullet'
-  //     },
-  //     {
-  //       name: 'Register',
-  //       url: '/register',
-  //       icon: 'nav-icon-bullet'
-  //     },
-  //     {
-  //       name: 'Error 404',
-  //       url: '/404',
-  //       icon: 'nav-icon-bullet'
-  //     },
-  //     {
-  //       name: 'Error 500',
-  //       url: '/500',
-  //       icon: 'nav-icon-bullet'
-  //     }
-  //   ]
-  // },
   {
     title: true,
     name: 'Links',
-    class: 'mt-auto'
+    class: 'mt-auto',
+    permission: ['MANAGER']
   },
   {
     name: 'Docs',
     url: 'https://coreui.io/angular/docs/5.x/',
     iconComponent: { name: 'cil-description' },
-    attributes: { target: '_blank' }
+    attributes: { target: '_blank' },
+    permission: ['MANAGER'] // Permissão necessária para ver este item
   }
 ];
