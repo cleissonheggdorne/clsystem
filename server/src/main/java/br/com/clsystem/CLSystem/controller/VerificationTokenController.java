@@ -36,8 +36,7 @@ public class VerificationTokenController {
         }
         
         // 4. Tudo certo! Atualiza o usuário e o token
-        Employee employee = employeeService.findByEmail(verificationToken.getEmail())
-                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado para o código fornecido"));
+        Employee employee = verificationToken.getEmployee();
 
         employee.setEmailConfirmed(true);
         employeeService.updateEmployee(employee);

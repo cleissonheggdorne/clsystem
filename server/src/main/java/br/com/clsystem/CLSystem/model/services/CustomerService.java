@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import br.com.clsystem.CLSystem.model.entities.Customer;
+import br.com.clsystem.CLSystem.model.entities.Employee;
 import br.com.clsystem.CLSystem.model.entities.VerificationToken;
 import br.com.clsystem.CLSystem.model.entities.record.CustomerRecord;
 import br.com.clsystem.CLSystem.model.entities.record.EmployeeRecord;
@@ -60,11 +61,15 @@ public class CustomerService {
                                                         customeRecord.email(), 
                                                         customeRecord,
                                                         TypeUser.ADMIN);
-        employeeService.save(employeeRecord, customerNew);
-        VerificationToken token = verificationTokenService.createVerificationToken(employeeRecord.email());
+        ResponseEntity<?> response = employeeService.save(employeeRecord, customerNew);
+        Employee employee = (Employee) response.getBody();
+        VerificationToken token = verificationTokenService.createVerificationToken(employee);
 
         String body = String.format(MENSAGEM,getUrlConfirmacao() + token.getToken());
-        mailService.sendEmailHtml(token.getEmail(), ASSUNTO, body);
+        boolean sent =mailService.sendEmailHtml(token.getEmail(), ASSUNTO, body);
+        if(!sent){
+            throw new Exception("Erro ao enviar email de confirmação. Por favor, tente novamente mais tarde.");
+        }
         return ResponseEntity.ok(customerNew);
     }
 

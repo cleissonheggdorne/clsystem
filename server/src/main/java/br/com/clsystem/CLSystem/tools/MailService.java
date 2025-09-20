@@ -7,6 +7,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
@@ -25,26 +26,39 @@ public class MailService {
         this.mailSender = mailSender;
     }
 
-    public void sendEmail(String para, String assunto, String texto) {
-        SimpleMailMessage mensagem = new SimpleMailMessage();
-        mensagem.setFrom(this.username); 
-        mensagem.setTo(para);
-        mensagem.setSubject(assunto);
-        mensagem.setText(texto);
-        mailSender.send(mensagem);
+    public boolean sendEmail(String para, String assunto, String texto) {
+        try {
+            SimpleMailMessage mensagem = new SimpleMailMessage();
+            mensagem.setFrom(this.username); 
+            mensagem.setTo(para);
+            mensagem.setSubject(assunto);
+            mensagem.setText(texto);
+            mailSender.send(mensagem);
+            return true;
+        } catch (Exception e) {
+            logger.info("Erro ao enviar email: " + e.getMessage());
+        }
+        return false;
     }
 
-    public void sendEmailHtml(String para, String assunto, String texto) {
+    public boolean sendEmailHtml(String para, String assunto, String texto) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
+        boolean sent = false;
         try {
             mimeMessage.setFrom(this.username);
             mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(para));
             mimeMessage.setSubject(assunto);
             mimeMessage.setContent(texto, "text/html; charset=utf-8");
             mailSender.send(mimeMessage);
+            return true;
+        } catch (AuthenticationFailedException e) {
+           logger.info("Erro de autenticação ao enviar email: " + e.getMessage());
         } catch (MessagingException e) {
            logger.info("Erro ao enviar email HTML: " + e.getMessage());
+        } catch (Exception e) {
+           logger.info("Erro inesperado ao enviar email: " + e.getMessage());
         }
+        return sent;
     }
     
 }

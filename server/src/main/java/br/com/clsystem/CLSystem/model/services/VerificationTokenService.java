@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import br.com.clsystem.CLSystem.model.entities.Employee;
 import br.com.clsystem.CLSystem.model.entities.VerificationToken;
 import br.com.clsystem.CLSystem.model.repositories.VerificationTokenRepository;
 
@@ -16,11 +17,12 @@ public class VerificationTokenService {
         this.verificationTokenRepository = verificationTokenRepository;
     }
 
-    public VerificationToken createVerificationToken(String email) {
+    public VerificationToken createVerificationToken(Employee employee) {
         VerificationToken verificationToken = new VerificationToken();
-        verificationToken.setEmail(email);
+        verificationToken.setEmail(employee.getEmail());
         verificationToken.setToken(UUID.randomUUID().toString());
         verificationToken.setUsed(false);
+        verificationToken.setEmployee(employee);
         return verificationTokenRepository.save(verificationToken);
     }
 
