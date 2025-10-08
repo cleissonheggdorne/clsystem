@@ -176,7 +176,11 @@ export class LoginComponent {
   onSubmit() {
     if (this.loginForm.valid) {
       this.loading = true;
-      this.loginService.login(this.username?.value, this.password?.value).subscribe({
+      this.loginService.login(this.username?.value, this.password?.value).pipe(
+      finalize(() => {
+        this.loading = false;
+      })
+    ).subscribe({
         next: () => {
           this.router.navigate(['/sale']);
         },
@@ -187,9 +191,6 @@ export class LoginComponent {
             this.alertAuthMessage = 'Ocorreu um erro ao fazer login. Tente novamente mais tarde.';
           }
           this.alertAuthvisible = true;
-        },
-        complete: () => {
-          this.loading = false;
         }
       });
     }
