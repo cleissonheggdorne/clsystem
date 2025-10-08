@@ -1,9 +1,11 @@
 package br.com.clsystem.CLSystem.model.services;
 
 import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -14,38 +16,27 @@ import br.com.clsystem.CLSystem.model.entities.record.CustomerRecord;
 import br.com.clsystem.CLSystem.model.entities.record.EmployeeRecord;
 import br.com.clsystem.CLSystem.model.repositories.CustomerRepository;
 import br.com.clsystem.CLSystem.tools.MailService;
+import br.com.clsystem.CLSystem.types.TypeToken;
 import br.com.clsystem.CLSystem.types.TypeUser;
 import jakarta.transaction.Transactional;
 
 @Service
 public class CustomerService {
-
-    final String ASSUNTO = "CLSystem - Confirmação de Cadastro";
-    final String MENSAGEM = "Olá, estamos felizes em tê-lo(a) conosco!<br>" +
-    "Você solicitou acesso ao Software <b>CLSystem</b>.<br>" +
-    "A partir de agora você poderá gerenciar seu negócio com mais eficiência e praticidade.<br>" +
-    "Confirme seu cadastro clicando aqui: <a href='%s'>Confirmar Cadastro</a>";
-
-    @Value("${url.frontend}")
-    private String baseUrl;
-
-    @Value("${url.frontend.dev}")
-    private String baseUrlDev;
-
-    @Value("${spring.profiles.active}")
-    private String activeProfile;
-
+    @Value("${app.base-url}")
+    private String appBaseUrl;
     final CustomerRepository customerRepository;
     final EmployeeService employeeService;
     final VerificationTokenService verificationTokenService;
     final MailService mailService;
+    private final MessageSource messageSource;
 
     public CustomerService(CustomerRepository customerRepository, EmployeeService employeeService,
-     VerificationTokenService verificationTokenService, MailService mailService){
+     VerificationTokenService verificationTokenService, MailService mailService, MessageSource messageSource){
         this.customerRepository = customerRepository;
         this.employeeService = employeeService;
         this.verificationTokenService = verificationTokenService;
         this.mailService = mailService;
+        this.messageSource = messageSource;
     }
 
     @Transactional
@@ -63,10 +54,9 @@ public class CustomerService {
                                                         TypeUser.ADMIN);
         ResponseEntity<?> response = employeeService.save(employeeRecord, customerNew);
         Employee employee = (Employee) response.getBody();
-        VerificationToken token = verificationTokenService.createVerificationToken(employee);
-
-        String body = String.format(MENSAGEM,getUrlConfirmacao() + token.getToken());
-        boolean sent =mailService.sendEmailHtml(token.getEmail(), ASSUNTO, body);
+        VerificationToken token = verificationTokenService.createVerificationToken(employee, TypeToken.VERIFICATION);
+        String body = String.format(messageSource.getMessage("email.body.register", null, Locale.getDefault()), getUrlConfirmacao() + token.getToken() + "&confirmation=true");
+        boolean sent =mailService.sendEmailHtml(token.getEmail(), messageSource.getMessage("email.subject.register", null, Locale.getDefault()), body);
         if(!sent){
             throw new Exception("Erro ao enviar email de confirmação. Por favor, tente novamente mais tarde.");
         }
@@ -74,7 +64,7 @@ public class CustomerService {
     }
 
     public String getUrlConfirmacao() {
-        return  (activeProfile.matches("dev|local") ? baseUrlDev : baseUrl)+ "/#/login?token=" ;
+        return appBaseUrl + "/#/login?token=";
     }
 
 }

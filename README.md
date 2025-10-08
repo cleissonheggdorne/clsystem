@@ -41,11 +41,11 @@
 O servidor backend roda na porta 8081 por padrão e se conecta a um banco de dados PostgreSQL.
 
 ### Frontend
-O cliente frontend roda na porta 4200 por padrão.
+O cliente frontend roda na porta 4201 por padrão.
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Run `ng serve` for a dev server. Navigate to `http://localhost:4201/`. The app will automatically reload if you change any of the source files.
 
 ## Code scaffolding
 
@@ -59,4 +59,12 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 O projeto utiliza Spring Security com autenticação JWT. As chaves públicas e privadas são configuradas no arquivo application.properties.
 
 ## Configuração de CORS
-O backend está configurado para aceitar requisições do frontend rodando em `http://localhost:4200`.
+O backend está configurado para aceitar requisições do frontend rodando em `http://localhost:4201`.
+
+# Arquivos de configuração
+application.properties.example -> Configurações a serem preenchidas
+application.properties -> Adicionar perfil ativo [spring.profiles.active=dev,prod
+application-dev.properties -> Configurações do perfil dev
+application-prod.properties -> Configurações do perfil prod
+messages_pt_BR.properties -> Mensagens
+

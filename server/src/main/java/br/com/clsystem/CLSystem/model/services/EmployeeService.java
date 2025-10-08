@@ -32,23 +32,6 @@ public class EmployeeService {
 		this.passwordEncoder = passwordEncoder;
 	}
 
-	// public void save(EmployeeRecord employeeRecord, Customer customer) {
-	// 	if(employeeRecord.idEmployee() != null && employeeRecord.idEmployee() > 0) {
-	// 		return update(employeeRecord, customer);
-	// 	}
-
-	// 	Optional<Employee> employeeOptional = employeeRepository.findByDocument(employeeRecord.document());
-	// 	if(employeeOptional.isPresent() && employeeOptional.get().getDeletedAt() == null){
-	// 		return ResponseEntity.badRequest().body("Funcionário em duplicidade. Não é possível ter o mesmo funcionário ativo em duas empresas diferentes.");
-	// 	}
-
-	// 	try {
-	// 		employeeRepository.saveAndFlush(employee);
-	// 	}catch(DataIntegrityViolationException dive) {
-	// 		throw new DataBaseException("", dive);
-	// 	}
-	// }
-
 	public ResponseEntity<?> save(EmployeeRecord employeeRecord, Customer customer){
 		Employee employee = new Employee();
 
@@ -191,9 +174,9 @@ public class EmployeeService {
 
 	public Optional<Employee> findByEmail(String email) {
 		try {
-			return employeeRepository.findByEmail(email);
+			return employeeRepository.findByEmailAndDeletedAtIsNull(email);
 		}catch(Exception e) {
-			throw new DataBaseException("Email não encontrado", e);
+			throw new DataBaseException("Ocorreu um problema. Tente novamente mais tarde", e);
 		}
 	}
 

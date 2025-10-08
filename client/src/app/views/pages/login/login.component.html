@@ -50,9 +50,9 @@
                     </button>
                   </c-col>
                   <c-col class="text-right" xs="6">
-                    <!-- <button cButton class="px-0" color="link">
-                      Forgot password?
-                    </button> -->
+                    <button cButton class="px-0" color="link" (click)="this.modalResetPassword = true">
+                      Esqueci minha senha
+                    </button>
                   </c-col>
                 </c-row>
               </form>
@@ -76,3 +76,14 @@
     </c-row>
   </c-container>
 </div>
+<!-- Modal de Resetar Senha -->
+<app-custom-modal
+  [visible]="modalResetPassword"
+  (visibleChange)="modalResetPassword = $event"
+  [title]="resetPasswordModalTitle"
+  [fields]="fieldsResetPassword"
+  [description]="resetPasswordModalDescription"
+  [primaryButtonText]="nameActionResetPassword"
+  [secondaryButtonText]="'Voltar'"
+  (primaryAction)="goToResetPassword($event)">
+</app-custom-modal>

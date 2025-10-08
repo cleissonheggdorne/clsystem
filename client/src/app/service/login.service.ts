@@ -37,7 +37,7 @@ export class LoginService {
 
   register(customer: Customer): Observable<Customer> {
       return this.http.post<Customer>(`${this.apiUrlDev}/api/public/employee/register`, customer);
-    }
+  }
 
   alterPassword(passwordOld: string, passwordNew: string): Observable<any> {
     return this.http.put(`${this.apiUrlDev}/api/employee/alter-password`, {
@@ -47,6 +47,16 @@ export class LoginService {
 
   verifyToken(token: string): Observable<any> {      
     return this.http.get(`${this.apiUrlDev}/api/public/verification?token=${token}`);
+  }
+
+  sendMailWithTokenToRedefinePassword(email: string): Observable<any> {      
+    return this.http.get(`${this.apiUrlDev}/api/public/verification/send-redefine?email=${email}`);
+  }
+
+  redefinePassword(password: string, confirmPassword: string, token: string): Observable<any> {      
+    return this.http.post(`${this.apiUrlDev}/api/public/verification/redefine-password?token=${token}`, {
+      password, confirmPassword
+    });
   }
 
   // Métodos para gerenciar o token

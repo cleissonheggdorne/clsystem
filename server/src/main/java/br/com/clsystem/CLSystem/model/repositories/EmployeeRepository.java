@@ -36,4 +36,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
                                                  @Param("value") String value);
 
 	Optional<Employee> findByEmail(String email);
+	Optional<Employee> findByEmailAndDeletedAtIsNull(String email);
 }
